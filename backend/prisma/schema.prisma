@@ -13,9 +13,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Student {
+model StudentLogin {
   id    Int     @id @default(autoincrement())
-  student_id  String
+  registrationNo  String
   password String 
 }
 

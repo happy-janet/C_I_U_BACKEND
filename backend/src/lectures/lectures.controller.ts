@@ -1,8 +1,15 @@
-import { Controller, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param} from '@nestjs/common';
+import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
+import { LecturesService } from './lectures.service'; // Import the service
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LecturesService } from './lectures.service';
 
 @Controller('lectures')
 export class LecturesController {
-    constructor(private readonly lecturesService: LecturesService) {}
+  constructor(private readonly lecturesService: LecturesService) {} // Inject the service
+
+  @Post()
+  async create(@Body() createLecturerSignUpDto: CreateLecturerSignUpDto) {
+    return await this.lecturesService.create(createLecturerSignUpDto); // Call the service method
+  }
+
 }
