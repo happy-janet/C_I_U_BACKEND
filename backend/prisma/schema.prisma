@@ -26,5 +26,6 @@ model LecturerSignUp{
   last_name  String
   email  String
   role  String
+  password String
   
 }
