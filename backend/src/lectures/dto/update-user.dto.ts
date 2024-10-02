@@ -9,8 +9,8 @@ export class UpdateUserDto {
     @IsOptional()
     lastName?: string;
 
-    @IsEmail()
-    @IsOptional({}, { message: 'Please provide a valid email address'})
+    @IsEmail({}, { message: 'Please provide a valid email address'})
+    @IsOptional()
     email?: string;
 
     @IsString()

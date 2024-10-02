@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable , NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class LecturesService {
@@ -15,6 +16,19 @@ export class LecturesService {
         role: createLecturerSignUpDto.role,
         password: createLecturerSignUpDto.password,
       },
+    });
+  }
+
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    // Check if the user exists
+    const user = await this.prisma.lecturerSignUp.findUnique({ where: { id: Number(id) } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    // Update the user
+    return this.prisma.lecturerSignUp.update({
+      where: { id: Number(id) },
+      data: updateUserDto,
     });
   }
 }

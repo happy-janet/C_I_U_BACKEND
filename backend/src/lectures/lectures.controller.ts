@@ -12,4 +12,11 @@ export class LecturesController {
     return await this.lecturesService.create(createLecturerSignUpDto); // Call the service method
   }
 
+  // Update user by ID
+  @Patch(':id')
+  async updateUser(
+        @Param('id') id: string, 
+        @Body() updateUserDto: UpdateUserDto) {// Call the service method to update the user
+    return this.lecturesService.updateUser(id, updateUserDto);
+  }
 }
