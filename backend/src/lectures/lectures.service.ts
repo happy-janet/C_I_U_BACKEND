@@ -31,4 +31,20 @@ export class LecturesService {
       data: updateUserDto,
     });
   }
+  
+  async findAll() {
+    return this.prisma.lecturerSignUp.findMany(); // Fetch all lecturer sign-ups
+  }
+  
+  async findOne(id: number) {
+    return this.prisma.lecturerSignUp.findUnique({
+      where: { id }, // Fetch a single lecturer sign-up by ID
+    });
+  }
+
+  async delete(id: number) {
+    return this.prisma.lecturerSignUp.delete({
+      where: { id }, // Delete a lecturer sign-up by ID
+    });
+  }
 }
