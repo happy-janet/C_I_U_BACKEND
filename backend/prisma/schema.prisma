@@ -29,3 +29,4 @@ model LecturerSignUp{
   password String
   
 }
+
