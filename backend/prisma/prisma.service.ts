@@ -5,10 +5,10 @@ import { PrismaClient } from '@prisma/client';
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   // lecturerSignUp: any;
   async onModuleInit() {
-    await this.$connect(); // Establish connection with the database when the module initializes
+    await this.$connect();
   }
 
   async onModuleDestroy() {
-    await this.$disconnect(); // Disconnect from the database when the module is destroyed
+    await this.$disconnect();
   }
 }
