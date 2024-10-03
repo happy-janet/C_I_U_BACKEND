@@ -1,6 +1,8 @@
-import { Controller, Post, Body, Get, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Get, Delete } from '@nestjs/common';
 import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
-import { LecturesService } from './lectures.service'; 
+import { LecturesService } from './lectures.service'; // Import the service
+import { UpdateUserDto } from './dto/update-user.dto';
+
 
 @Controller('lectures')
 export class LecturesController {
@@ -11,6 +13,13 @@ export class LecturesController {
     return await this.lecturesService.create(createLecturerSignUpDto); 
   }
 
+  // Update user by ID
+  @Patch(':id')
+  async updateUser(
+        @Param('id') id: string, 
+        @Body() updateUserDto: UpdateUserDto) {// Call the service method to update the user
+    return this.lecturesService.updateUser(id, updateUserDto);
+  }
 
 //   @Get()
 //   async getAllBooks(): Promise<Book[]> {
