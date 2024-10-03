@@ -29,4 +29,16 @@ model LecturerSignUp{
   password String
   
 }
+// Student registration
 
+model users {
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String   @unique
+  program         String
+  createdAt      DateTime @default(now())
+  lastLogin      DateTime?
+  registrationNo String   @unique
+  password       String
+  role          String
+}
