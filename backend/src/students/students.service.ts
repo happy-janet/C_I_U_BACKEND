@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, InternalServerErrorException,BadRequestException, } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -155,30 +155,27 @@ export class StudentsService {
       throw new InternalServerErrorException('Error logging in');
     }
   }
-}
 
 
-async countStudents() {
-  try {
-    return await this.prisma.users.count(); // Assuming `users` is the model for students
-  } catch (error) {
-    console.error("Error counting students:", error);
-    throw new InternalServerErrorException('Failed to count students');
+  async searchByName(name: string) {
+    try {
+      // Use Prisma to find users where the name contains the search term
+      return await this.prisma.users.findMany({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Error during search:', error);
+      throw new InternalServerErrorException('Error during search');
+    }
   }
 }
 
-// Count distinct programs
-async countPrograms() {
-  try {
-    const uniquePrograms = await this.prisma.users.findMany({
-      select: { program: true },
-      distinct: ['program'],
-    });
-    return {
-      count: uniquePrograms.length,
-    };
-  } catch (error) {
-    console.error("Error counting programs:", error);
-    throw new InternalServerErrorException('Failed to count programs');
-  }
-}
+
+
+
+

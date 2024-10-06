@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body,Request, UseGuards , Query,BadRequestException, InternalServerErrorException} from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from '../students/auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 @Controller('students')
 export class StudentsController {
   constructor(
@@ -56,7 +57,33 @@ async login(@Body() loginDto: LoginDto) {
   async getProgramCount() {
     return this.studentsService.countPrograms();
   }
+
+  @UseGuards(JwtAuthGuard) 
+  @Post('logout')
+  async logout(@Request() req) {
+      // Optionally handle any additional logout logic if necessary
+      return { message: 'Logout successful. Remove the token from your client storage.' };
+  }
+
+  @Get('search')
+  async search(@Query('name') name: string) {
+    // Validate that the name query parameter is provided
+    if (!name) {
+      throw new BadRequestException('Name query parameter is required');
+    }
+
+    try {
+      // Call the service method to search for users by name
+      return await this.studentsService.searchByName(name);
+    } catch (error) {
+      console.error('Error during search:', error);
+      throw new InternalServerErrorException('Error during search');
+    }
+  }
 }
+
+
+
 
 
 

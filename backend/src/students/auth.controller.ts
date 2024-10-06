@@ -1,7 +1,7 @@
-import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, UnauthorizedException,UseGuards, Request  } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto'; // Import the LoginDto
-
+import { JwtAuthGuard } from './jwt-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -16,4 +16,12 @@ export class AuthController {
     // Login method returns the JWT token
     return this.authService.login(loginDto);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Request() req) {
+    // Instruct client to handle token removal
+    return this.authService.logout();
+  }
 }
+

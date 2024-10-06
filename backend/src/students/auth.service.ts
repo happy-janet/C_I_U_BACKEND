@@ -35,7 +35,15 @@ export class AuthService {
 
     const payload = { registrationNo: student.registrationNo, sub: student.id };
     return {
+      message: 'Login successful',
       access_token: this.jwtService.sign(payload),
     };
+  
+  }
+
+  async logout(): Promise<any> {
+    return { message: 'Logout successful. Please remove token on client.' };
   }
 }
+  
+
