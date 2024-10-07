@@ -24,6 +24,8 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateCourseDto } from './dto/create-course.dto';
+
 
 @Injectable()
 export class LecturesService {
@@ -77,4 +79,20 @@ export class LecturesService {
   }
 
   
+}
+
+export class CoursesService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createCourseDto: CreateCourseDto) {
+    return await this.prisma.courses.create({
+      data: {
+        facultyName: createCourseDto.facultyName,
+        courseName: createCourseDto.courseName,
+        courseUnits: createCourseDto.courseUnits,
+      },
+    });
+  }
+  
+  // Add other methods for findAll, findOne, etc.
 }

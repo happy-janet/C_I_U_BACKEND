@@ -11,6 +11,8 @@ datasource db {
 
 
 
+// registering a Lecturer
+
 model LecturerSignUp {
   id         Int    @id @default(autoincrement())
   first_name String
@@ -31,3 +33,32 @@ model users {
   password       String
   role           String
 }
+
+
+// adding courses and course units
+
+model courses {
+  id           Int       @id @default(autoincrement())
+  facultyName  String
+  courseName   String
+  courseUnits  String[]  // Store course units as an array of strings
+  assessments  addAssessment[]  // Relation to assessments
+}
+
+model addAssessment {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String
+  courseId       Int       // Foreign key to courses model
+  course         courses   @relation(fields: [courseId], references: [id])
+  courseUnit     String
+  duration       Int       // in minutes
+  scheduledDate  DateTime
+  startTime      DateTime
+  endTime        DateTime
+  createdBy      Int
+  createdAt      DateTime  @default(now())
+  questions      Json
+}
+
+
