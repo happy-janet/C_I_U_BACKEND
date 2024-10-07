@@ -13,6 +13,8 @@ model StudentLogin {
   password       String
 }
 
+// registering a Lecturer
+
 model LecturerSignUp {
   id         Int    @id @default(autoincrement())
   first_name String

@@ -5,7 +5,8 @@ import { LecturesModule } from './lectures/lectures.module';
 import { ConfigModule } from '@nestjs/config';
 import { StudentsModule } from './students/students.module';
 import { AdminModule } from './admin/admin.module';
-import { AuthModule } from './lectures/auth.module'; // Import AuthModule
+import { AuthModule } from './lectures/auth.module';
+ // Import AuthModule
 
 @Module({
   imports: [

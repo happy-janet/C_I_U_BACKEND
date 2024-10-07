@@ -4,7 +4,7 @@ import { LecturesService } from './lectures.service'; // Import the service
 import { UpdateUserDto } from './dto/update-user.dto';
 
 
-@Controller('lectures')
+@Controller('lecturerReg')
 export class LecturesController {
   constructor(private readonly lecturesService: LecturesService) {} 
 
