@@ -7,11 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model StudentLogin {
-  id             Int    @id @default(autoincrement())
-  registrationNo String
-  password       String
-}
+
+
+
 
 // registering a Lecturer
 
