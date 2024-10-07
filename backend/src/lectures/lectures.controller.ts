@@ -2,7 +2,8 @@ import { Controller, Post, Body, Patch, Param, Get, Delete } from '@nestjs/commo
 import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
 import { LecturesService } from './lectures.service'; // Import the service
 import { UpdateUserDto } from './dto/update-user.dto';
-
+import { CreateCourseDto } from './dto/create-course.dto';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Controller('lecturerReg')
 export class LecturesController {
@@ -43,3 +44,6 @@ async delete(@Param('id') id: string) {
   return this.lecturesService.delete(+id); // Call the service method to delete a lecturer
 }
 }
+
+
+

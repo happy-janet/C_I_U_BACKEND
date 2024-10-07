@@ -6,9 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import { StudentsModule } from './students/students.module';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './lectures/auth.module'; 
-import { PrismaModule } from '../prisma/prisma.module'; 
-import { AuthModule } from './lectures/auth.module';
- // Import AuthModule
+import { PrismaModule } from '../prisma/prisma.module';
+import { CoursesModule } from './lectures/courses.module'; 
 
 @Module({
   imports: [
@@ -17,6 +16,7 @@ import { AuthModule } from './lectures/auth.module';
     AuthModule,
     AdminModule,
     PrismaModule,
+    CoursesModule, // <-- Add the CoursesModule here
     ConfigModule.forRoot({
       isGlobal: true, // Makes the config globally available
     }),
