@@ -157,6 +157,10 @@ export class StudentsService {
   }
 
 
+
+
+  
+
   async searchByName(name: string) {
     try {
       // Use Prisma to find users where the name contains the search term

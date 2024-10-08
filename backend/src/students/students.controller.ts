@@ -44,7 +44,6 @@ deleteStudent(@Param('id') id: string) {
 
 @Post('login')
 async login(@Body() loginDto: LoginDto) {
-    console.log('Received login DTO:', loginDto);
     return this.authService.login(loginDto);
 }
 

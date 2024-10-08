@@ -33,4 +33,6 @@ model users {
   registrationNo String   @unique
   password       String
   role          String
+  resetToken      String?   @unique
+  resetTokenExpiry DateTime?
 }
