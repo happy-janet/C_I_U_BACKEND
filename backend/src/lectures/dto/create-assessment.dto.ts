@@ -14,6 +14,9 @@ export class CreateAssessmentDto {
   @IsString()
   courseUnit: string;
 
+  @IsString()
+  courseUnitCode: string;
+
   @IsInt()
   duration: number; // in minutes
 
@@ -30,5 +33,11 @@ export class CreateAssessmentDto {
   createdBy: number;
 
   @IsString()
-  questions: string; // If you need a more structured format, consider using JSON
+  questions: JSON; 
+
+  @IsString()
+  Options: JSON; 
+
+  @IsString()
+  correctAnswer: string; 
 }
