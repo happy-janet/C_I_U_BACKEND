@@ -158,27 +158,3 @@ export class StudentsService {
 }
 
 
-async countStudents() {
-  try {
-    return await this.prisma.users.count(); // Assuming `users` is the model for students
-  } catch (error) {
-    console.error("Error counting students:", error);
-    throw new InternalServerErrorException('Failed to count students');
-  }
-}
-
-// Count distinct programs
-async countPrograms() {
-  try {
-    const uniquePrograms = await this.prisma.users.findMany({
-      select: { program: true },
-      distinct: ['program'],
-    });
-    return {
-      count: uniquePrograms.length,
-    };
-  } catch (error) {
-    console.error("Error counting programs:", error);
-    throw new InternalServerErrorException('Failed to count programs');
-  }
-}
