@@ -1,10 +1,11 @@
 import { Controller, Post, Body, Patch, Param, Get, Delete } from '@nestjs/common';
 import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
-import { LecturesService } from './lectures.service'; // Import the service
+import { LecturesService } from './lectures.service'; 
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateCourseDto } from './dto/create-course.dto';
+import { PrismaService } from '../../prisma/prisma.service';
 
-
-@Controller('lectures')
+@Controller('lecturerReg')
 export class LecturesController {
   constructor(private readonly lecturesService: LecturesService) {} 
 
@@ -17,14 +18,11 @@ export class LecturesController {
   @Patch(':id')
   async updateUser(
         @Param('id') id: string, 
-        @Body() updateUserDto: UpdateUserDto) {// Call the service method to update the user
+        @Body() updateUserDto: UpdateUserDto) {
     return this.lecturesService.updateUser(id, updateUserDto);
   }
 
-//   @Get()
-//   async getAllBooks(): Promise<Book[]> {
-//       return this.lecturesService.findAll();
-//   }
+
 @Get()
 async findAll() {
   return this.lecturesService.findAll(); 
@@ -40,6 +38,9 @@ async findOne(@Param('id') id: string) {
 // Delete a lecturer by ID
 @Delete(':id')
 async delete(@Param('id') id: string) {
-  return this.lecturesService.delete(+id); // Call the service method to delete a lecturer
+  return this.lecturesService.delete(+id); 
 }
 }
+
+
+
