@@ -81,18 +81,5 @@ export class LecturesService {
   
 }
 
-export class CoursesService {
-  constructor(private readonly prisma: PrismaService) {}
 
-  async create(createCourseDto: CreateCourseDto) {
-    return await this.prisma.courses.create({
-      data: {
-        facultyName: createCourseDto.facultyName,
-        courseName: createCourseDto.courseName,
-        courseUnits: createCourseDto.courseUnits,
-      },
-    });
-  }
-  
-  // Add other methods for findAll, findOne, etc.
-}
+ 
