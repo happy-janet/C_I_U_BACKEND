@@ -2,12 +2,16 @@ import { Controller, Get, Post, Patch, Delete, Param, Body } from '@nestjs/commo
 import { StudentsService } from './students.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-
+import { LoginDto } from './dto/login.dto';
+import { AuthService } from '../students/auth.service';
 @Controller('students')
 export class StudentsController {
-  constructor(private readonly studentsService: StudentsService) {}
-
+  constructor(
+    private readonly studentsService: StudentsService,
+    private readonly authService: AuthService 
+  ) {}
   @Get()
+
   getAllStudents() {
     return this.studentsService.findAll();
   }
@@ -37,4 +41,23 @@ deleteStudent(@Param('id') id: string) {
   return this.studentsService.delete(Number(id));
 }
 
+@Post('login')
+async login(@Body() loginDto: LoginDto) {
+    console.log('Received login DTO:', loginDto);
+    return this.authService.login(loginDto);
 }
+
+@Get('count/students')
+  async getStudentCount() {
+    return this.studentsService.countStudents();
+  }
+
+  @Get('count/programs')
+  async getProgramCount() {
+    return this.studentsService.countPrograms();
+  }
+}
+
+
+
+

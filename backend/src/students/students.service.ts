@@ -1,10 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
+import { LoginDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt'; 
 
 @Injectable()
 export class StudentsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService 
+  ) {}
 
   // Get all students
   async findAll() {
@@ -23,19 +29,8 @@ export class StudentsService {
   }
 
   // Create a new student
-  async create(createUserDto: CreateUserDto) {
-    return this.prisma.users.create({
-      data: {
-        name: createUserDto.name,
-        email: createUserDto.email,
-        program: createUserDto.program,
-        registrationNo: createUserDto.registrationNo,
-        password: createUserDto.password,
-        role: createUserDto.role,
-      },
-    });
-  }
-
+  
+  
   // Update student details
   async update(id: number, updateUserDto: CreateUserDto) {
     // First, find the student by ID to ensure they exist
@@ -68,14 +63,15 @@ export class StudentsService {
   async resetPassword(id: number, newPassword: string) {
     const student = await this.findOneById(id);
     if (!student) {
-      throw new NotFoundException(`Student with ID ${id} not found`);
+        throw new NotFoundException(`Student with ID ${id} not found`);
     }
-
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     return this.prisma.users.update({
-      where: { id },
-      data: { password: newPassword },
+        where: { id },
+        data: { password: hashedPassword }, // Store the hashed password
     });
-  }
+}
+
 
   // Delete a student
   async delete(id: number) {
@@ -84,4 +80,81 @@ export class StudentsService {
       where: { id },
     });
   }
+
+ 
+
+  // Create a new student
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
+      return await this.prisma.users.create({
+        data: {
+          name: createUserDto.name,
+          email: createUserDto.email,
+          program: createUserDto.program,
+          registrationNo: createUserDto.registrationNo,
+          password: hashedPassword,
+          role: createUserDto.role,
+        },
+      });
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw new InternalServerErrorException('Error creating user');
+    }
+  }
+
+  // Login method
+   async countStudents() {
+    return this.prisma.users.count();
+  }
+
+  async countPrograms() {
+    try {
+      const uniquePrograms = await this.prisma.users.findMany({
+        select: { program: true },
+        distinct: ['program'],
+      });
+      return {
+        count: uniquePrograms.length,
+      };
+    } catch (error) {
+      console.error("Error counting programs:", error);
+      throw new Error("Failed to count programs");
+    }
+  }
+
+  async login(loginUserDto: LoginDto) {
+    try {
+      const { registrationNo, password } = loginUserDto;
+
+      const user = await this.prisma.users.findUnique({
+        where: { registrationNo },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      const payload = { sub: user.id, registrationNo: user.registrationNo };
+      const accessToken = this.jwtService.sign(payload);
+
+      return {
+        message: 'Login successful',
+        access_token: accessToken,
+        user: { id: user.id, registrationNo: user.registrationNo }, // Include user details if needed
+      };
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw new InternalServerErrorException('Error logging in');
+    }
+  }
 }
+
+

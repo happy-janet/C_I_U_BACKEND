@@ -7,32 +7,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model StudentLogin {
-  id             Int    @id @default(autoincrement())
-  registrationNo String
-  password       String
-}
+
+
+
+
+// registering a Lecturer
 
 model LecturerSignUp {
   id         Int    @id @default(autoincrement())
   first_name String
   last_name  String
-  email      String @unique
+  email      String   @unique
   role       String
   password   String
 }
 
-
-// Student registration
-
 model users {
-  id             Int      @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   name           String
-  email          String   @unique
-  program         String
-  createdAt      DateTime @default(now())
+  email          String    @unique
+  program        String
+  createdAt      DateTime  @default(now())
   lastLogin      DateTime?
-  registrationNo String   @unique
+  registrationNo String    @unique
   password       String
-  role          String
+  role           String
 }
+
+
+// adding courses and course units
+
+model courses {
+  id           Int       @id @default(autoincrement())
+  facultyName  String
+  courseName   String
+  courseUnits  String[]  // Store course units as an array of strings
+  courseUnitCode  String
+  assessments  addAssessment[]  // Relation to assessments
+}
+
+model addAssessment {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String
+  courseId       Int       // Foreign key to courses model
+  course         courses   @relation(fields: [courseId], references: [id])
+  courseUnit     String
+  courseUnitCode  String
+  duration       Int       // in minutes
+  scheduledDate  DateTime
+  startTime      DateTime
+  endTime        DateTime
+  createdBy      Int
+  createdAt      DateTime  @default(now())
+  questions      Json
+  options        Json
+  correctAnswer  String
+}
+
+
