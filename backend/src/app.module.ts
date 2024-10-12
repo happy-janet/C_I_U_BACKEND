@@ -8,9 +8,12 @@ import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './lectures/auth.module'; 
 import { PrismaModule } from '../prisma/prisma.module';
 import { CoursesModule } from './lectures/courses.module'; 
+import { ChatGateway } from './students/chat/chat.gateway';
+import { ChatModule } from './students/chat/chat.module';
 
 @Module({
   imports: [
+    ChatModule,
     LecturesModule,
     StudentsModule,
     AuthModule,
@@ -22,6 +25,6 @@ import { CoursesModule } from './lectures/courses.module';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ChatGateway],
 })
 export class AppModule {}

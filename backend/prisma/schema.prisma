@@ -27,12 +27,34 @@ model users {
   name           String
   email          String    @unique
   program        String
+  messages       Message[]
+  chats          Chat[]    @relation("ChatParticipants")  
   createdAt      DateTime  @default(now())
   lastLogin      DateTime?
   registrationNo String    @unique
   password       String
   role           String
 }
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  text      String
+  senderId  Int
+  sender    users     @relation(fields: [senderId], references: [id])  
+  chatId    Int
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Chat {
+  id          Int       @id @default(autoincrement())
+  participants users[]   @relation("ChatParticipants")  
+  messages     Message[]
+  createdAt    DateTime  @default(now())
+}
+
+
+
 
 
 // adding courses and course units
@@ -64,5 +86,4 @@ model addAssessment {
   options        Json
   correctAnswer  String
 }
-
 
