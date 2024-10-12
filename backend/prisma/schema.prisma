@@ -47,22 +47,27 @@ model courses {
 }
 
 model addAssessment {
-  id             Int       @id @default(autoincrement())
-  title          String
-  description    String
-  courseId       Int       // Foreign key to courses model
-  course         courses   @relation(fields: [courseId], references: [id])
-  courseUnit     String
+  id              Int       @id @default(autoincrement())
+  title           String
+  description     String
+  courseId        Int       // Explicit foreign key to courses model
+  course          courses   @relation(fields: [courseId], references: [id]) // Relation to courses model
+  courseUnit      String
   courseUnitCode  String
-  duration       Int       // in minutes
-  scheduledDate  DateTime
-  startTime      DateTime
-  endTime        DateTime
-  createdBy      Int
-  createdAt      DateTime  @default(now())
-  questions      Json
-  options        Json
-  correctAnswer  String
+  duration        String       // in minutes
+  scheduledDate   DateTime
+  startTime       DateTime
+  endTime         DateTime
+  createdBy       String
+  createdAt       DateTime  @default(now())
+  questions       Question[] @relation("AssessmentQuestions") // Relation to Question model
 }
 
-
+model Question {
+  id              Int       @id @default(autoincrement())
+  content         String
+  answer          String?
+  options         Json      // Store options for multiple choice questions
+  assessmentId    Int       // Foreign key to addAssessment model
+  assessment      addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id]) // Relation back to addAssessment
+}

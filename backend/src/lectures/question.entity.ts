@@ -14,4 +14,5 @@ export class Question {
 
   @ManyToOne(() => ExamPaper, examPaper => examPaper.questions, { onDelete: 'CASCADE' })
   examPaper: ExamPaper;
+  options: any;
 }

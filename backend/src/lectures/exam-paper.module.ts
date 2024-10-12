@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ExamPaper } from './exam-paper.entity';
-import { Question } from './question.entity';
-import { ExamPaperController } from './exam-paper.controller';
 import { ExamPaperService } from './exam-paper.service';
+import { ExamPaperController } from './exam-paper.controller';  // Import the controller
+import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ExamPaper, Question])],
-  controllers: [ExamPaperController],
+  imports: [PrismaModule],
   providers: [ExamPaperService],
+  controllers: [ExamPaperController], // Register the controller here
 })
 export class ExamPaperModule {}

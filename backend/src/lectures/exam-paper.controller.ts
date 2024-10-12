@@ -12,11 +12,9 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import * as csvParser from 'csv-parser';
-import { ExamPaperService } from '../lectures/exam-paper.service';
-import { UploadExamPaperDto, UpdateQuestionDto } from '../lectures/dto/exam-paper.dto';
+import { ExamPaperService } from './exam-paper.service';
+import { UploadExamPaperDto, UpdateQuestionDto } from './dto/exam-paper.dto';
 
-// No need to import Multer.File separately
 @Controller('exam-paper')
 export class ExamPaperController {
   constructor(private readonly examPaperService: ExamPaperService) {}
@@ -39,28 +37,61 @@ export class ExamPaperController {
     }),
   )
   async uploadExamPaper(
-    @UploadedFile() file: Express.Multer.File, // Correctly using Express.Multer.File
+    @UploadedFile() file: Express.Multer.File,
     @Body() uploadExamPaperDto: UploadExamPaperDto,
   ) {
     return this.examPaperService.uploadExamPaper(file, uploadExamPaperDto);
   }
 
   @Get(':id')
-  async previewExamPaper(@Param('id') id: number) {
-    return this.examPaperService.previewExamPaper(id);
+  async getExamPaper(@Param('id') id: string) {
+    const examPaperId = parseInt(id, 10); // Ensure id is a number
+    if (isNaN(examPaperId)) {
+      throw new BadRequestException('Invalid exam paper ID');
+    }
+    return this.examPaperService.previewExamPaper(examPaperId);
   }
 
   @Put(':id/question/:questionId')
   async updateQuestion(
-    @Param('id') id: number,
-    @Param('questionId') questionId: number,
+    @Param('id') id: string,
+    @Param('questionId') questionId: string,
     @Body() updateQuestionDto: UpdateQuestionDto,
   ) {
-    return this.examPaperService.updateQuestion(id, questionId, updateQuestionDto);
+    const examPaperId = parseInt(id, 10);
+    const parsedQuestionId = parseInt(questionId, 10);
+    if (isNaN(examPaperId) || isNaN(parsedQuestionId)) {
+      throw new BadRequestException('Invalid IDs');
+    }
+    return this.examPaperService.updateQuestion(examPaperId, parsedQuestionId, updateQuestionDto);
   }
 
   @Delete(':id')
-  async deleteExamPaper(@Param('id') id: number) {
-    return this.examPaperService.deleteExamPaper(id);
+  async deleteExamPaper(@Param('id') id: string) {
+    const examPaperId = parseInt(id, 10);
+    if (isNaN(examPaperId)) {
+      throw new BadRequestException('Invalid exam paper ID');
+    }
+    return this.examPaperService.deleteExamPaper(examPaperId);
+  }
+
+  // New method to delete all questions in the CSV file
+  @Delete(':id/questions')
+  async deleteAllQuestions(@Param('id') id: string) {
+    const examPaperId = parseInt(id, 10);
+    if (isNaN(examPaperId)) {
+      throw new BadRequestException('Invalid exam paper ID');
+    }
+    return this.examPaperService.deleteAllQuestions(examPaperId);
+  }
+
+  // New method to preview all questions in the CSV file
+  @Get(':id/questions')
+  async previewAllQuestions(@Param('id') id: string) {
+    const examPaperId = parseInt(id, 10);
+    if (isNaN(examPaperId)) {
+      throw new BadRequestException('Invalid exam paper ID');
+    }
+    return this.examPaperService.previewAllQuestions(examPaperId);
   }
 }
