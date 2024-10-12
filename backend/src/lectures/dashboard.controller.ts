@@ -9,3 +9,4 @@ export class DashboardController {
     return { message: 'Welcome to the Dashboard' }; // Protected dashboard route
   }
 }
+// To the lecturer dashboard
