@@ -47,16 +47,14 @@ model courses {
   manualAssessment manualAssessment[]
 }
 
-
-
-model manualAssessment {
+model addAssessment {
   id             Int       @id @default(autoincrement())
   title          String
   description    String
-  courseId       Int
+  courseId       Int       // Foreign key to courses model
   course         courses   @relation(fields: [courseId], references: [id])
   courseUnit     String
-  courseUnitCode String
+  courseUnitCode  String
   duration       Int       // in minutes
   scheduledDate  DateTime
   startTime      DateTime
@@ -65,6 +63,7 @@ model manualAssessment {
   createdAt      DateTime  @default(now())
   questions      Json
   options        Json
-  objectives     Json      // Add this field
   correctAnswer  String
 }
+
+

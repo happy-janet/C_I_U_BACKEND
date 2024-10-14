@@ -1,0 +1,6 @@
+content,answer,options
+"What is the capital of France?",Paris,"[{""option"": ""Paris""}, {""option"": ""London""}, {""option"": ""Berlin""}, {""option"": ""Madrid""}]"
+"Which planet is known as the Red Planet?",Mars,"[{""option"": ""Venus""}, {""option"": ""Earth""}, {""option"": ""Mars""}, {""option"": ""Jupiter""}]"
+"Who wrote 'To Kill a Mockingbird'?",Harper Lee,"[{""option"": ""Harper Lee""}, {""option"": ""J.K. Rowling""}, {""option"": ""Mark Twain""}, {""option"": ""Ernest Hemingway""}]"
+"Which element has the atomic number 1?",Hydrogen,"[{""option"": ""Helium""}, {""option"": ""Oxygen""}, {""option"": ""Hydrogen""}, {""option"": ""Carbon""}]"
+"Which country is known as the Land of the Rising Sun?",Japan,"[{""option"": ""Japan""}, {""option"": ""China""}, {""option"": ""Thailand""}, {""option"": ""India""}]"
