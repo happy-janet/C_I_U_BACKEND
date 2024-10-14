@@ -43,17 +43,20 @@ model courses {
   courseName   String
   courseUnits  String[]  // Store course units as an array of strings
   courseUnitCode  String
-  assessments  addAssessment[]  // Relation to assessments
+  
+  manualAssessment manualAssessment[]
 }
 
-model addAssessment {
+
+
+model manualAssessment {
   id             Int       @id @default(autoincrement())
   title          String
   description    String
-  courseId       Int       // Foreign key to courses model
+  courseId       Int
   course         courses   @relation(fields: [courseId], references: [id])
   courseUnit     String
-  courseUnitCode  String
+  courseUnitCode String
   duration       Int       // in minutes
   scheduledDate  DateTime
   startTime      DateTime
@@ -62,7 +65,6 @@ model addAssessment {
   createdAt      DateTime  @default(now())
   questions      Json
   options        Json
+  objectives     Json      // Add this field
   correctAnswer  String
 }
-
-
