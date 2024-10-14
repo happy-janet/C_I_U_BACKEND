@@ -8,7 +8,7 @@ import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './lectures/auth.module'; 
 import { PrismaModule } from '../prisma/prisma.module';
 import { CoursesModule } from './lectures/courses.module'; 
-import { AddAssessmentModule } from './lectures/addAssessment.module';
+import { ManualAssessmentModule } from './lectures/addAssessment.module';
 
 @Module({
   imports: [
@@ -18,6 +18,7 @@ import { AddAssessmentModule } from './lectures/addAssessment.module';
     AdminModule,
     PrismaModule,
     CoursesModule,
+    ManualAssessmentModule, // <-- Add the ManualAssessmentModule here
      // <-- Add the CoursesModule here
     ConfigModule.forRoot({
       isGlobal: true, // Makes the config globally available
