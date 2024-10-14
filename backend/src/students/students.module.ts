@@ -1,10 +1,19 @@
 import { Module } from '@nestjs/common';
-import { StudentsService } from './students.service';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt.strategy'; // If you're using a custom strategy
+import { AuthService } from './auth.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { StudentsController } from './students.controller';
+import { StudentsService } from './students.service';
 
 @Module({
-  providers: [StudentsService],
+  imports: [
+    JwtModule.register({
+      secret: process.env.JWT_SECRET, // Ensure .env is correctly set
+      signOptions: { expiresIn: '1h' }, // Increase token expiration to 1 hour or more if necessary
+    }),
+  ],
   controllers: [StudentsController],
-  exports: [StudentsService],
+  providers: [AuthService, PrismaService, JwtStrategy, StudentsService], // Providers include both AuthService and StudentsService
 })
 export class StudentsModule {}
