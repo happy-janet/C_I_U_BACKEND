@@ -36,34 +36,66 @@ model users {
 
 
 // adding courses and course units
-
 model courses {
-  id           Int       @id @default(autoincrement())
-  facultyName  String
-  courseName   String
-  courseUnits  String[]  // Store course units as an array of strings
-  courseUnitCode  String
-  
-  manualAssessment manualAssessment[]
+  id              Int       @id @default(autoincrement())
+  title           String
+  description     String
+  addAssessments  addAssessment[] // Corresponding relation field to addAssessment model
+  manualAssessments ManualAssessment[] // Corresponding relation field to manualAssessment model
 }
 
+
 model addAssessment {
-  id             Int       @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
+  title           String
+  description     String
+  courseId        Int       // Explicit foreign key to courses model
+  course          courses   @relation(fields: [courseId], references: [id]) // Relation to courses model
+  courseUnit      String
+  courseUnitCode  String
+  duration        String       // in minutes
+  scheduledDate   DateTime
+  startTime       DateTime
+  endTime         DateTime
+  createdBy       String
+  createdAt       DateTime  @default(now())
+  questions       Question[] @relation("AssessmentQuestions")
+ 
+}
+
+model Question {
+  id              Int       @id @default(autoincrement())
+  content         String
+  answer          String?
+  options         Json      // Store options for multiple choice questions
+  assessmentId    Int       // Foreign key to addAssessment model
+  assessment    addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
+}
+
+
+model ManualAssessment {
+  id             Int             @id @default(autoincrement())
   title          String
   description    String
-  courseId       Int       // Foreign key to courses model
-  course         courses   @relation(fields: [courseId], references: [id])
+  courseId       Int
+  course         courses          @relation(fields: [courseId], references: [id])
   courseUnit     String
-  courseUnitCode  String
-  duration       Int       // in minutes
+  courseUnitCode String
+  duration       Int             // in minutes
   scheduledDate  DateTime
   startTime      DateTime
   endTime        DateTime
   createdBy      Int
-  createdAt      DateTime  @default(now())
-  questions      Json
-  options        Json
-  correctAnswer  String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  questions      QuestionManual[] // One-to-Many relationship to QuestionManual
 }
 
-
+model QuestionManual {
+  id             Int             @id @default(autoincrement())
+  questions      String            // Stores the question details
+  options        Json            // Stores options for the questions
+  correctAnswer  String          // The correct answer for the question
+  assessmentId   Int             // Foreign key to ManualAssessment
+  assessment     ManualAssessment @relation(fields: [assessmentId], references: [id])
+}
