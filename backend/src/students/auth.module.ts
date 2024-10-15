@@ -26,4 +26,4 @@ import { Reflector } from '@nestjs/core';
   controllers: [AuthController, DashboardController],
   exports: [AuthService, JwtModule, RolesGuard], // Export RolesGuard
 })
-export class AuthModule {}
+export class StudentAuthModule{}
