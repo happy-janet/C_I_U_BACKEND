@@ -22,6 +22,7 @@ model LecturerSignUp {
   password   String
 }
 
+
 model AdminSignUp  {
   id         Int    @id @default(autoincrement())
   first_name String
@@ -32,17 +33,38 @@ model AdminSignUp  {
 }
 
 
+
 model users {
-  id             Int       @id @default(autoincrement())
-  name           String
-  email          String    @unique
-  program        String
-  createdAt      DateTime  @default(now())
-  lastLogin      DateTime?
-  registrationNo String    @unique
-  password       String
-  role           String
+  id                Int              @id @default(autoincrement())
+  first_name        String
+  last_name         String
+  email             String           @unique
+  program           String
+  createdAt        DateTime         @default(now())
+  lastLogin         DateTime?
+  registrationNo    String           @unique
+  password          String
+  role              String           // Add the role field here
+  resetToken        String?          @unique
+  resetTokenExpiry  DateTime?
+  issueReports      IssueReport[]    @relation("StudentReports")
 }
+
+model IssueReport {
+  id                Int              @id @default(autoincrement())
+  issueDescription  String
+  regno             String  
+  reportedAt       DateTime         @default(now())
+  studentId        Int
+  student          users             @relation("StudentReports", fields: [studentId], references: [id])
+}
+
+model FAQ {
+  id                Int              @id @default(autoincrement())
+  question          String
+  answer            String
+}
+
 
 
 // adding courses and course units
@@ -92,8 +114,10 @@ model ManualAssessment {
   courseId       Int
   course         courses          @relation(fields: [courseId], references: [id])
   courseUnit     String
+
   courseUnitCode String
   duration       Int             // in minutes
+
   scheduledDate  DateTime
   startTime      DateTime
   endTime        DateTime
