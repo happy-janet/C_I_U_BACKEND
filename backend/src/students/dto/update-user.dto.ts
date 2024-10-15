@@ -1,10 +1,19 @@
+// src/students/dto/update-user.dto.ts
 
-import { IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
-  name?: string;
+  first_name?: string; // Changed from 'String' to 'string'
+
+  @IsOptional()
+  @IsString()
+  last_name?: string; // Changed from 'String' to 'string'
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
 
   @IsOptional()
   @IsString()
