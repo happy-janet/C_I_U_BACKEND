@@ -15,7 +15,7 @@ import { FAQController } from './students/faq.controller';
 import { NotificationGateway } from './students/notification.gateway';
 import { IssueReportService } from './students/issue-report.service';
 import { RolesGuard } from './students/roles.guard';
-import { AuthModule } from './students/auth.module';
+import { StudentAuthModule } from './students/auth.module';
 
 
 
@@ -34,6 +34,7 @@ import { QuestionsModule } from './lectures/questions.module';
     StudentsModule,
     AdminAuthModule,
     AuthModule,
+    StudentAuthModule,
     AdminModule,
     PrismaModule,
     CoursesModule,
