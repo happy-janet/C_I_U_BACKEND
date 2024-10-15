@@ -7,9 +7,9 @@ import { UpdatemanualAssessmentDto } from './dto/update-addAssessment.dto';
 export class ManualAssessmentService {
   constructor(private prisma: PrismaService) {}
 
- // CREATE
-async create(data: CreatemanualAssessmentDto) {
-    return this.prisma.manualAssessment.create({
+  // CREATE
+  async create(data: CreatemanualAssessmentDto) {
+    return this.prisma.ManualAssessment.create({
       data: {
         title: data.title,
         description: data.description,
@@ -21,22 +21,23 @@ async create(data: CreatemanualAssessmentDto) {
         startTime: data.startTime,
         endTime: data.endTime,
         createdBy: data.createdBy,
-        questions: JSON.stringify(data.questions),
-        options: JSON.stringify(data.options),
-        objectives: JSON.stringify(data.objectives),  // Now recognized
-        correctAnswer: data.correctAnswer,
+        questions: data.questions, // Assuming it's an array of QuestionManual objects
       },
     });
   }
+
   // FIND ALL
   async findAll() {
-    return this.prisma.manualAssessment.findMany();
+    return this.prisma.ManualAssessment.findMany({
+      include: { questions: true }, // Include related questions if needed
+    });
   }
 
   // FIND ONE BY ID
   async findOne(id: number) {
-    const assessment = await this.prisma.manualAssessment.findUnique({
+    const assessment = await this.prisma.ManualAssessment.findUnique({
       where: { id },
+      include: { questions: true }, // Include related questions if needed
     });
 
     if (!assessment) {
@@ -47,10 +48,10 @@ async create(data: CreatemanualAssessmentDto) {
   }
 
   // UPDATE
-async update(id: number, data: UpdatemanualAssessmentDto) {
+  async update(id: number, data: UpdatemanualAssessmentDto) {
     const assessment = await this.findOne(id);
   
-    return this.prisma.manualAssessment.update({
+    return this.prisma.ManualAssessment.update({
       where: { id },
       data: {
         title: data.title || assessment.title,
@@ -63,16 +64,14 @@ async update(id: number, data: UpdatemanualAssessmentDto) {
         startTime: data.startTime || assessment.startTime,
         endTime: data.endTime || assessment.endTime,
         createdBy: data.createdBy || assessment.createdBy,
-        questions: data.questions ? JSON.stringify(data.questions) : assessment.questions,
-        options: data.options ? JSON.stringify(data.options) : assessment.options,
-        objectives: data.objectives ? JSON.stringify(data.objectives) : assessment.objectives,  // Now recognized
-        correctAnswer: data.correctAnswer || assessment.correctAnswer,
+        questions: data.questions || assessment.questions, // Assuming it's an array of QuestionManual objects
       },
     });
   }
+
   // DELETE
   async remove(id: number) {
     await this.findOne(id); // Check if exists
-    return this.prisma.manualAssessment.delete({ where: { id } });
+    return this.prisma.ManualAssessment.delete({ where: { id } });
   }
 }
