@@ -12,6 +12,7 @@ import { CoursesModule } from './lectures/courses.module';
 import { ManualAssessmentModule } from './lectures/addAssessment.module';
 import { ExamPaperModule } from './lectures/exam-paper.module';
 import { QuestionsModule } from './lectures/questions.module'; 
+import { ManualQuestionModule } from './lectures/manualquestion.module';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { QuestionsModule } from './lectures/questions.module';
     CoursesModule,
     ManualAssessmentModule, // <-- Add the ManualAssessmentModule here
      // <-- Add the CoursesModule here
-
+    ManualQuestionModule,
     ExamPaperModule,
     QuestionsModule,
     CoursesModule, // <-- Add the CoursesModule here
