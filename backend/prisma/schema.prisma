@@ -38,8 +38,10 @@ model users {
 // adding courses and course units
 model courses {
   id              Int       @id @default(autoincrement())
-  title           String
-  description     String
+  facultyName     String
+  courseName     String
+  courseUnits     String[]
+  courseUnitCode    String
   addAssessments  addAssessment[] // Corresponding relation field to addAssessment model
   manualAssessments ManualAssessment[] // Corresponding relation field to manualAssessment model
 }
