@@ -48,3 +48,11 @@ export class CreatemanualAssessmentDto {
 
   questions?: QuestionManual[]; // Assuming QuestionManual is defined elsewhere
 }
+
+export class QuestionManual {
+  id: number;
+  questionText: string;
+  options: any;
+  correctAnswer: any;
+  // other fields as necessary
+}
