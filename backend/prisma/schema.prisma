@@ -22,6 +22,16 @@ model LecturerSignUp {
   password   String
 }
 
+model AdminSignUp  {
+  id         Int    @id @default(autoincrement())
+  first_name String
+  last_name  String
+  email      String   @unique
+  role       String
+  password   String
+}
+
+
 model users {
   id             Int       @id @default(autoincrement())
   name           String
@@ -43,31 +53,27 @@ model courses {
   courseName   String
   courseUnits  String[]  // Store course units as an array of strings
   courseUnitCode  String
-  assessments  addAssessment[]  // Relation to assessments
+  
+  manualAssessment manualAssessment[]
 }
 
 model addAssessment {
-  id              Int       @id @default(autoincrement())
-  title           String
-  description     String
-  courseId        Int       // Explicit foreign key to courses model
-  course          courses   @relation(fields: [courseId], references: [id]) // Relation to courses model
-  courseUnit      String
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String
+  courseId       Int       // Foreign key to courses model
+  course         courses   @relation(fields: [courseId], references: [id])
+  courseUnit     String
   courseUnitCode  String
-  duration        String       // in minutes
-  scheduledDate   DateTime
-  startTime       DateTime
-  endTime         DateTime
-  createdBy       String
-  createdAt       DateTime  @default(now())
-  questions       Question[] @relation("AssessmentQuestions") // Relation to Question model
+  duration       Int       // in minutes
+  scheduledDate  DateTime
+  startTime      DateTime
+  endTime        DateTime
+  createdBy      Int
+  createdAt      DateTime  @default(now())
+  questions      Json
+  options        Json
+  correctAnswer  String
 }
 
-model Question {
-  id              Int       @id @default(autoincrement())
-  content         String
-  answer          String?
-  options         Json      // Store options for multiple choice questions
-  assessmentId    Int       // Foreign key to addAssessment model
-  assessment      addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id]) // Relation back to addAssessment
-}
+
