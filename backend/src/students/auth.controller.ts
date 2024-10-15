@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UnauthorizedException, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, UnauthorizedException, UseGuards, Request,Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto'; // Import the LoginDto
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -25,15 +25,13 @@ export class AuthController {
   async logout(@Request() req) {
     return this.authService.logout();
   }
-
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(forgotPasswordDto);
+      return this.authService.forgotPassword(forgotPasswordDto);
   }
-
-  // 2. Reset Password Endpoint
   @Post('reset-password')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+    // Ensure that the token is passed correctly in the resetPasswordDto
     return this.authService.resetPassword(resetPasswordDto);
-  }
+}
 }

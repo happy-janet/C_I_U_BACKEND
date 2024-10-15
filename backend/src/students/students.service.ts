@@ -87,10 +87,11 @@ export class StudentsService {
   async create(createUserDto: CreateUserDto) {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
+  
       return await this.prisma.users.create({
         data: {
-          name: createUserDto.name,
+          first_name: createUserDto.first_name,  
+          last_name: createUserDto.last_name,   
           email: createUserDto.email,
           program: createUserDto.program,
           registrationNo: createUserDto.registrationNo,
@@ -103,6 +104,7 @@ export class StudentsService {
       throw new InternalServerErrorException('Error creating user');
     }
   }
+  
 
   // Login method
    async countStudents() {
@@ -157,32 +159,24 @@ export class StudentsService {
   }
 
 
-<<<<<<< HEAD
-
+}
 
   
 
-  async searchByName(name: string) {
-    try {
-      // Use Prisma to find users where the name contains the search term
-      return await this.prisma.users.findMany({
-        where: {
-          name: {
-            contains: name,
-            mode: 'insensitive',
-          },
-        },
-      });
-    } catch (error) {
-      console.error('Error during search:', error);
-      throw new InternalServerErrorException('Error during search');
-    }
-  }
-}
-
-
-
-
-
-=======
->>>>>>> b4bc6adb2dc2fccf7153716857dd92d0c65a6a31
+//   async searchByName(name: string) {
+//     try {
+//       // Use Prisma to find users where the name contains the search term
+//       return await this.prisma.users.findMany({
+//         where: {
+//           name: {
+//             contains: name,
+//             mode: 'insensitive',
+//           },
+//         },
+//       });
+//     } catch (error) {
+//       console.error('Error during search:', error);
+//       throw new InternalServerErrorException('Error during search');
+//     }
+//   }
+// }

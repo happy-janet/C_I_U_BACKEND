@@ -1,28 +1,36 @@
-// src/utils/sendEmail.ts
+import * as nodemailer from 'nodemailer';
 
-import nodemailer from 'nodemailer';
-import { ConfigService } from '@nestjs/config';
+export async function sendEmail(to: string, subject: string, text: string, html: string) {
+    console.log('Preparing to send email to:', to); // Log recipient email
 
-export const sendEmail = async (to: string, subject: string, text: string, html: string) => {
-  const configService = new ConfigService();
+    const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT),
+        secure: process.env.SMTP_SECURE === 'true',
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+        },
+    });
 
-  const transporter = nodemailer.createTransport({
-    host: configService.get<string>('SMTP_HOST'),
-    port: configService.get<number>('SMTP_PORT'),
-    secure: configService.get<boolean>('SMTP_SECURE'), // true for 465, false for other ports
-    auth: {
-      user: configService.get<string>('SMTP_USER'),
-      pass: configService.get<string>('SMTP_PASS'),
-    },
-  });
+    console.log('Transporter created:', transporter); // Log transporter creation
 
-  const mailOptions = {
-    from: `"No Reply" <${configService.get<string>('SMTP_FROM')}>`,
-    to,
-    subject,
-    text,
-    html,
-  };
+    const mailOptions = {
+        from: process.env.SMTP_FROM,
+        to,
+        subject,
+        text,
+        html,
+    };
 
-  await transporter.sendMail(mailOptions);
-};
+    // Log mail options before sending
+    console.log('Mail options:', mailOptions);
+
+    // Send the email
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully:', info);
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+}

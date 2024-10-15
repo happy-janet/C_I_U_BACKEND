@@ -4,7 +4,11 @@ import { IsOptional, IsString } from 'class-validator';
 export class DeleteUserDto {
   @IsOptional()
   @IsString()
-  name?: string;
+  first_name : string;
+  
+  @IsOptional()
+  @IsString()
+  last_name : string
 
   @IsOptional()
   @IsString()
