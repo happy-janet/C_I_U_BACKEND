@@ -75,12 +75,8 @@ export class LecturesService {
   async delete(id: number) {
     return this.prisma.lecturerSignUp.delete({
       where: { id },
-    });
-  }
-
-  
-}
-
+    })
   
 
+ 
 

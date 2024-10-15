@@ -12,5 +12,9 @@ export class CreateCourseDto {
   @IsString({ each: true }) // Ensures each element in the array is a string
   courseUnits: string[];
 
-  courseUnitCode:  string;
+
+  courseUnitCode: string;
+
 }
+
+
