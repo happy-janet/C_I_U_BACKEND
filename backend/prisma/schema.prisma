@@ -22,6 +22,16 @@ model LecturerSignUp {
   password   String
 }
 
+model AdminSignUp  {
+  id         Int    @id @default(autoincrement())
+  first_name String
+  last_name  String
+  email      String   @unique
+  role       String
+  password   String
+}
+
+
 model users {
   id             Int       @id @default(autoincrement())
   name           String
