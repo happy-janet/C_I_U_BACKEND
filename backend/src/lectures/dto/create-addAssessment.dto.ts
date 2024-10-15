@@ -1,20 +1,28 @@
-import { IsString, IsInt, IsNotEmpty, IsArray, IsDate } from 'class-validator';
+// manual-assessment.dto.ts
+
+import { IsDate, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreatemanualAssessmentDto {
+  @IsInt()
+  id: number;
+
   @IsString()
   @IsNotEmpty()
   title: string;
 
   @IsString()
+  @IsNotEmpty()
   description: string;
 
   @IsInt()
   courseId: number;
 
   @IsString()
+  @IsNotEmpty()
   courseUnit: string;
 
   @IsString()
+  @IsNotEmpty()
   courseUnitCode: string;
 
   @IsInt()
@@ -32,15 +40,11 @@ export class CreatemanualAssessmentDto {
   @IsInt()
   createdBy: number;
 
-  @IsArray()
-  questions: string[];
+  @IsDate()
+  createdAt?: Date;
 
-  @IsArray()
-  options: string[];
+  @IsDate()
+  updatedAt?: Date;
 
-  @IsArray()
-  objectives: string[];
-
-  @IsString()
-  correctAnswer: string;
+  questions?: QuestionManual[]; // Assuming QuestionManual is defined elsewhere
 }
