@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "addAssessment" ALTER COLUMN "duration" SET DATA TYPE TEXT,
-ALTER COLUMN "createdBy" SET DATA TYPE TEXT;
