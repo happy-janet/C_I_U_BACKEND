@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post, Get } from '@nestjs/common';
 import { ManualQuestionService } from './manualquestion.service';
 import { CreateQuestionManualDto, UpdateQuestionManualDto } from '../lectures/dto/manual-questions.dto';
-// import { QuestionManual } from '@prisma/client'; // Adjust based on your Prisma setup
+
 
 @Controller('assessments')
 export class ManualQuestionController {
@@ -9,22 +9,27 @@ export class ManualQuestionController {
 
   @Post(':id/questions')
   async addQuestion(
-    @Param('id') assessmentId: number,
+    @Param('id', ParseIntPipe) assessmentId: number,
     @Body() createQuestionDto: CreateQuestionManualDto
   ) {
     return await this.assessmentService.addQuestionToAssessment(assessmentId, createQuestionDto);
   }
 
+  @Get('questions/:questionId')
+  async getQuestion(@Param('questionId', ParseIntPipe) id: number) {
+    return this.assessmentService.getQuestion(id);
+  }
+
   @Patch('questions/:questionId')
   async updateQuestion(
-    @Param('questionId') questionId: number,
+    @Param('questionId', ParseIntPipe) questionId: number,
     @Body() updateQuestionDto: UpdateQuestionManualDto
   ) {
     return await this.assessmentService.updateQuestion(questionId, updateQuestionDto);
   }
 
   @Delete('questions/:questionId')
-  async deleteQuestion(@Param('questionId') questionId: number) {
+  async deleteQuestion(@Param('questionId', ParseIntPipe) questionId: number) {
     return await this.assessmentService.deleteQuestion(questionId);
   }
 }

@@ -8,36 +8,38 @@ import { CreateQuestionManualDto, UpdateQuestionManualDto } from '../lectures/dt
 export class ManualQuestionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async addQuestionToAssessment(
-    assessmentId: number,
-    createQuestionDto: CreateQuestionManualDto
-  ) {
-    const question = await this.prisma.questionManual.create({
+  async addQuestionToAssessment(assessmentId: number, createQuestionDto: CreateQuestionManualDto) {
+    const {questions, options, correctAnswer} = createQuestionDto;
+    
+    return this.prisma.questionManual.create({
       data: {
-        assessmentId,
-        ...createQuestionDto,
+        assessment: { connect: { id: assessmentId, } },
+        questions,
+        options,
+        correctAnswer,
       },
     });
-    return question; // The resolved value is returned
   }
 
-  async updateQuestion(
-    questionId: number,
-    updateQuestionDto: UpdateQuestionManualDto
-  ) {
-    const updatedQuestion = await this.prisma.questionManual.update({
+  async getQuestion(id: number) {
+    return this.prisma.questionManual.findUnique({ where: { id } });
+  }
+
+  async updateQuestion(questionId: number, updateQuestionDto: UpdateQuestionManualDto ) {
+    const { questions, options, correctAnswer } = updateQuestionDto;
+    return this.prisma.questionManual.update({
       where: { id: questionId },
       data: {
-        ...updateQuestionDto,
+        questions,
+        options,
+        correctAnswer,
       },
     });
-    return updatedQuestion; // The resolved value is returned
   }
 
   async deleteQuestion(questionId: number) {
-    const deletedQuestion = await this.prisma.questionManual.delete({
+    return this.prisma.questionManual.delete({
       where: { id: questionId },
     });
-    return deletedQuestion; // The resolved value is returned
   }
 }

@@ -3,7 +3,7 @@ import { IsOptional, IsNotEmpty, IsString } from 'class-validator';
 export class CreateQuestionManualDto {
   @IsString()
   @IsNotEmpty()
-  questionText: string;
+  questions: string;
 
   @IsNotEmpty()
   options: any[]; // Assuming options can be an array of strings or objects
@@ -18,7 +18,7 @@ export class UpdateQuestionManualDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  questionText?: string;
+  questions?: string;
 
   @IsOptional()
   options?: any[];
