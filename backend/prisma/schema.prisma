@@ -131,7 +131,7 @@ model QuestionManual {
   id             Int             @id @default(autoincrement())
   questions      String            // Stores the question details
   options        Json            // Stores options for the questions
-  correctAnswer  String          // The correct answer for the question
+  correctAnswer  Json          // The correct answer for the question
   assessmentId   Int             // Foreign key to ManualAssessment
   assessment     ManualAssessment @relation(fields: [assessmentId], references: [id])
 }
