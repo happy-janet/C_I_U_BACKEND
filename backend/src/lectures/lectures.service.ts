@@ -75,24 +75,8 @@ export class LecturesService {
   async delete(id: number) {
     return this.prisma.lecturerSignUp.delete({
       where: { id },
-    });
-  }
-
+    })
   
+  } 
+ 
 }
-
-// export class CoursesService {
-//   constructor(private readonly prisma: PrismaService) {}
-
-//   async create(createCourseDto: CreateCourseDto) {
-//     return await this.prisma.courses.create({
-//       data: {
-//         facultyName: createCourseDto.facultyName,
-//         courseName: createCourseDto.courseName,
-//         courseUnits: createCourseDto.courseUnits,
-//       },
-//     });
-//   }
-  
-//   // Add other methods for findAll, findOne, etc.
-// }
