@@ -48,6 +48,7 @@ model users {
   resetToken        String?          @unique
   resetTokenExpiry  DateTime?
   issueReports      IssueReport[]    @relation("StudentReports")
+  notifications Notification[]
 }
 
 model IssueReport {
@@ -63,6 +64,14 @@ model FAQ {
   id                Int              @id @default(autoincrement())
   question          String
   answer            String
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  content   String
+  userId    Int
+  users     users     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 

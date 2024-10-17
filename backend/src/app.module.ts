@@ -8,7 +8,7 @@ import { AdminModule } from './admin/admin.module';
 
 // import { AuthModule } from './lectures/auth.module'; 
 import { PrismaModule } from '../prisma/prisma.module';
-import { CoursesModule } from './lectures/courses.module'; 
+// import { CoursesModule } from './lectures/courses.module'; 
 import { IssueReportController } from './students/issue-reprt.controller'; 
 import { FAQService } from './students/faq.service';
 import { FAQController } from './students/faq.controller';
@@ -16,6 +16,7 @@ import { NotificationGateway } from './students/notification.gateway';
 import { IssueReportService } from './students/issue-report.service';
 import { RolesGuard } from './students/roles.guard';
 import { StudentAuthModule } from './students/auth.module';
+// import { ChatModule } from './students/chat/chat.module';
 
 
 
@@ -31,7 +32,7 @@ import { ManualQuestionModule } from './lectures/manualquestion.module';
 
 @Module({
   imports: [
-    ChatModule,
+    // ChatModule,
     LecturesModule,
     StudentsModule,
     AdminAuthModule,
@@ -39,13 +40,13 @@ import { ManualQuestionModule } from './lectures/manualquestion.module';
     StudentAuthModule,
     AdminModule,
     PrismaModule,
-    CoursesModule,
+    // CoursesModule,
     ManualAssessmentModule, // <-- Add the ManualAssessmentModule here
      // <-- Add the CoursesModule here
     ManualQuestionModule,
     ExamPaperModule,
     QuestionsModule,
-    CoursesModule, // <-- Add the CoursesModule here
+    // CoursesModule, // <-- Add the CoursesModule here
 
     ConfigModule.forRoot({
       isGlobal: true, // Makes the config globally available
