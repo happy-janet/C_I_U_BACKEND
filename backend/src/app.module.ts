@@ -16,7 +16,8 @@ import { NotificationGateway } from './students/notification.gateway';
 import { IssueReportService } from './students/issue-report.service';
 import { RolesGuard } from './students/roles.guard';
 import { StudentAuthModule } from './students/auth.module';
-// import { ChatModule } from './students/chat/chat.module';
+import { ChatModule } from './students/chat/chat.module';
+import { NotificationModule } from './students/notification/notification.module';
 
 
 
@@ -32,7 +33,7 @@ import { ManualQuestionModule } from './lectures/manualquestion.module';
 
 @Module({
   imports: [
-    // ChatModule,
+    ChatModule,
     LecturesModule,
     StudentsModule,
     AdminAuthModule,
@@ -46,6 +47,7 @@ import { ManualQuestionModule } from './lectures/manualquestion.module';
     ManualQuestionModule,
     ExamPaperModule,
     QuestionsModule,
+    NotificationModule,
     // CoursesModule, // <-- Add the CoursesModule here
 
     ConfigModule.forRoot({

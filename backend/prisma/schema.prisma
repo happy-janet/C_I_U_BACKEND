@@ -7,10 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
-
-
 // registering a Lecturer
 
 model LecturerSignUp {
@@ -22,8 +18,7 @@ model LecturerSignUp {
   password   String
 }
 
-
-model AdminSignUp  {
+model AdminSignUp {
   id         Int    @id @default(autoincrement())
   first_name String
   last_name  String
@@ -31,8 +26,6 @@ model AdminSignUp  {
   role       String
   password   String
 }
-
-
 
 model users {
   id                Int              @id @default(autoincrement())
@@ -44,11 +37,16 @@ model users {
   lastLogin         DateTime?
   registrationNo    String           @unique
   password          String
-  role              String           // Add the role field here
+  role              String
   resetToken        String?          @unique
   resetTokenExpiry  DateTime?
   issueReports      IssueReport[]    @relation("StudentReports")
-  notifications Notification[]
+  notifications     Notification[]
+
+  // Relationships
+  sentMessages      Message[]        @relation("SentMessages")
+  receivedMessages   Message[]       @relation("ReceivedMessages")
+  chats             Chat[]           @relation("ChatParticipants") // Add this line
 }
 
 model IssueReport {
@@ -74,7 +72,28 @@ model Notification {
   createdAt DateTime @default(now())
 }
 
+model Message {
+  id        Int      @id @default(autoincrement())
+  text      String
+  senderId  Int
+  receiverId Int     // New field for receiver ID
+  chatId    Int
+  createdAt DateTime @default(now())
+  
+  // Relationships
+  sender    users    @relation("SentMessages", fields: [senderId], references: [id])
+  receiver  users    @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  chat      Chat     @relation(fields: [chatId], references: [id])
+}
 
+model Chat {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  
+  // Relationships
+  messages  Message[]
+  participants users[] @relation("ChatParticipants")
+}
 
 // adding courses and course units
 model courses {
@@ -86,7 +105,6 @@ model courses {
   addAssessments  addAssessment[] // Corresponding relation field to addAssessment model
   manualAssessments ManualAssessment[] // Corresponding relation field to manualAssessment model
 }
-
 
 model addAssessment {
   id              Int       @id @default(autoincrement())
@@ -101,9 +119,8 @@ model addAssessment {
   startTime       DateTime
   endTime         DateTime
   createdBy       String
-  createdAt       DateTime  @default(now())
+  createdAt      DateTime  @default(now())
   questions       Question[] @relation("AssessmentQuestions")
- 
 }
 
 model Question {
@@ -112,9 +129,8 @@ model Question {
   answer          String?
   options         Json      // Store options for multiple choice questions
   assessmentId    Int       // Foreign key to addAssessment model
-  assessment    addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
+  assessment      addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
 }
-
 
 model ManualAssessment {
   id             Int             @id @default(autoincrement())
@@ -123,10 +139,8 @@ model ManualAssessment {
   courseId       Int
   course         courses          @relation(fields: [courseId], references: [id])
   courseUnit     String
-
   courseUnitCode String
   duration       Int             // in minutes
-
   scheduledDate  DateTime
   startTime      DateTime
   endTime        DateTime

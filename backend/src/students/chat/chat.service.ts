@@ -1,57 +1,57 @@
-// import { Injectable } from '@nestjs/common';
-// import { PrismaService } from '../../../prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { CreateMessageDto } from '../dto/create-message.dto'; // Adjust the path as necessary
 
+@Injectable()
+export class ChatService {
+  constructor(private prisma: PrismaService) {}
 
-// @Injectable()
-// export class ChatService {
-//   constructor(private prisma: PrismaService) {}
+  async createMessage(createMessageDto: CreateMessageDto) {
+    const { senderId, receiverId, chatId, text } = createMessageDto;
 
-//   async createMessage(senderId: number, chatId: number, text: string) {
-//     return this.prisma.message.create({
-//       data: {
-//         senderId,
-//         chatId,
-//         text,
-//       },
-//     });
-//   }
+    return this.prisma.message.create({
+      data: {
+        senderId,
+        receiverId, // Include the receiverId
+        chatId,
+        text,
+      },
+    });
+  }
 
-//   async getChatMessages(chatId: number) {
-//     return this.prisma.message.findMany({
-//       where: { chatId },
-//       include: { sender: true },
-//     });
-//   }
+  async getChatMessages(chatId: number) {
+    return this.prisma.message.findMany({
+      where: { chatId },
+      include: { sender: true, receiver: true }, // Include receiver in the response if needed
+    });
+  }
 
+  async getOrCreateChat(participants: number[]) {
+    const usersExist = await this.prisma.users.findMany({
+      where: { id: { in: participants } },
+      select: { id: true },
+    });
 
-//   async getOrCreateChat(participants: number[]) {
-//     // Check if users exist first
-//     const usersExist = await this.prisma.users.findMany({
-//       where: { id: { in: participants } },
-//       select: { id: true },
-//     });
+    if (usersExist.length !== participants.length) {
+      throw new Error('One or more users do not exist');
+    }
 
-//     if (usersExist.length !== participants.length) {
-//       throw new Error('One or more users do not exist');
-//     }
+    const chat = await this.prisma.chat.findFirst({
+      where: {
+        participants: {
+          every: { id: { in: participants } },
+        },
+      },
+    });
 
-//     // Then proceed to find or create the chat
-//     const chat = await this.prisma.chat.findFirst({
-//       where: {
-//         participants: {
-//           every: { id: { in: participants } },
-//         },
-//       },
-//     });
+    if (chat) return chat;
 
-//     if (chat) return chat;
-
-//     return this.prisma.chat.create({
-//       data: {
-//         participants: {
-//           connect: participants.map((id) => ({ id })),
-//         },
-//       },
-//     });
-//   }
-// } 
+    return this.prisma.chat.create({
+      data: {
+        participants: {
+          connect: participants.map((id) => ({ id })),
+        },
+      },
+    });
+  }
+}
