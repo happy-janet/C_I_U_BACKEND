@@ -1,31 +1,37 @@
-// src/issue-report/notification.gateway.ts
 import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+  },
+})
 export class NotificationGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  // Array to hold connected clients (e.g., admins)
-  private admins: Set<any> = new Set();
+  private admins = new Set();  // Track connected admins
 
   handleConnection(client: any) {
-    this.admins.add(client);
+    // Log connection
+    console.log('Admin connected:', client.id);
+
+    // Register the admin when the event 'registerAdmin' is triggered
+    client.on('registerAdmin', () => {
+      console.log('Admin registered:', client.id);
+      this.admins.add(client.id);  // Only add the admin once
+    });
   }
 
   handleDisconnect(client: any) {
-    this.admins.delete(client);
+    console.log('Admin disconnected:', client.id);
+    this.admins.delete(client.id);  // Remove admin on disconnect
   }
 
-  // Update the method to accept both regno and issueDescription
+  // Notify all registered admins
   notifyAdmin(regno: string, issueDescription: string) {
-    // Notify all admins with both regno and issue description
-    this.admins.forEach((admin) => {
-      admin.emit('issueReported', {
-        regno,
-        issueDescription,
-      });
-    });
+    console.log('Notifying admins about:', regno, issueDescription);
+    this.server.emit('issueReported', { regno, issueDescription });
   }
 }

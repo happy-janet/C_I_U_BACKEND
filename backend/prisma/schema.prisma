@@ -48,6 +48,7 @@ model users {
   resetToken        String?          @unique
   resetTokenExpiry  DateTime?
   issueReports      IssueReport[]    @relation("StudentReports")
+  submissions       Submission[]   
 }
 
 model IssueReport {
@@ -63,6 +64,18 @@ model FAQ {
   id                Int              @id @default(autoincrement())
   question          String
   answer            String
+}
+
+model Submission {
+  id             Int       @id @default(autoincrement())
+  studentId      Int       // Foreign key to the student (users model)
+  student        users     @relation(fields: [studentId], references: [id])
+  assessmentId   Int       // Foreign key to the assessment
+  assessment     ManualAssessment @relation(fields: [assessmentId], references: [id])
+  answers        Json      // Stores the student's answers in JSON format
+  score          Int       // The score the student achieved
+  percentage     Float     // Percentage of correct answers
+  submittedAt    DateTime  // When the student submitted the exam
 }
 
 
@@ -125,6 +138,7 @@ model ManualAssessment {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   questions      QuestionManual[] // One-to-Many relationship to QuestionManual
+  submissions    Submission[]  //added by 
 }
 
 model QuestionManual {
