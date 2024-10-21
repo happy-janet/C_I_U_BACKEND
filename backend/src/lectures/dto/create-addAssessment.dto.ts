@@ -1,10 +1,8 @@
 // manual-assessment.dto.ts
 
-import { IsDate, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreatemanualAssessmentDto {
-  @IsInt()
-  id: number;
 
   @IsString()
   @IsNotEmpty()
@@ -28,23 +26,23 @@ export class CreatemanualAssessmentDto {
   @IsInt()
   duration: number; // in minutes
 
-  @IsDate()
+  @IsDateString()
   scheduledDate: Date;
 
-  @IsDate()
+  @IsDateString()
   startTime: Date;
 
-  @IsDate()
+  @IsDateString()
   endTime: Date;
 
   @IsInt()
   createdBy: number;
 
-  @IsDate()
-  createdAt?: Date;
+  // @IsDateString()
+  // createdAt?: Date;
 
-  @IsDate()
-  updatedAt?: Date;
+  // @IsDateString()
+  // updatedAt?: Date;
 
   questions?: QuestionManual[]; // Assuming QuestionManual is defined elsewhere
 }

@@ -9,6 +9,12 @@ export class ManualAssessmentService {
 
   // CREATE
   async create(data: CreatemanualAssessmentDto) {
+    const questions = data.questions?.map((question) => ({
+      questions: question.questionText, // Ensure this matches the model
+      options: JSON.stringify(question.options), // Ensure this matches your expected format
+      correctAnswer: question.correctAnswer,
+    })) || []; // Fallback to an empty array if questions is undefined
+
     return this.prisma.manualAssessment.create({
       data: {
         title: data.title,
@@ -22,11 +28,7 @@ export class ManualAssessmentService {
         endTime: data.endTime,
         createdBy: data.createdBy,
         questions: {
-          create: data.questions.map((question) => ({
-            questions: question.questionText, // Corrected to match the model
-            options: JSON.stringify(question.options), // Ensure this matches your expected format
-            correctAnswer: question.correctAnswer,
-          })),
+          create: questions,
         },
       },
     });
@@ -57,6 +59,12 @@ export class ManualAssessmentService {
   async update(id: number, data: UpdatemanualAssessmentDto) {
     const assessment = await this.findOne(id);
 
+    const questions = data.questions?.map((question) => ({
+      questions: question.questionText, // Ensure it matches the schema
+      options: JSON.stringify(question.options), // Ensure correct formatting
+      correctAnswer: question.correctAnswer,
+    })) || []; // Fallback to an empty array if questions is undefined
+
     return this.prisma.manualAssessment.update({
       where: { id },
       data: {
@@ -71,11 +79,7 @@ export class ManualAssessmentService {
         endTime: data.endTime || assessment.endTime,
         createdBy: data.createdBy || assessment.createdBy,
         questions: {
-          create: data.questions.map((question) => ({
-            questions: question.questionText, // Ensure it matches the schema
-            options: JSON.stringify(question.options), // Ensure correct formatting
-            correctAnswer: question.correctAnswer,
-          })),
+          create: questions,
         },
       },
     });
