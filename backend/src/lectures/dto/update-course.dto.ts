@@ -1,7 +1,7 @@
 // src/courses/dto/create-course.dto.ts
 import { IsArray, IsString } from 'class-validator';
 
-export class CreateCourseDto {
+export class UpdateCourseDto {
   @IsString()
   facultyName: string;
 
@@ -12,7 +12,7 @@ export class CreateCourseDto {
   @IsString({ each: true }) // Ensures each element in the array is a string
   courseUnits: string[];
 
-
   courseUnitCode: string;
-
 }
+
+

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, InternalServerErrorException,BadRequestException, } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -87,10 +87,11 @@ export class StudentsService {
   async create(createUserDto: CreateUserDto) {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
+  
       return await this.prisma.users.create({
         data: {
-          name: createUserDto.name,
+          first_name: createUserDto.first_name,  
+          last_name: createUserDto.last_name,   
           email: createUserDto.email,
           program: createUserDto.program,
           registrationNo: createUserDto.registrationNo,
@@ -103,6 +104,7 @@ export class StudentsService {
       throw new InternalServerErrorException('Error creating user');
     }
   }
+  
 
   // Login method
    async countStudents() {
@@ -155,6 +157,54 @@ export class StudentsService {
       throw new InternalServerErrorException('Error logging in');
     }
   }
+  // students.service.ts
+
+async submitManualAssessment(studentId: number, assessmentId: number, studentAnswers: any) {
+  
+  const assessment = await this.prisma.manualAssessment.findUnique({
+    where: { id: assessmentId },
+    include: { questions: true },
+  });
+
+  if (!assessment) {
+    throw new Error('Assessment not found');
+  }
+
+  // Initialize score
+  let score = 0;
+  const totalQuestions = assessment.questions.length;
+
+  // Iterate through each question and compare student's answers
+  assessment.questions.forEach((question) => {
+    const studentAnswer = studentAnswers[question.id];
+    if (studentAnswer === question.correctAnswer) {
+      score++;  // Increase score if the student's answer is correct
+    }
+  });
+
+  // Calculate the percentage
+  const percentage = (score / totalQuestions) * 100;
+
+  // Save the submission
+  const submission = await this.prisma.submission.create({
+    data: {
+      studentId: studentId,
+      assessmentId: assessmentId,
+      answers: studentAnswers,
+      score: score,
+      percentage: percentage,
+      submittedAt: new Date(),
+    },
+  });
+
+  return { score, totalQuestions, percentage };
 }
 
+}
+
+
+
+
+
+  
 
