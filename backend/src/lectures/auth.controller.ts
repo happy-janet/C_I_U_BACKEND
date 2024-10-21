@@ -2,6 +2,8 @@ import { Controller, Post, Body, Res, HttpException, HttpStatus } from '@nestjs/
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { LoginDto } from './dto/login.dto'; // Import the DTO
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,4 +23,13 @@ export class AuthController {
       return res.status(error.status || HttpStatus.UNAUTHORIZED).json({ message: error.message });
     }
   }
+  @Post('forgot-pass')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+      return this.authService.forgotPassword(forgotPasswordDto);
+  }
+  @Post('reset-pass')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+    // Ensure that the token is passed correctly in the resetPasswordDto
+    return this.authService.resetPassword(resetPasswordDto);
+}
 }
