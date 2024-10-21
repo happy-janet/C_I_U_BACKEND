@@ -20,6 +20,8 @@ model LecturerSignUp {
   email      String   @unique
   role       String
   password   String
+  resetToken        String?          @unique
+  resetTokenExpiry  DateTime?
 }
 
 
@@ -30,6 +32,8 @@ model AdminSignUp  {
   email      String   @unique
   role       String
   password   String
+  resetToken        String?          @unique
+  resetTokenExpiry  DateTime?
 }
 
 
