@@ -1,0 +1,4 @@
+questions,options,correctAnswer
+"[{""question"": ""What is the capital of France?"", ""options"": [""Paris"", ""London"", ""Berlin""], ""correctAnswer"": ""Paris""}]","[{""option"": ""A"", ""content"": ""Paris""}, {""option"": ""B"", ""content"": ""London""}, {""option"": ""C"", ""content"": ""Berlin""}]",Paris
+"[{""question"": ""What is the largest planet in our solar system?"", ""options"": [""Jupiter"", ""Mars"", ""Earth""], ""correctAnswer"": ""Jupiter""}]","[{""option"": ""A"", ""content"": ""Jupiter""}, {""option"": ""B"", ""content"": ""Mars""}, {""option"": ""C"", ""content"": ""Earth""}]",Jupiter
+
