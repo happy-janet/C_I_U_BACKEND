@@ -15,7 +15,7 @@ export class IssueReportService {
   async reportIssue(reportIssueDto: ReportIssueDto): Promise<IssueReport> {
     const { regno, issueDescription } = reportIssueDto;
 
-    // Find the student by registration number
+    // Find student by registration number
     const student = await this.prisma.users.findUnique({
       where: { registrationNo: regno },
     });
@@ -34,7 +34,7 @@ export class IssueReportService {
       },
     });
 
-    // Notify the admin with regno and issue description
+    // Trigger notification to all connected admins
     this.notificationGateway.notifyAdmin(regno, issueDescription);
 
     return issueReport;

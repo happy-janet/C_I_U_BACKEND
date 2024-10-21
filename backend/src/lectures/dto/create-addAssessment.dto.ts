@@ -3,8 +3,6 @@
 import { IsDateString, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreatemanualAssessmentDto {
-  @IsInt()
-  id: number;
 
   @IsString()
   @IsNotEmpty()
@@ -40,11 +38,11 @@ export class CreatemanualAssessmentDto {
   @IsInt()
   createdBy: number;
 
-  @IsDateString()
-  createdAt?: Date;
+  // @IsDateString()
+  // createdAt?: Date;
 
-  @IsDateString()
-  updatedAt?: Date;
+  // @IsDateString()
+  // updatedAt?: Date;
 
   questions?: QuestionManual[]; // Assuming QuestionManual is defined elsewhere
 }

@@ -61,6 +61,19 @@ CREATE TABLE "FAQ" (
 );
 
 -- CreateTable
+CREATE TABLE "Submission" (
+    "id" SERIAL NOT NULL,
+    "studentId" INTEGER NOT NULL,
+    "assessmentId" INTEGER NOT NULL,
+    "answers" JSONB NOT NULL,
+    "score" INTEGER NOT NULL,
+    "percentage" DOUBLE PRECISION NOT NULL,
+    "submittedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Submission_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "courses" (
     "id" SERIAL NOT NULL,
     "facultyName" TEXT NOT NULL,
@@ -147,6 +160,12 @@ CREATE UNIQUE INDEX "users_resetToken_key" ON "users"("resetToken");
 
 -- AddForeignKey
 ALTER TABLE "IssueReport" ADD CONSTRAINT "IssueReport_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_assessmentId_fkey" FOREIGN KEY ("assessmentId") REFERENCES "ManualAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "addAssessment" ADD CONSTRAINT "addAssessment_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

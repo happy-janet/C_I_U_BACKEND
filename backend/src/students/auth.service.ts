@@ -9,7 +9,7 @@ import * as crypto from 'crypto';
 import { sendEmail } from './sendEmail';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
-
+import { generateNumericToken } from './token-generator';
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -74,12 +74,24 @@ export class AuthService {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    // Create reset token
-    const resetToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Create a 6-digit numeric token
+    const resetToken = generateNumericToken(6);
+
+    // Store the reset token and expiry time in the database
+    const tokenExpiry = new Date();
+    tokenExpiry.setHours(tokenExpiry.getHours() + 1); // Set expiration to 1 hour
+
+    await this.prisma.users.update({
+        where: { id: user.id },
+        data: {
+            resetToken: resetToken,
+            resetTokenExpiry: tokenExpiry,
+        },
+    });
 
     // Prepare email content
-    const emailText = `You requested a password reset. Please use the following token to reset your password: ${resetToken}. Copy this token and enter it on the reset password page.`;
-    const emailHtml = `<p>You requested a password reset. Please use the following token to reset your password: <strong>${resetToken}</strong>. Copy this token and enter it on the reset password page.</p>`;
+    const emailText = `You requested a password reset. Your reset token is: ${resetToken}. Enter this token on the reset password page.`;
+    const emailHtml = `<p>You requested a password reset. Your reset token is: <strong>${resetToken}</strong>. Enter this token on the reset password page.</p>`;
 
     // Send the reset token via email
     await sendEmail(
@@ -94,24 +106,39 @@ export class AuthService {
 
 
 async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
-  let userId;
-  try {
-      const decoded = jwt.verify(resetPasswordDto.token, process.env.JWT_SECRET) as any;
-      userId = decoded.id;
-  } catch (error) {
+  const { token, newPassword, confirmPassword } = resetPasswordDto;
+
+  if (newPassword !== confirmPassword) {
+      throw new HttpException('Passwords do not match', HttpStatus.BAD_REQUEST);
+  }
+
+  // Find the user with the provided token
+  const user = await this.prisma.users.findFirst({
+      where: {
+          resetToken: token,
+          resetTokenExpiry: {
+              gte: new Date(), // Ensure the token is still valid (not expired)
+          },
+      },
+  });
+
+  if (!user) {
       throw new HttpException('Invalid or expired token', HttpStatus.BAD_REQUEST);
   }
 
-  const hashedPassword = await bcrypt.hash(resetPasswordDto.newPassword, 10);
+  // Hash the new password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
 
+  // Update user's password and clear the reset token fields
   await this.prisma.users.update({
-      where: { id: userId },
+      where: { id: user.id },
       data: {
           password: hashedPassword,
+          resetToken: null, // Clear the token after successful reset
+          resetTokenExpiry: null,
       },
   });
 
   return { message: 'Your password has been successfully reset.' };
 }
-
 }

@@ -157,26 +157,54 @@ export class StudentsService {
       throw new InternalServerErrorException('Error logging in');
     }
   }
+  // students.service.ts
 
+async submitManualAssessment(studentId: number, assessmentId: number, studentAnswers: any) {
+  
+  const assessment = await this.prisma.manualAssessment.findUnique({
+    where: { id: assessmentId },
+    include: { questions: true },
+  });
+
+  if (!assessment) {
+    throw new Error('Assessment not found');
+  }
+
+  // Initialize score
+  let score = 0;
+  const totalQuestions = assessment.questions.length;
+
+  // Iterate through each question and compare student's answers
+  assessment.questions.forEach((question) => {
+    const studentAnswer = studentAnswers[question.id];
+    if (studentAnswer === question.correctAnswer) {
+      score++;  // Increase score if the student's answer is correct
+    }
+  });
+
+  // Calculate the percentage
+  const percentage = (score / totalQuestions) * 100;
+
+  // Save the submission
+  const submission = await this.prisma.submission.create({
+    data: {
+      studentId: studentId,
+      assessmentId: assessmentId,
+      answers: studentAnswers,
+      score: score,
+      percentage: percentage,
+      submittedAt: new Date(),
+    },
+  });
+
+  return { score, totalQuestions, percentage };
+}
 
 }
 
+
+
+
+
   
 
-//   async searchByName(name: string) {
-//     try {
-//       // Use Prisma to find users where the name contains the search term
-//       return await this.prisma.users.findMany({
-//         where: {
-//           name: {
-//             contains: name,
-//             mode: 'insensitive',
-//           },
-//         },
-//       });
-//     } catch (error) {
-//       console.error('Error during search:', error);
-//       throw new InternalServerErrorException('Error during search');
-//     }
-//   }
-// }
