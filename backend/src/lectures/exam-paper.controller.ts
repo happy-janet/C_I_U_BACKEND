@@ -24,7 +24,23 @@ export class ExamPaperController {
    async getAllExamPapers() {
      return this.examPaperService.getAllExamPapers(); // Call the service method
    }
+  
 
+   // Retrieve a specific question by questionId from a specific exam paper
+  @Get(':id/question/:questionId')
+  async getQuestionById(
+    @Param('id') id: string,
+    @Param('questionId') questionId: string,
+  ) {
+    const examPaperId = parseInt(id, 10);
+    const parsedQuestionId = parseInt(questionId, 10);
+
+    if (isNaN(examPaperId) || isNaN(parsedQuestionId)) {
+      throw new BadRequestException('Invalid exam paper or question ID');
+    }
+
+    return this.examPaperService.getQuestionById(examPaperId, parsedQuestionId);
+  }
 
 //update each question in the exam paper
 @Put(':id/question/:questionId')
