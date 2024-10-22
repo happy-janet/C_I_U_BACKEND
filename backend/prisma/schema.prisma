@@ -8,9 +8,6 @@ datasource db {
 }
 
 
-
-
-
 // registering a Lecturer
 
 model LecturerSignUp {
