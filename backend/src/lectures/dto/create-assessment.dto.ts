@@ -13,7 +13,6 @@ export class CreateAssessmentDto {
 
   @IsString()
   courseUnit: string;
-
   @IsString()
   courseUnitCode: string;
 
