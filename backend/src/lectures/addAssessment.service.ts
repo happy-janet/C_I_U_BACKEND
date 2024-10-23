@@ -14,12 +14,12 @@ export class ManualAssessmentService {
       options: JSON.stringify(question.options), // Ensure this matches your expected format
       correctAnswer: question.correctAnswer,
     })) || []; // Fallback to an empty array if questions is undefined
-
+  
     return this.prisma.manualAssessment.create({
       data: {
         title: data.title,
         description: data.description,
-        courseId: data.courseId,
+        course: { connect: { id: data.courseId } }, // Use `connect` to link the course by its ID
         courseUnit: data.courseUnit,
         courseUnitCode: data.courseUnitCode,
         duration: data.duration,
@@ -28,11 +28,12 @@ export class ManualAssessmentService {
         endTime: data.endTime,
         createdBy: data.createdBy,
         questions: {
-          create: questions,
+          create: questions, // Creates related questions in the QuestionManual model
         },
       },
     });
   }
+  
 
   // FIND ALL
   async findAll() {
@@ -84,6 +85,29 @@ export class ManualAssessmentService {
       },
     });
   }
+  async findUpcomingExams(studentId: number) {
+    const currentDate = new Date(); // Get the current date and time
+    
+    return this.prisma.manualAssessment.findMany({
+      where: {
+        scheduledDate: { gte: currentDate }, // Only future assessments
+        course: {
+          students: { some: { id: studentId } }, // Filter by the student's enrolled courses
+        },
+      },
+      select: {
+        title: true,
+        scheduledDate: true,
+        startTime: true,
+        endTime: true,
+        course: {
+          select: { courseName: true }, // Assuming the course has a `courseName` field
+        },
+      },
+      orderBy: { scheduledDate: 'asc' }, // Sort exams by scheduled date
+    });
+  }
+
 
   // DELETE
   async remove(id: number) {
@@ -92,3 +116,9 @@ export class ManualAssessmentService {
     });
   }
 }
+
+
+
+
+
+

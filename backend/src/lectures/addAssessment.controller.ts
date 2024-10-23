@@ -40,3 +40,4 @@ export class ManualAssessmentController {
     return this.manualAssessmentService.remove(+id);
   }
 }
+
