@@ -59,7 +59,29 @@ export class ExamPaperService {
     });
   }
 
+  // Retrieve a specific question by ID
+  async getQuestionById(examPaperId: number, questionId: number) {
+    // Ensure the exam paper exists
+    const examPaper = await this.prisma.addAssessment.findUnique({
+      where: { id: examPaperId },
+      include: { questions: true }, // Ensure related questions are included
+    });
 
+    if (!examPaper) {
+      throw new NotFoundException('Exam paper not found');
+    }
+
+    // Find the specific question within the exam paper
+    const question = await this.prisma.question.findFirst({
+      where: { id: questionId, assessmentId: examPaperId },
+    });
+
+    if (!question) {
+      throw new NotFoundException('Question not found in this exam paper');
+    }
+
+    return question;
+  }
 
   // Delete specific question by ID for a given exam paper
   async deleteQuestionById(questionId: number, examPaperId: number) {
