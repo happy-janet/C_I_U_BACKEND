@@ -9,6 +9,7 @@ import {
   Request,
   UseGuards,
   Query,
+  Req,
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -27,7 +28,8 @@ import { RolesGuard } from './roles.guard';
 import { Roles } from './role.decorator';
 import { CreateFAQDto } from  './dto/create-faq.dto'
 import { ReportIssueDto } from './dto/report-issue.dto';
-
+import {SubmissionDto} from './dto/SubmitAssessmentDto.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('students')
 export class StudentsController {
@@ -49,14 +51,15 @@ export class StudentsController {
   }
 
   @Post()
-  createStudent(@Body() createUserDto: CreateUserDto) {
-    return this.studentsService.create(createUserDto);
-  }
+createStudent(@Body() createUserDto: CreateUserDto) {
+  return this.studentsService.create(createUserDto);
+}
 
-  @Patch(':id')
-  updateStudent(@Param('id') id: string, @Body() updateUserDto: CreateUserDto) {
-    return this.studentsService.update(Number(id), updateUserDto);
-  }
+
+@Patch(':id')
+updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  return this.studentsService.update(Number(id), updateUserDto);
+}
 
   
 
@@ -75,10 +78,10 @@ export class StudentsController {
         return this.studentsService.countStudents();
     }
 
-    @Get('count/programs')
-    async getProgramCount() {
-        return this.studentsService.countPrograms();
-    }
+    // @Get('count/programs')
+    // async getProgramCount() {
+    //     return this.studentsService.countPrograms();
+    // }
 
 
   @UseGuards(JwtAuthGuard)
@@ -88,21 +91,7 @@ export class StudentsController {
     return { message: 'Logout successful. Remove the token from your client storage.' };
   }
 
-  // @Get('search')
-  // async search(@Query('name') name: string) {
-  //   // Validate that the name query parameter is provided
-  //   if (!name) {
-  //     throw new BadRequestException('Name query parameter is required');
-  //   }
-
-  //   try {
-  //     // Call the service method to search for users by name
-  //     return await this.studentsService.searchByName(name);
-  //   } catch (error) {
-  //     console.error('Error during search:', error);
-  //     throw new InternalServerErrorException('Error during search');
-  //   }
-  // }
+  
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
@@ -132,7 +121,23 @@ export class StudentsController {
   ): Promise<IssueReport> {
     return this.issueReportService.reportIssue(reportIssueDto);
   }
+
+// students.controller.ts
+
+@Post('submit-assessment')
+async submitAssessment(
+  @Body() submitAssessmentDto: SubmissionDto,
+  @Req() req: any
+) {
+  const studentId = req.user.id;  // Assuming user authentication is implemented
+  return this.studentsService.submitManualAssessment(studentId, submitAssessmentDto.assessmentId, submitAssessmentDto.answers);
 }
+
+  
+}
+  
+
+
 
 
 

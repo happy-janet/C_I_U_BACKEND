@@ -36,8 +36,80 @@ export class FAQService {
       throw new NotFoundException('Failed to fetch FAQs');
     }
   }
+  async searchUsersByName(name: string) {
+    try {
+      return await this.prisma.users.findMany({
+        where: {
+          OR: [
+            {
+              first_name: {
+                contains: name,
+                mode: 'insensitive',  
+              },
+            },
+            {
+              last_name: {
+                contains: name,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      console.error('Error while searching users:', error); // Log the error
+      throw new Error('An error occurred while searching users.');
+    }
+  }
+  async getProfile(userId: number) {
+    try {
+      // Fetch the user data from the database
+      return await this.prisma.users.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          first_name: true,
+          last_name: true,
+          role: true, // Assuming the role field exists in the database
+        },
+      });
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw new Error('Error fetching user profile');
+    }
+  }
 }
 
 
-  
+//   async findUpcomingExams(studentId: number) {
+//     const currentDate = new Date();
+    
+//     const studentExists = await this.prisma.users.findUnique({
+//         where: { id: studentId },
+//     });
 
+//     if (!studentExists) {
+//         return []; // Return an empty array if the student doesn't exist
+//     }
+
+//     return this.prisma.manualAssessment.findMany({
+//         where: {
+//             scheduledDate: { gte: currentDate },
+//             course: {
+//                 students: { some: { id: studentId } },
+//             },
+//         },
+//         select: {
+//             title: true,
+//             scheduledDate: true,
+//             startTime: true,
+//             endTime: true,
+//             course: {
+//                 select: { courseName: true },
+//             },
+//         },
+//         orderBy: { scheduledDate: 'asc' },
+//     });
+// }
+// }

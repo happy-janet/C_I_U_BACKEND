@@ -42,9 +42,12 @@ export class AdminService {
   // Fetch a single admin by ID
   async findOne(id: number) {
     return this.prisma.adminSignUp.findUnique({
-      where: { id },
+      where: { id },  // This should work if 'id' is a valid number
     });
   }
+  
+  
+
 
   // Delete an admin by ID
   async delete(id: number) {
@@ -52,5 +55,20 @@ export class AdminService {
       where: { id },
     });
   }
+<<<<<<< HEAD
 }
 
+=======
+
+  async getProfile(id: number) {
+    return this.prisma.adminSignUp.findUnique({
+      where: { id },
+      select: {
+        first_name: true,
+        last_name: true,
+        role: true
+      },
+    });
+  }
+}
+>>>>>>> 24c3faf8d0ba54de0eca93637e75e680dc2933ba

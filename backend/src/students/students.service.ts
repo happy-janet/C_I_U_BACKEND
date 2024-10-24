@@ -93,7 +93,7 @@ export class StudentsService {
           first_name: createUserDto.first_name,  
           last_name: createUserDto.last_name,   
           email: createUserDto.email,
-          program: createUserDto.program,
+          program: createUserDto.program, 
           registrationNo: createUserDto.registrationNo,
           password: hashedPassword,
           role: createUserDto.role,

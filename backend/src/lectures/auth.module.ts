@@ -9,7 +9,7 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     PrismaModule,
-    ConfigModule.forRoot(), // Ensure env variables are loaded
+    ConfigModule.forRoot(), // Ensure env variables are loaded properly
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({

@@ -10,148 +10,145 @@ datasource db {
 // registering a Lecturer
 
 model LecturerSignUp {
-  id         Int    @id @default(autoincrement())
-  first_name String
-  last_name  String
-  email      String   @unique
-  role       String
-  password   String
+  id               Int       @id @default(autoincrement())
+  first_name       String
+  last_name        String
+  email            String    @unique
+  role             String
+  password         String
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
 }
 
 model AdminSignUp {
-  id         Int    @id @default(autoincrement())
-  first_name String
-  last_name  String
-  email      String   @unique
-  role       String
-  password   String
+  id               Int       @id @default(autoincrement())
+  first_name       String
+  last_name        String
+  email            String    @unique
+  role             String
+  password         String
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
 }
 
 model users {
-  id                Int              @id @default(autoincrement())
-  first_name        String
-  last_name         String
-  email             String           @unique
-  program           String
-  createdAt        DateTime         @default(now())
-  lastLogin         DateTime?
-  registrationNo    String           @unique
-  password          String
-  role              String
-  resetToken        String?          @unique
-  resetTokenExpiry  DateTime?
-  issueReports      IssueReport[]    @relation("StudentReports")
-  notifications     Notification[]
-  registeredCourses courses[] @relation("StudentCourses", references: [id]) // Many-to-Many relation to courses
-  sentMessages      Message[]        @relation("SentMessages")
-  receivedMessages   Message[]       @relation("ReceivedMessages")
-  chats             Chat[]           @relation("ChatParticipants") // Add this line
+  id               Int           @id @default(autoincrement())
+  first_name       String
+  last_name        String
+  email            String        @unique
+  program          String
+  createdAt        DateTime      @default(now())
+  lastLogin        DateTime?
+  registrationNo   String        @unique
+  password         String
+  role             String // Add the role field here
+  resetToken       String?       @unique
+  resetTokenExpiry DateTime?
+  issueReports     IssueReport[] @relation("StudentReports")
+  submissions      Submission[]
+  
+  // New field for relation to courses
+  //courseId Int // Foreign key to courses model
+  //course   courses   @relation(fields: [courseId], references: [id]) // Relation to courses model
+  //courses  courses[] @relation("UserCourses") // Relation to multiple courses
 }
 
 model IssueReport {
-  id                Int              @id @default(autoincrement())
-  issueDescription  String
-  regno             String  
-  reportedAt       DateTime         @default(now())
+  id               Int      @id @default(autoincrement())
+  issueDescription String
+  regno            String
+  reportedAt       DateTime @default(now())
   studentId        Int
-  student          users             @relation("StudentReports", fields: [studentId], references: [id])
+  student          users    @relation("StudentReports", fields: [studentId], references: [id])
 }
 
 model FAQ {
-  id                Int              @id @default(autoincrement())
-  question          String
-  answer            String
+  id       Int    @id @default(autoincrement())
+  question String
+  answer   String
 }
 
-model Notification {
-  id        Int      @id @default(autoincrement())
-  content   String
-  userId    Int
-  users     users     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+model Submission {
+  id           Int              @id @default(autoincrement())
+  studentId    Int // Foreign key to the student (users model)
+  student      users            @relation(fields: [studentId], references: [id])
+  assessmentId Int // Foreign key to the assessment
+  assessment   ManualAssessment @relation(fields: [assessmentId], references: [id])
+  answers      Json // Stores the student's answers in JSON format
+  score        Int // The score the student achieved
+  percentage   Float // Percentage of correct answers
+  submittedAt  DateTime // When the student submitted the exam
 }
 
-model Message {
-  id        Int      @id @default(autoincrement())
-  text      String
-  senderId  Int
-  receiverId Int     // New field for receiver ID
-  chatId    Int
-  createdAt DateTime @default(now())
-
-  sender    users    @relation("SentMessages", fields: [senderId], references: [id])
-  receiver  users    @relation("ReceivedMessages", fields: [receiverId], references: [id])
-  chat      Chat     @relation(fields: [chatId], references: [id])
-}
-
-model Chat {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  messages  Message[]
-  participants users[] @relation("ChatParticipants")
-}
-
-// adding courses and course units
+// Adding courses and course units
 model courses {
-  id              Int       @id @default(autoincrement())
-  facultyName     String
+  id             Int      @id @default(autoincrement())
+  facultyName    String
   courseName     String
-  courseUnits     String[]
-  courseUnitCode    String
-  addAssessments  addAssessment[] // Corresponding relation field to addAssessment model
-  manualAssessments ManualAssessment[] // Corresponding relation field to manualAssessment model
-  
-}
+  courseUnits    String[]
+  courseUnitCode String
 
+  addAssessments    addAssessment[] // Corresponding relation field to addAssessment model
+  manualAssessments ManualAssessment[] // Corresponding relation field to manualAssessment model
+
+  // New field for relation to users
+  //students users[] @relation("UserCourses") // Relation to users model
+  //users    users[]
+  enrolledStudents users[]  @relation("StudentCourses", references: [id]) // Many-to-Many relation to users
+}
+//caters for the uploa CSV file
 model addAssessment {
-  id              Int       @id @default(autoincrement())
-  title           String
-  description     String
-  courseId        Int       // Explicit foreign key to courses model
-  course          courses   @relation(fields: [courseId], references: [id]) // Relation to courses model
-  courseUnit      String
-  courseUnitCode  String
-  duration        String       // in minutes
-  scheduledDate   DateTime
-  startTime       DateTime
-  endTime         DateTime
-  createdBy       String
-  createdAt      DateTime  @default(now())
-  questions       Question[] @relation("AssessmentQuestions")
+  id             Int        @id @default(autoincrement())
+  title          String
+  description    String
+  courseId       Int // Explicit foreign key to courses model
+  course         courses    @relation(fields: [courseId], references: [id]) // Relation to courses model
+  courseUnit     String
+  courseUnitCode String
+  duration       String // in minutes
+  scheduledDate  DateTime
+  startTime      DateTime
+  endTime        DateTime
+  createdBy      String
+  createdAt      DateTime   @default(now())
+  questions      Question[] @relation("AssessmentQuestions")
 }
 
 model Question {
-  id              Int       @id @default(autoincrement())
-  content         String
-  answer          String?
-  options         Json      // Store options for multiple choice questions
-  assessmentId    Int       // Foreign key to addAssessment model
-  assessment      addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
+  id           Int           @id @default(autoincrement())
+  content      String
+  answer       String?
+  options      Json // Store options for multiple choice questions
+  assessmentId Int // Foreign key to addAssessment model
+  assessment   addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
 }
 
 model ManualAssessment {
-  id             Int             @id @default(autoincrement())
+  id             Int              @id @default(autoincrement())
   title          String
   description    String
   courseId       Int
-  course         courses          @relation(fields: [courseId], references: [id])
+  course         courses          @relation(fields: [courseId], references: [id]) // Relation to `courses`
   courseUnit     String
   courseUnitCode String
-  duration       Int             // in minutes
+  duration       Int // in minutes
   scheduledDate  DateTime
   startTime      DateTime
   endTime        DateTime
   createdBy      Int
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   questions      QuestionManual[] // One-to-Many relationship to QuestionManual
+  submissions    Submission[]     // Submissions related to this assessment
+  
 }
 
+
 model QuestionManual {
-  id             Int             @id @default(autoincrement())
-  questions      String            // Stores the question details
-  options        Json            // Stores options for the questions
-  correctAnswer  Json          // The correct answer for the question
-  assessmentId   Int             // Foreign key to ManualAssessment
-  assessment     ManualAssessment @relation(fields: [assessmentId], references: [id])
+  id            Int              @id @default(autoincrement())
+  questions     String // Stores the question details
+  options       Json // Stores options for the questions
+  correctAnswer Json // The correct answer for the question
+  assessmentId  Int // Foreign key to ManualAssessment
+  assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
 }
