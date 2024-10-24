@@ -42,8 +42,7 @@ model users {
   resetTokenExpiry  DateTime?
   issueReports      IssueReport[]    @relation("StudentReports")
   notifications     Notification[]
-
-  // Relationships
+  registeredCourses courses[] @relation("StudentCourses", references: [id]) // Many-to-Many relation to courses
   sentMessages      Message[]        @relation("SentMessages")
   receivedMessages   Message[]       @relation("ReceivedMessages")
   chats             Chat[]           @relation("ChatParticipants") // Add this line
@@ -79,8 +78,7 @@ model Message {
   receiverId Int     // New field for receiver ID
   chatId    Int
   createdAt DateTime @default(now())
-  
-  // Relationships
+
   sender    users    @relation("SentMessages", fields: [senderId], references: [id])
   receiver  users    @relation("ReceivedMessages", fields: [receiverId], references: [id])
   chat      Chat     @relation(fields: [chatId], references: [id])
@@ -89,8 +87,6 @@ model Message {
 model Chat {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  
-  // Relationships
   messages  Message[]
   participants users[] @relation("ChatParticipants")
 }
@@ -104,6 +100,7 @@ model courses {
   courseUnitCode    String
   addAssessments  addAssessment[] // Corresponding relation field to addAssessment model
   manualAssessments ManualAssessment[] // Corresponding relation field to manualAssessment model
+  
 }
 
 model addAssessment {

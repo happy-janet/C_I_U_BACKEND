@@ -111,7 +111,7 @@ export class StudentsService {
     return this.prisma.users.count();
   }
 
-  async countPrograms() {
+  async countRegisteredCourses() {
     try {
       const uniquePrograms = await this.prisma.users.findMany({
         select: { program: true },
@@ -163,20 +163,3 @@ export class StudentsService {
 
   
 
-//   async searchByName(name: string) {
-//     try {
-//       // Use Prisma to find users where the name contains the search term
-//       return await this.prisma.users.findMany({
-//         where: {
-//           name: {
-//             contains: name,
-//             mode: 'insensitive',
-//           },
-//         },
-//       });
-//     } catch (error) {
-//       console.error('Error during search:', error);
-//       throw new InternalServerErrorException('Error during search');
-//     }
-//   }
-// }
