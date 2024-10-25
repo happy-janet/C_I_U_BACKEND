@@ -1,25 +1,27 @@
 // src/students/dto/create-user.dto.ts
 
+// import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+
+// 
+
+
+
+
+
+// create-user.dto.ts
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
-  @IsString()
-  first_name: string; 
+  first_name: string;
 
   @IsNotEmpty()
-  @IsString()
-  last_name: string; 
+  last_name: string;
 
   @IsEmail()
   email: string;
 
   @IsNotEmpty()
-  @IsString()
-  program: string;
-
-  @IsNotEmpty()
-  @IsString()
   registrationNo: string;
 
   @IsNotEmpty()
@@ -27,6 +29,8 @@ export class CreateUserDto {
   password: string;
 
   @IsNotEmpty()
-  @IsString()
   role: string;
+
+  @IsNotEmpty()
+  courseId: number; 
 }
