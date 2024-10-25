@@ -9,11 +9,26 @@ export class ManualAssessmentService {
 
   // CREATE
   async create(data: CreatemanualAssessmentDto) {
+    // Validate that the courseId exists in the courses table
+    const course = await this.prisma.courses.findUnique({
+      where: { id: data.courseId },
+    });
+
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${data.courseId} not found`);
+    }
+
+    // Map questions if they exist, or fallback to an empty array
     const questions = data.questions?.map((question) => ({
-      questions: question.questionText, // Ensure this matches the model
+      questions: question.questionText, // Adjust according to your Prisma model
       options: JSON.stringify(question.options), // Ensure this matches your expected format
       correctAnswer: question.correctAnswer,
-    })) || []; // Fallback to an empty array if questions is undefined
+    })) || []; // Fallback to an empty array if questions are undefined
+
+    // Parse dates and convert to ISO strings
+    const scheduledDate = new Date(data.scheduledDate);
+    const startTime = new Date(data.startTime);
+    const endTime = new Date(data.endTime);
 
     return this.prisma.manualAssessment.create({
       data: {
@@ -23,9 +38,9 @@ export class ManualAssessmentService {
         courseUnit: data.courseUnit,
         courseUnitCode: data.courseUnitCode,
         duration: data.duration,
-        scheduledDate: data.scheduledDate,
-        startTime: data.startTime,
-        endTime: data.endTime,
+        scheduledDate: scheduledDate,
+        startTime: startTime,
+        endTime: endTime,
         createdBy: data.createdBy,
         questions: {
           create: questions,
@@ -37,7 +52,7 @@ export class ManualAssessmentService {
   // FIND ALL
   async findAll() {
     return this.prisma.manualAssessment.findMany({
-      include: { questions: true },
+      include: { questions: true }, // Include the related questions
     });
   }
 
@@ -45,7 +60,7 @@ export class ManualAssessmentService {
   async findOne(id: number) {
     const assessment = await this.prisma.manualAssessment.findUnique({
       where: { id },
-      include: { questions: true },
+      include: { questions: true }, // Include related questions
     });
 
     if (!assessment) {
@@ -59,11 +74,16 @@ export class ManualAssessmentService {
   async update(id: number, data: UpdatemanualAssessmentDto) {
     const assessment = await this.findOne(id);
 
+    // Map questions for update if they exist
     const questions = data.questions?.map((question) => ({
-      questions: question.questionText, // Ensure it matches the schema
+      questions: question.questionText, // Adjust according to your Prisma model
       options: JSON.stringify(question.options), // Ensure correct formatting
       correctAnswer: question.correctAnswer,
-    })) || []; // Fallback to an empty array if questions is undefined
+    })) || []; // Fallback to an empty array if questions are undefined
+
+    // Parse dates and convert to ISO strings
+    const startTime = new Date(data.startTime);
+    const endTime = new Date(data.endTime);
 
     return this.prisma.manualAssessment.update({
       where: { id },
@@ -75,8 +95,8 @@ export class ManualAssessmentService {
         courseUnitCode: data.courseUnitCode || assessment.courseUnitCode,
         duration: data.duration || assessment.duration,
         scheduledDate: data.scheduledDate || assessment.scheduledDate,
-        startTime: data.startTime || assessment.startTime,
-        endTime: data.endTime || assessment.endTime,
+        startTime: startTime || assessment.startTime,
+        endTime: endTime || assessment.endTime,
         createdBy: data.createdBy || assessment.createdBy,
         questions: {
           create: questions,

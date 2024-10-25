@@ -1,31 +1,8 @@
-// import { Injectable } from '@nestjs/common';
-// import { PrismaService } from '../../prisma/prisma.service';
-// import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
-
-// @Injectable()
-// export class LecturesService {
-//   constructor(private readonly prisma: PrismaService) {}
-
-//   async create(createLecturerSignUpDto: CreateLecturerSignUpDto) {
-//     return this.prisma.lecturerSignUp.create({
-//       data: {
-//         first_name: createLecturerSignUpDto.first_name,
-//         last_name: createLecturerSignUpDto.last_name,
-//         email: createLecturerSignUpDto.email,
-//         role: createLecturerSignUpDto.role,
-//         password: createLecturerSignUpDto.password,
-//       },
-//     });
-//   }
-
-
-import { Injectable , NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateCourseDto } from './dto/create-course.dto';
-
 
 @Injectable()
 export class LecturesService {
@@ -33,6 +10,12 @@ export class LecturesService {
 
   // Create lecturer with hashed password
   async create(createLecturerSignUpDto: CreateLecturerSignUpDto) {
+    const emailPattern = /^[a-zA-Z]+@ciu\.ac\.ug$/; // Regex pattern for the email format
+
+    if (!emailPattern.test(createLecturerSignUpDto.email)) {
+      throw new BadRequestException('Email must be in the format: firstname@ciu.ac.ug');
+    }
+
     const hashedPassword = await bcrypt.hash(createLecturerSignUpDto.password, 10);
     return this.prisma.lecturerSignUp.create({
       data: {
@@ -46,14 +29,11 @@ export class LecturesService {
   }
 
   // Fetch all lecturers
-
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
-    // Check if the user exists
     const user = await this.prisma.lecturerSignUp.findUnique({ where: { id: Number(id) } });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    // Update the user
     return this.prisma.lecturerSignUp.update({
       where: { id: Number(id) },
       data: updateUserDto,
@@ -64,19 +44,15 @@ export class LecturesService {
     return this.prisma.lecturerSignUp.findMany();
   }
 
-  // Fetch a single lecturer by ID
   async findOne(id: number) {
     return this.prisma.lecturerSignUp.findUnique({
       where: { id },
     });
   }
 
-  // Delete a lecturer by ID
   async delete(id: number) {
     return this.prisma.lecturerSignUp.delete({
       where: { id },
-    })
-  
+    });
   } 
- 
 }

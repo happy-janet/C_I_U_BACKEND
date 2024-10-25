@@ -127,10 +127,8 @@ model ManualAssessment {
   courseId       Int
   course         courses          @relation(fields: [courseId], references: [id])
   courseUnit     String
-
   courseUnitCode String
   duration       Int             // in minutes
-
   scheduledDate  DateTime
   startTime      DateTime
   endTime        DateTime
@@ -138,7 +136,8 @@ model ManualAssessment {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   questions      QuestionManual[] // One-to-Many relationship to QuestionManual
-  submissions    Submission[]  //added by 
+  submissions    Submission[]
+    //added by 
 }
 
 model QuestionManual {
