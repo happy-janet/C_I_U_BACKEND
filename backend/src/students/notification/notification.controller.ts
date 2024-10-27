@@ -41,3 +41,34 @@
 //     return this.notificationService.createNotification(createNotificationDto.userId, createNotificationDto.content);
 //   }
 // }
+
+import { Controller, Post, Get, Param, Patch, Body } from '@nestjs/common';
+import { NotificationService } from '../notification/notification.service';
+import { CreateNotificationDto } from '../dto/create-notification.dto';
+
+@Controller('notifications')
+export class NotificationController {
+  constructor(private readonly notificationService: NotificationService) {}
+
+  @Post()
+  async createNotification(
+    @Body() createNotificationDto: CreateNotificationDto,
+  ) {
+    return this.notificationService.createNotification(
+      createNotificationDto.userId,
+      createNotificationDto.title,
+      createNotificationDto.message,
+      createNotificationDto.eventType,
+    );
+  }
+
+  @Get(':userId')
+  async getNotifications(@Param('userId') userId: number) {
+    return this.notificationService.getNotificationsForUser(userId);
+  }
+
+  @Patch(':id/read')
+  async markAsRead(@Param('id') notificationId: number) {
+    return this.notificationService.markNotificationAsRead(notificationId);
+  }
+}

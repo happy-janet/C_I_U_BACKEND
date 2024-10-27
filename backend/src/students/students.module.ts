@@ -8,8 +8,6 @@ import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
 import { FaqModule } from './faq.module'; // Correct import path
 import { IssueReportModule } from './issue-report.module';
-import { ExamService } from './exam.service';
-import { ExamController } from './exam.controller';
 
 
 @Module({
@@ -21,13 +19,13 @@ import { ExamController } from './exam.controller';
     FaqModule, // Import FaqModule to access FAQService
     IssueReportModule, // Import IssueReportModule to access IssueReportService
   ],
-  controllers: [StudentsController, ExamController],
+  controllers: [StudentsController],
   providers: [
     AuthService,
     PrismaService,
     JwtStrategy,
     StudentsService,
-    ExamService,
+    
   ],
 })
 export class StudentsModule {}

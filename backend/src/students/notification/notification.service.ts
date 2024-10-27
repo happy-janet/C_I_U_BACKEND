@@ -1,36 +1,41 @@
-// import { Injectable } from '@nestjs/common';
-// import { PrismaService } from '../../../prisma/prisma.service';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { NotificationGateway } from '../notification/notification.gateway';
 
-// @Injectable()
-// export class NotificationService {
-//   constructor(private readonly prisma: PrismaService) {}
+@Injectable()
+export class NotificationService {
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(forwardRef(() => NotificationGateway)) // Use forwardRef here
+    private readonly notificationGateway: NotificationGateway,
+  ) {}
 
-//   async createNotification(userId: number, content: string) {
-//     return this.prisma.notification.create({
-//       data: {
-//         userId,
-//         content, // Only include content
-//       },
-//     });
-//   }
+  async createNotification(userId: number, title: string, message: string, eventType: string) {
+    const notification = await this.prisma.notification.create({
+      data: {
+        title,
+        message,
+        userId,
+        eventType,
+      },
+    });
 
-//   async getUserNotifications(userId: number) {
-//     return this.prisma.notification.findMany({
-//       where: { userId },
-//       orderBy: { createdAt: 'desc' },
-//     });
-//   }
+    // Emit the notification in real-time
+    this.notificationGateway.sendNotification(userId, title, message, eventType);
+    return notification;
+  }
 
-//   async markAsRead(notificationId: number) {
-//     // Remove the read property, or if you want to implement a similar functionality,
-//     // consider updating another field that exists in the Notification model.
-//     return this.prisma.notification.update({
-//       where: { id: notificationId },
-//       data: {
-//         // You might want to remove this if no other update is needed
-//         // If you have a similar field like 'status', you can use that
-//       },
-//     });
-//   }
-// }
+  async getNotificationsForUser(userId: number) {
+    return this.prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 
+  async markNotificationAsRead(notificationId: number) {
+    return this.prisma.notification.update({
+      where: { id: notificationId },
+      data: { read: true },
+    });
+  }
+}

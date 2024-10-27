@@ -55,10 +55,6 @@ export class AdminService {
       where: { id },
     });
   }
-<<<<<<< HEAD
-}
-
-=======
 
   async getProfile(id: number) {
     return this.prisma.adminSignUp.findUnique({
@@ -71,4 +67,3 @@ export class AdminService {
     });
   }
 }
->>>>>>> 24c3faf8d0ba54de0eca93637e75e680dc2933ba

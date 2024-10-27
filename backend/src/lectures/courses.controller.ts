@@ -3,9 +3,9 @@ import { CreateCourseDto } from './dto/create-course.dto';
 import { CoursesService } from './courses.service';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
-// @Controller('coursesAdd')
-// export class CoursesController {
-//   // constructor(private readonly coursesService: CoursesService) {}
+@Controller('coursesAdd')
+export class CoursesController {
+  constructor(private readonly coursesService: CoursesService) {}
 
   // Create a new course
   @Post()

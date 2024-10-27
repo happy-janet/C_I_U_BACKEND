@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt'; 
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class StudentsService {
@@ -32,31 +33,36 @@ export class StudentsService {
   
   
   // Update student details
-  async update(id: number, updateUserDto: CreateUserDto) {
-    // First, find the student by ID to ensure they exist
+  async update(id: number, updateUserDto: UpdateUserDto) {
     const existingStudent = await this.findOneById(id);
     if (!existingStudent) {
       throw new NotFoundException(`Student with ID ${id} not found`);
     }
-  
-    // If the email is being updated, check if it's already used by another student
+
     if (updateUserDto.email) {
       const studentWithEmail = await this.prisma.users.findUnique({
         where: { email: updateUserDto.email },
       });
-  
-      // Check if the found student with that email is not the same as the one being updated
       if (studentWithEmail && studentWithEmail.id !== id) {
-        throw new Error('Email is already in use by another student.');
+        throw new Error('Email already in use');
       }
     }
-  
-    // Proceed with the update after validation
+
     return this.prisma.users.update({
       where: { id },
-      data: updateUserDto,
+      data: {
+        first_name: updateUserDto.first_name,
+        last_name: updateUserDto.last_name,
+        email: updateUserDto.email,
+        program: updateUserDto.program,
+        registrationNo: updateUserDto.registrationNo,
+        password: updateUserDto.password,
+        role: updateUserDto.role,
+        courseId: updateUserDto.courseId,  // Include courseId in the update data
+      },
     });
   }
+
   
 
   // Reset student password
@@ -83,27 +89,39 @@ export class StudentsService {
 
  
 
-  // Create a new student
-  async create(createUserDto: CreateUserDto) {
-    try {
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
   
-      return await this.prisma.users.create({
-        data: {
-          first_name: createUserDto.first_name,  
-          last_name: createUserDto.last_name,   
-          email: createUserDto.email,
-          program: createUserDto.program, 
-          registrationNo: createUserDto.registrationNo,
-          password: hashedPassword,
-          role: createUserDto.role,
-        },
-      });
-    } catch (error) {
-      console.error('Error creating user:', error);
-      throw new InternalServerErrorException('Error creating user');
+async create(createUserDto: CreateUserDto) {
+  try {
+    // First, find the course name using the courseId
+    const course = await this.prisma.courses.findUnique({
+      where: { id: createUserDto.courseId }, // Make sure courseId is in CreateUserDto
+      select: { courseName: true },
+    });
+
+    if (!course) {
+      throw new BadRequestException('Course not found');
     }
+
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
+    return await this.prisma.users.create({
+      data: {
+        first_name: createUserDto.first_name,
+        last_name: createUserDto.last_name,
+        email: createUserDto.email,
+        program: course.courseName, 
+        registrationNo: createUserDto.registrationNo,
+        password: hashedPassword,
+        role: createUserDto.role,
+        courseId: createUserDto.courseId, 
+      },
+    });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw new InternalServerErrorException('Error creating user');
   }
+}
+
   
 
   // Login method
@@ -111,7 +129,7 @@ export class StudentsService {
     return this.prisma.users.count();
   }
 
-  async countRegisteredCourses() {
+  async countPrograms() {
     try {
       const uniquePrograms = await this.prisma.users.findMany({
         select: { program: true },
@@ -157,9 +175,47 @@ export class StudentsService {
       throw new InternalServerErrorException('Error logging in');
     }
   }
+  // students.service.ts
 
+async submitManualAssessment(studentId: number, assessmentId: number, studentAnswers: any) {
+  
+  const assessment = await this.prisma.manualAssessment.findUnique({
+    where: { id: assessmentId },
+    include: { questions: true },
+  });
 
+  if (!assessment) {
+    throw new Error('Assessment not found');
+  }
+
+  // Initialize score
+  let score = 0;
+  const totalQuestions = assessment.questions.length;
+
+  // Iterate through each question and compare student's answers
+  assessment.questions.forEach((question) => {
+    const studentAnswer = studentAnswers[question.id];
+    if (studentAnswer === question.correctAnswer) {
+      score++;  // Increase score if the student's answer is correct
+    }
+  });
+
+  // Calculate the percentage
+  const percentage = (score / totalQuestions) * 100;
+
+  // Save the submission
+  const submission = await this.prisma.submission.create({
+    data: {
+      studentId: studentId,
+      assessmentId: assessmentId,
+      answers: studentAnswers,
+      score: score,
+      percentage: percentage,
+      submittedAt: new Date(),
+    },
+  });
+
+  return { score, totalQuestions, percentage };
 }
 
-  
-
+}

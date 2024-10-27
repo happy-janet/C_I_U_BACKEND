@@ -4,9 +4,9 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
-// @Injectable()
-// export class CoursesService {
-//     constructor(private readonly prisma: PrismaService) {}
+@Injectable()
+export class CoursesService {
+    constructor(private readonly prisma: PrismaService) {}
 
     async create(createCourseDto: CreateCourseDto) {
         return this.prisma.courses.create({
@@ -47,5 +47,5 @@ import { UpdateCourseDto } from './dto/update-course.dto';
       }
     
       
-    
+    }
     

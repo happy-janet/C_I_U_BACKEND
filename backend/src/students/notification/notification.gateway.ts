@@ -1,27 +1,45 @@
-// import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-// import { Server, Socket } from 'socket.io';
-// import { NotificationService } from './notification.service';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+} from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
+import { NotificationService } from '../notification/notification.service';
+import { Inject, forwardRef } from '@nestjs/common';
 
-// @WebSocketGateway(3000, {
-//   cors: {
-//     origin: '*',
-//     methods: ['GET', 'POST'],
-//   },
-// })
-// export class NotificationGateway {
-//   @WebSocketServer()
-//   server: Server;
+@WebSocketGateway({ cors: true })
+export class NotificationGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
+  @WebSocketServer() server: Server;
 
-//   constructor(private notificationService: NotificationService) {}
+  constructor(
+    @Inject(forwardRef(() => NotificationService)) // Use forwardRef here
+    private readonly notificationService: NotificationService,
+  ) {}
 
-//   // Notify user of a new notification in real-time
-//   async sendNotification(userId: number, notification: any) {
-//     this.server.to(`user_${userId}`).emit('newNotification', notification);
-//   }
+  handleConnection(client: Socket) {
+    console.log(`Client connected: ${client.id}`);
+  }
 
-//   // Handle user joining the notification room (when the user connects)
-//   handleConnection(client: Socket) {
-//     const userId = client.handshake.query.userId; // Get the user ID from the query
-//     client.join(`user_${userId}`); // Join a room for the user
-//   }
-// }
+  handleDisconnect(client: Socket) {
+    console.log(`Client disconnected: ${client.id}`);
+  }
+
+  async sendNotification(userId: number, title: string, message: string, eventType: string) {
+    const notification = await this.notificationService.createNotification(
+      userId,
+      title,
+      message,
+      eventType,
+    );
+
+    this.server.to(`user_${userId}`).emit('newNotification', notification);
+  }
+
+  // Use this method to join users to a specific room on client connection.
+  joinUserRoom(client: Socket, userId: number) {
+    client.join(`user_${userId}`);
+  }
+}
