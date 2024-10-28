@@ -79,7 +79,7 @@ export class ManualAssessmentService {
     const questionsArray = Array.isArray(data.questions) ? data.questions : [];
 
     const questions = questionsArray.map((question) => ({
-      questions: question.questionText,
+      questions: question.questions,
       options: JSON.stringify(question.options),
       correctAnswer: question.correctAnswer,
     }));
