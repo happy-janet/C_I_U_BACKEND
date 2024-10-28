@@ -1,5 +1,5 @@
 // src/assessments/dto/create-assessment.dto.ts
-import { IsDate, IsInt, IsString } from 'class-validator';
+import { IsDate, IsInt, IsString, IsBoolean, IsOptional } from 'class-validator';
 
 export class CreateAssessmentDto {
   @IsString()
@@ -39,4 +39,8 @@ export class CreateAssessmentDto {
 
   @IsString()
   correctAnswer: string; 
+
+  @IsBoolean()
+  @IsOptional() // This allows the property to be optional
+  isDraft?: boolean; 
 }

@@ -9,6 +9,8 @@ export class UploadExamPaperDto {
   createdBy: string;
   courseUnitCode: string;
   courseId: string; // Ensure this field exists in the database
+  status?: string; // Optional status field
+  isDraft?: boolean; // Optional boolean property to indicate draft status
 }
 
 export class UpdateQuestionDto {

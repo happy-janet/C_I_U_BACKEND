@@ -103,6 +103,8 @@ model addAssessment {
   createdAt      DateTime   @default(now())
   questions      Question[] @relation("AssessmentQuestions")
   course         courses    @relation(fields: [courseId], references: [id])
+  status         String     @default("draft") // New field to track status
+  isDraft        Boolean    @default(true) // Add this line
 }
 
 model Question {
@@ -125,7 +127,7 @@ model ManualAssessment {
   scheduledDate  DateTime
   startTime      DateTime
   endTime        DateTime
-  createdBy      Int
+  createdBy      String
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   course         courses          @relation(fields: [courseId], references: [id])

@@ -39,8 +39,8 @@ export class CreatemanualAssessmentDto {
   createdBy: number;
 
   @IsString()
-  @IsNotEmpty()
-  examRules: string;
+  
+
 
 
   // @IsDateString()
