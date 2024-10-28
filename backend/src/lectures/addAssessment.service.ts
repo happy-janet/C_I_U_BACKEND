@@ -42,7 +42,7 @@ export class ManualAssessmentService {
         scheduledDate: scheduledDate,
         startTime: startTime,
         endTime: endTime,
-        createdBy: data.createdBy,
+        createdBy: String(data.createdBy),
         questions: {
           create: questions, // Creates related questions in the QuestionManual model
         },
@@ -78,7 +78,7 @@ export class ManualAssessmentService {
 
     // Map questions for update if they exist
     const questions = data.questions?.map((question) => ({
-      questions: question.questionText, // Adjust according to your Prisma model
+      questions: question.questions, // Adjust according to your Prisma model
       options: JSON.stringify(question.options), // Ensure correct formatting
       correctAnswer: question.correctAnswer,
     })) || []; // Fallback to an empty array if questions are undefined
