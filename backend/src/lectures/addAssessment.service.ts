@@ -18,13 +18,14 @@ export class ManualAssessmentService {
       throw new NotFoundException(`Course with ID ${data.courseId} not found`);
     }
 
-    // Map questions if they exist, or fallback to an empty array
-    const questions = data.questions?.map((question) => ({
+    // Ensure `data.questions` is an array, or default to an empty array
+    const questionsArray = Array.isArray(data.questions) ? data.questions : [];
+
+    const questions = questionsArray.map((question) => ({
       questions: question.questionText, // Adjust according to your Prisma model
       options: JSON.stringify(question.options), // Ensure this matches your expected format
       correctAnswer: question.correctAnswer,
-
-    })) || []; // Fallback to an empty array if questions are undefined
+    }));
 
     // Parse dates and convert to ISO strings
     const scheduledDate = new Date(data.scheduledDate);
@@ -35,7 +36,7 @@ export class ManualAssessmentService {
       data: {
         title: data.title,
         description: data.description,
-        course: { connect: { id: data.courseId } }, // Use `connect` to link the course by its ID
+        course: { connect: { id: data.courseId } },
         courseUnit: data.courseUnit,
         courseUnitCode: data.courseUnitCode,
         duration: data.duration,
@@ -49,12 +50,11 @@ export class ManualAssessmentService {
       },
     });
   }
-  
 
   // FIND ALL
   async findAll() {
     return this.prisma.manualAssessment.findMany({
-      include: { questions: true }, // Include the related questions
+      include: { questions: true },
     });
   }
 
@@ -62,7 +62,7 @@ export class ManualAssessmentService {
   async findOne(id: number) {
     const assessment = await this.prisma.manualAssessment.findUnique({
       where: { id },
-      include: { questions: true }, // Include related questions
+      include: { questions: true },
     });
 
     if (!assessment) {
@@ -76,14 +76,14 @@ export class ManualAssessmentService {
   async update(id: number, data: UpdatemanualAssessmentDto) {
     const assessment = await this.findOne(id);
 
-    // Map questions for update if they exist
-    const questions = data.questions?.map((question) => ({
-      questions: question.questionText, // Adjust according to your Prisma model
-      options: JSON.stringify(question.options), // Ensure correct formatting
-      correctAnswer: question.correctAnswer,
-    })) || []; // Fallback to an empty array if questions are undefined
+    const questionsArray = Array.isArray(data.questions) ? data.questions : [];
 
-    // Parse dates and convert to ISO strings
+    const questions = questionsArray.map((question) => ({
+      questions: question.questionText,
+      options: JSON.stringify(question.options),
+      correctAnswer: question.correctAnswer,
+    }));
+
     const startTime = new Date(data.startTime);
     const endTime = new Date(data.endTime);
 
@@ -106,14 +106,15 @@ export class ManualAssessmentService {
       },
     });
   }
+
   async findUpcomingExams(studentId: number) {
-    const currentDate = new Date(); // Get the current date and time
+    const currentDate = new Date();
     
     return this.prisma.manualAssessment.findMany({
       where: {
-        scheduledDate: { gte: currentDate }, // Only future assessments
+        scheduledDate: { gte: currentDate },
         course: {
-          students: { some: { id: studentId } }, // Filter by the student's enrolled courses
+          students: { some: { id: studentId } },
         },
       },
       select: {
@@ -122,13 +123,12 @@ export class ManualAssessmentService {
         startTime: true,
         endTime: true,
         course: {
-          select: { courseName: true }, // Assuming the course has a `courseName` field
+          select: { courseName: true },
         },
       },
-      orderBy: { scheduledDate: 'asc' }, // Sort exams by scheduled date
+      orderBy: { scheduledDate: 'asc' },
     });
   }
-
 
   // DELETE
   async remove(id: number) {
@@ -137,9 +137,3 @@ export class ManualAssessmentService {
     });
   }
 }
-
-
-
-
-
-
