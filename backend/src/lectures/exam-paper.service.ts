@@ -9,8 +9,8 @@ import * as moment from 'moment';
 export class ExamPaperService {
   constructor(private readonly prisma: PrismaService) {}
 
-   // New method to get all exam papers
-   async getAllExamPapers() {
+  // New method to get all exam papers
+  async getAllExamPapers() {
     return this.prisma.addAssessment.findMany(); // Retrieve all exam papers
   }
 
@@ -61,17 +61,15 @@ export class ExamPaperService {
 
   // Retrieve a specific question by ID
   async getQuestionById(examPaperId: number, questionId: number) {
-    // Ensure the exam paper exists
     const examPaper = await this.prisma.addAssessment.findUnique({
       where: { id: examPaperId },
-      include: { questions: true }, // Ensure related questions are included
+      include: { questions: true },
     });
 
     if (!examPaper) {
       throw new NotFoundException('Exam paper not found');
     }
 
-    // Find the specific question within the exam paper
     const question = await this.prisma.question.findFirst({
       where: { id: questionId, assessmentId: examPaperId },
     });
@@ -85,59 +83,42 @@ export class ExamPaperService {
 
   // Delete specific question by ID for a given exam paper
   async deleteQuestionById(questionId: number, examPaperId: number) {
-    console.log(`Attempting to delete question ID ${questionId} from exam paper ID ${examPaperId}`);
-    
     const examPaper = await this.prisma.addAssessment.findUnique({
       where: { id: examPaperId },
       include: { questions: true },
     });
-    
+
     if (!examPaper) {
-      console.log(`Exam paper with ID ${examPaperId} not found`);
       throw new NotFoundException('Exam paper not found');
     }
-    
-    console.log('Questions in exam paper:', examPaper.questions.map(q => q.id));
-    
+
     const question = examPaper.questions.find(q => q.id === questionId);
-    
+
     if (!question) {
-      console.log(`Question with ID ${questionId} not found in exam paper ${examPaperId}`);
       throw new NotFoundException('Question not found in this exam paper');
     }
-    
-    console.log(`Deleting question with ID ${questionId}`);
+
     await this.prisma.question.delete({ where: { id: questionId } });
     return { message: 'Question deleted successfully' };
   }
-  
-
 
   // Update a question in an exam paper
-async updateQuestion(id: number, questionId: number, updateQuestionDto: UpdateQuestionDto) {
-  console.log(`Updating Question: ID = ${questionId}, Exam Paper ID = ${id}`);
-  
-  const question = await this.prisma.question.findUnique({ where: { id: questionId } });
+  async updateQuestion(id: number, questionId: number, updateQuestionDto: UpdateQuestionDto) {
+    const question = await this.prisma.question.findUnique({ where: { id: questionId } });
 
-  if (!question) {
-    console.log(`Question with ID ${questionId} not found.`);
-    throw new NotFoundException('Question not found');
+    if (!question) {
+      throw new NotFoundException('Question not found');
+    }
+
+    return this.prisma.question.update({
+      where: { id: questionId },
+      data: {
+        content: updateQuestionDto.content,
+        options: updateQuestionDto.options,
+        answer: updateQuestionDto.answer || '',
+      },
+    });
   }
-
-  console.log(`Found Question: ${JSON.stringify(question)}`);
-
-  return this.prisma.question.update({
-    where: { id: questionId },
-    data: {
-      content: updateQuestionDto.content,
-      options: updateQuestionDto.options,
-      answer: updateQuestionDto.answer || '',
-    },
-  });
-}
-
-
-
 
   // Preview an exam paper along with its questions
   async previewExamPaper(id: number) {
@@ -153,6 +134,26 @@ async updateQuestion(id: number, questionId: number, updateQuestionDto: UpdateQu
     return examPaper;
   }
 
+
+// In exam-paper.service.ts
+async publishExamPaper(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { isDraft: false }, // Set isDraft to false to mark it as published
+  });
+}
+
+
+
+
   // Upload exam paper (CSV parsing)
   async uploadExamPaper(file: Express.Multer.File, uploadExamPaperDto: UploadExamPaperDto) {
     if (!file || !file.originalname.endsWith('.csv')) {
@@ -164,51 +165,58 @@ async updateQuestion(id: number, questionId: number, updateQuestionDto: UpdateQu
       throw new BadRequestException('No valid questions found in CSV');
     }
 
-    const scheduledDate = new Date(uploadExamPaperDto.scheduledDate);
-    if (isNaN(scheduledDate.getTime())) {
-      throw new BadRequestException('Invalid scheduled date format. Use YYYY-MM-DD.');
+    
+    // Parse the scheduled date and times
+    const scheduledDate = moment(uploadExamPaperDto.scheduledDate, 'YYYY-MM-DD HH:mm:ss', true);
+    if (!scheduledDate.isValid()) {
+        throw new BadRequestException('Invalid scheduled date format. Use YYYY-MM-DD HH:mm:ss.');
     }
 
-    const [startHour, startMinute, startSecond] = uploadExamPaperDto.startTime.split(':').map(Number);
-    const [endHour, endMinute, endSecond] = uploadExamPaperDto.endTime.split(':').map(Number);
+    const startTimeParts = uploadExamPaperDto.startTime.split(':').map(Number);
+    const endTimeParts = uploadExamPaperDto.endTime.split(':').map(Number);
 
-    const startTime = new Date();
-    startTime.setHours(startHour, startMinute, startSecond, 0);
-
-    const endTime = new Date();
-    endTime.setHours(endHour, endMinute, endSecond, 0);
-
-    if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+    if (startTimeParts.length !== 3 || endTimeParts.length !== 3) {
       throw new BadRequestException('Invalid time format for startTime or endTime. Use HH:MM:SS.');
     }
 
-    const examPaper = await this.prisma.addAssessment.create({
-      data: {
-        title: uploadExamPaperDto.title,
-        description: uploadExamPaperDto.description,
-        courseUnit: uploadExamPaperDto.courseUnit,
-        courseUnitCode: uploadExamPaperDto.courseUnitCode,
-        duration: uploadExamPaperDto.duration,
-        scheduledDate,
-        startTime,
-        endTime,
-        createdBy: uploadExamPaperDto.createdBy,
-        course: { connect: { id: parseInt(uploadExamPaperDto.courseId, 10) } },
-        questions: {
-          create: questions.map((question) => ({
-            content: question.content,
-            answer: question.answer || '',
-            options: question.options,
-          })),
-        },
+    const startTime = moment(scheduledDate).set({ hour: startTimeParts[0], minute: startTimeParts[1], second: startTimeParts[2] });
+    const endTime = moment(scheduledDate).set({ hour: endTimeParts[0], minute: endTimeParts[1], second: endTimeParts[2] });
+
+    if (!startTime.isValid() || !endTime.isValid()) {
+      throw new BadRequestException('Invalid time format for startTime or endTime. Use HH:MM:SS.');
+    }
+
+    // Prepare exam paper data
+    const examPaperData = {
+      title: uploadExamPaperDto.title,
+      description: uploadExamPaperDto.description,
+      courseUnit: uploadExamPaperDto.courseUnit,
+      courseUnitCode: uploadExamPaperDto.courseUnitCode,
+      duration: uploadExamPaperDto.duration,
+      scheduledDate: scheduledDate.toDate(),
+      startTime: startTime.toDate(),
+      endTime: endTime.toDate(),
+      createdBy: uploadExamPaperDto.createdBy,
+      course: { connect: { id: parseInt(uploadExamPaperDto.courseId, 10) } },
+      questions: {
+        create: questions.map((question) => ({
+          content: question.content,
+          answer: question.answer || '',
+          options: question.options,
+        })),
       },
+      isDraft: Boolean(uploadExamPaperDto.isDraft), // Ensure isDraft is a Boolean
+    };
+
+    const examPaper = await this.prisma.addAssessment.create({
+      data: examPaperData,
     });
 
     return {
       ...examPaper,
       scheduledDate: moment(examPaper.scheduledDate).format('YYYY-MM-DD HH:mm:ss'),
-      startTime: moment(examPaper.startTime).format('YYYY-MM-DD HH:mm:ss'),
-      endTime: moment(examPaper.endTime).format('YYYY-MM-DD HH:mm:ss'),
+      startTime: moment(examPaper.startTime).format('HH:mm:ss'),
+      endTime: moment(examPaper.endTime).format('HH:mm:ss'),
     };
   }
 
@@ -273,4 +281,3 @@ async updateQuestion(id: number, questionId: number, updateQuestionDto: UpdateQu
     });
   }
 }
-
