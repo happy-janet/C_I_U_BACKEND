@@ -1,43 +1,42 @@
-// import {
-//   WebSocketGateway,
-//   WebSocketServer,
-//   SubscribeMessage,
-//   OnGatewayConnection,
-//   OnGatewayDisconnect,
-// } from '@nestjs/websockets';
-// import { Server, Socket } from 'socket.io';
-// import { ChatService } from '../chat/chat.service';
-// import { CreateMessageDto } from '../dto/create-message.dto';
+import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
+import { ChatService } from './chat.service';
 
-// @WebSocketGateway(3000, {
-//   cors: {
-//     origin: '*',
-//     methods: ['GET', 'POST'],
-//     transports: ['websocket'],
-//   },
-// })
-// export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-//   @WebSocketServer()
-//   server: Server;
+@WebSocketGateway({
+  namespace: '/chat', // namespace for chat connections
+  cors: {
+    origin: '*', // adjust as needed
+  },
+})
+export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  @WebSocketServer() server: Server;
 
-//   constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService) {}
 
-//   async handleConnection(client: Socket) {
-//     console.log('Client connected: ', client.id);
-//   }
+  afterInit(server: Server) {
+    console.log('WebSocket Gateway Initialized');
+  }
 
-//   handleDisconnect(client: Socket) {
-//     console.log('Client disconnected: ', client.id);
-//   }
+  handleConnection(client: Socket) {
+    console.log(`Client connected: ${client.id}`);
+  }
 
-//   @SubscribeMessage('sendMessage')
-//   async handleSendMessage(client: Socket, payload: CreateMessageDto) {
-//     const message = await this.chatService.createMessage(payload); // Pass the entire DTO
-//     this.server.to(`chat_${payload.chatId}`).emit('newMessage', message);
-//   }
+  handleDisconnect(client: Socket) {
+    console.log(`Client disconnected: ${client.id}`);
+  }
 
-//   @SubscribeMessage('joinChat')
-//   async handleJoinChat(client: Socket, payload: { chatId: number }) {
-//     client.join(`chat_${payload.chatId}`);
-//   }
-// }
+  @SubscribeMessage('joinChat')
+  async handleJoinChat(@MessageBody() chatId: number, @ConnectedSocket() client: Socket) {
+    client.join(`chat_${chatId}`);
+    console.log(`Client ${client.id} joined chat ${chatId}`);
+  }
+
+  @SubscribeMessage('sendMessage')
+  async handleMessage(
+    @MessageBody() data: { chatId: number; senderId: number; content: string },
+    @ConnectedSocket() client: Socket
+  ) {
+    const message = await this.chatService.createMessage(data.chatId, data.senderId, data.content);
+    this.server.to(`chat_${data.chatId}`).emit('newMessage', message);
+  }
+}

@@ -46,25 +46,26 @@ model users {
   resetTokenExpiry DateTime?
   issueReports     IssueReport[] @relation("StudentReports")
   submissions      Submission[]
-  courseId         Int?          // Foreign key to courses model, nullable if needed
+  courseId         Int? // Foreign key to courses model, nullable if needed
   course           courses?      @relation(fields: [courseId], references: [id])
   courses          courses[]     @relation("UserCourses")
 
-  notifications    Notification[] // Relation to Notification model
+  notifications Notification[] // Relation to Notification model
+  chats         Chat[]         @relation("UserChats") // Many-to-many with Chat
+  messages      Message[]      @relation("UserMessages") // One-to-many with Message
 }
 
 model Notification {
-  id        Int       @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    Int
   title     String
   message   String
   eventType String
-  read      Boolean   @default(false) // Add this line to track read status
-  createdAt DateTime  @default(now())
+  read      Boolean  @default(false) // Add this line to track read status
+  createdAt DateTime @default(now())
 
-  user      users     @relation(fields: [userId], references: [id])
+  user users @relation(fields: [userId], references: [id])
 }
-
 
 model IssueReport {
   id               Int      @id @default(autoincrement())
@@ -164,3 +165,20 @@ model QuestionManual {
   assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
 }
 
+model Chat {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  participants users[]   @relation("UserChats") // Many-to-many with users
+  messages     Message[] @relation("ChatMessages") // One-to-many with Message
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  chatId    Int
+  chat      Chat     @relation("ChatMessages", fields: [chatId], references: [id], onDelete: Cascade)
+  senderId  Int // ID of the user sending the message
+  sender    users    @relation("UserMessages", fields: [senderId], references: [id])
+}

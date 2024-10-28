@@ -25,3 +25,20 @@
 //     }
 //   }
 // }
+
+// chat.controller.ts
+import { Controller, Get, Param } from '@nestjs/common';
+import { ChatService } from './chat.service';
+
+@Controller('chat')
+export class ChatController {
+  constructor(private chatService: ChatService) {}
+
+  // Get all messages for a specific chat
+  @Get(':chatId/messages')
+  async getMessages(@Param('chatId') chatId: number) {
+    return this.chatService.getMessages(chatId);
+  }
+
+  // You can add more endpoints as needed, like listing active chats
+}

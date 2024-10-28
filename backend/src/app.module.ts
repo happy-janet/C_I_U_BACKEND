@@ -18,6 +18,7 @@ import { RolesGuard } from './students/roles.guard';
 import { StudentAuthModule } from './students/auth.module';
 // import { AssessmentModule } from './students/assessement.module';
 import { NotificationModule } from './students/notification/notification.module';
+import { ChatModule } from './students/chat/chat.module';
 
 
 import { AuthModule } from './lectures/auth.module'; 
@@ -32,7 +33,7 @@ import { ManualQuestionModule } from './lectures/manualquestion.module';
 
 @Module({
   imports: [
-    // ChatModule,
+    ChatModule,
     LecturesModule,
     StudentsModule,
     AdminAuthModule,
