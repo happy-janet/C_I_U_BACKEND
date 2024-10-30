@@ -21,7 +21,7 @@ export class ManualExamPaperService {
     const startTime = new Date(data.startTime);
     const endTime = new Date(data.endTime);
 
-    return this.prisma.manualAssessment.create({
+    return this.prisma.addAssessment.create({
       data: {
         title: data.title,
         description: data.description,
