@@ -1,6 +1,6 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ChatService } from './chat.service';
+import { ChatService } from '../chat/chat.service';
 
 @WebSocketGateway({
   namespace: '/chat', // namespace for chat connections
@@ -8,7 +8,9 @@ import { ChatService } from './chat.service';
     origin: '*', // adjust as needed
   },
 })
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() server: Server;
 
   constructor(private chatService: ChatService) {}

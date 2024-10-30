@@ -15,7 +15,7 @@ export class NotificationGateway
   @WebSocketServer() server: Server;
 
   constructor(
-    @Inject(forwardRef(() => NotificationService)) // Use forwardRef here
+    @Inject(forwardRef(() => NotificationService)) 
     private readonly notificationService: NotificationService,
   ) {}
 
@@ -38,8 +38,7 @@ export class NotificationGateway
     this.server.to(`user_${userId}`).emit('newNotification', notification);
   }
 
-  // Use this method to join users to a specific room on client connection.
-  joinUserRoom(client: Socket, userId: number) {
+    joinUserRoom(client: Socket, userId: number) {
     client.join(`user_${userId}`);
   }
 }
