@@ -9,8 +9,6 @@
 */
 -- AlterTable
 ALTER TABLE "ManualAssessment" DROP COLUMN "updatedAt",
-ADD COLUMN     "isDraft" BOOLEAN NOT NULL DEFAULT true,
-ADD COLUMN     "status" TEXT NOT NULL DEFAULT 'draft',
 ALTER COLUMN "duration" SET DATA TYPE TEXT;
 
 -- AlterTable

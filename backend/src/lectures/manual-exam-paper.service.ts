@@ -57,7 +57,7 @@ export class ManualExamPaperService {
     });
 
     if (questions.length > 0) {
-      throw new ConflictException('Delete all questions within and try again☠️');
+      throw new ConflictException('Delete all questions within and try again☠');
     }
 
     // Proceed to delete the exam paper

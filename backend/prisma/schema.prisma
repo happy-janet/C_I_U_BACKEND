@@ -131,10 +131,9 @@ model ManualAssessment {
   createdAt      DateTime   @default(now())
   questions      QuestionManual[]
   course         courses    @relation(fields: [courseId], references: [id])
-
+  status         String     @default("draft") // New field to track status
+  isDraft        Boolean    @default(true) // Add this line
   submissions    Submission[]
-  status       String    @default("draft")  // Tracks the status
-  isDraft      Boolean   @default(true)     // Indicates if it's a draft
 }
 
 model QuestionManual {
@@ -143,5 +142,5 @@ model QuestionManual {
   answer       String?
   options      Json
   assessmentId Int
-  assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
+  assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
 }
