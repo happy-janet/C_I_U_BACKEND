@@ -9,26 +9,43 @@ export class ManualAssessmentService {
 
   // CREATE
   async create(data: CreatemanualAssessmentDto) {
-    const questions = data.questions?.map((question) => ({
-      questions: question.questionText, // Ensure this matches the model
+    // Validate that the courseId exists in the courses table
+    const course = await this.prisma.courses.findUnique({
+      where: { id: data.courseId },
+    });
+
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${data.courseId} not found`);
+    }
+
+    // Ensure `data.questions` is an array, or default to an empty array
+    const questionsArray = Array.isArray(data.questions) ? data.questions : [];
+
+    const questions = questionsArray.map((question) => ({
+      questions: question.questionText, // Adjust according to your Prisma model
       options: JSON.stringify(question.options), // Ensure this matches your expected format
       correctAnswer: question.correctAnswer,
-    })) || []; // Fallback to an empty array if questions is undefined
+    }));
+
+    // Parse dates and convert to ISO strings
+    const scheduledDate = new Date(data.scheduledDate);
+    const startTime = new Date(data.startTime);
+    const endTime = new Date(data.endTime);
 
     return this.prisma.manualAssessment.create({
       data: {
         title: data.title,
         description: data.description,
-        courseId: data.courseId,
+        course: { connect: { id: data.courseId } },
         courseUnit: data.courseUnit,
         courseUnitCode: data.courseUnitCode,
         duration: data.duration,
-        scheduledDate: data.scheduledDate,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        createdBy: data.createdBy,
+        scheduledDate: scheduledDate,
+        startTime: startTime,
+        endTime: endTime,
+        createdBy: String(data.createdBy),
         questions: {
-          create: questions,
+          create: questions, // Creates related questions in the QuestionManual model
         },
       },
     });
@@ -59,11 +76,16 @@ export class ManualAssessmentService {
   async update(id: number, data: UpdatemanualAssessmentDto) {
     const assessment = await this.findOne(id);
 
-    const questions = data.questions?.map((question) => ({
-      questions: question.questionText, // Ensure it matches the schema
-      options: JSON.stringify(question.options), // Ensure correct formatting
+    const questionsArray = Array.isArray(data.questions) ? data.questions : [];
+
+    const questions = questionsArray.map((question) => ({
+      questions: question.questions,
+      options: JSON.stringify(question.options),
       correctAnswer: question.correctAnswer,
-    })) || []; // Fallback to an empty array if questions is undefined
+    }));
+
+    const startTime = new Date(data.startTime);
+    const endTime = new Date(data.endTime);
 
     return this.prisma.manualAssessment.update({
       where: { id },
@@ -75,13 +97,36 @@ export class ManualAssessmentService {
         courseUnitCode: data.courseUnitCode || assessment.courseUnitCode,
         duration: data.duration || assessment.duration,
         scheduledDate: data.scheduledDate || assessment.scheduledDate,
-        startTime: data.startTime || assessment.startTime,
-        endTime: data.endTime || assessment.endTime,
+        startTime: startTime || assessment.startTime,
+        endTime: endTime || assessment.endTime,
         createdBy: data.createdBy || assessment.createdBy,
         questions: {
           create: questions,
         },
       },
+    });
+  }
+
+  async findUpcomingExams(studentId: number) {
+    const currentDate = new Date();
+    
+    return this.prisma.manualAssessment.findMany({
+      where: {
+        scheduledDate: { gte: currentDate },
+        course: {
+          students: { some: { id: studentId } },
+        },
+      },
+      select: {
+        title: true,
+        scheduledDate: true,
+        startTime: true,
+        endTime: true,
+        course: {
+          select: { courseName: true },
+        },
+      },
+      orderBy: { scheduledDate: 'asc' },
     });
   }
 

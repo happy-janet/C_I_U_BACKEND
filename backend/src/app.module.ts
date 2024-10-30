@@ -16,7 +16,7 @@ import { NotificationGateway } from './students/notification.gateway';
 import { IssueReportService } from './students/issue-report.service';
 import { RolesGuard } from './students/roles.guard';
 import { StudentAuthModule } from './students/auth.module';
-
+// import { AssessmentModule } from './students/assessement.module';
 
 
 import { AuthModule } from './lectures/auth.module'; 
@@ -39,6 +39,7 @@ import { ManualQuestionModule } from './lectures/manualquestion.module';
     AdminModule,
     PrismaModule,
     CoursesModule,
+    // AssessmentModule,
     ManualAssessmentModule, // <-- Add the ManualAssessmentModule here
      // <-- Add the CoursesModule here
     ManualQuestionModule,

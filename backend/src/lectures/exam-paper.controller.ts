@@ -14,10 +14,23 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ExamPaperService } from './exam-paper.service';
 import { UploadExamPaperDto, UpdateQuestionDto } from './dto/exam-paper.dto';
+import { Response } from 'express';
+import { Patch, Res } from '@nestjs/common';
 
 @Controller('exam-paper')
 export class ExamPaperController {
   constructor(private readonly examPaperService: ExamPaperService) {}
+
+
+  @Patch(':id/publish')
+  async publishExamPaper(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const publishedExamPaper = await this.examPaperService.publishExamPaper(parseInt(id));
+      return res.json(publishedExamPaper);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
 
    // New route to get all exam papers
    @Get()
