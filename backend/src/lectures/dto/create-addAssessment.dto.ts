@@ -1,60 +1,74 @@
-import { IsArray, IsDateString, IsInt, IsNotEmpty, IsString } from 'class-validator';
+// import { IsArray, IsDateString, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
-export class QuestionManual {
-  @IsInt()
-  id: number; // This can be optional if you're not expecting an ID for new questions
+// export class QuestionManual {
+//   @IsInt()
+//   id: number; // This can be optional if you're not expecting an ID for new questions
 
-  @IsString()
-  @IsNotEmpty()
-  questionText: string;
+//   @IsString()
+//   @IsNotEmpty()
+//   questionText: string;
 
-  @IsArray() // Assuming options is an array
-  options: string[];
+//   @IsArray() // Assuming options is an array
+//   options: string[];
 
-  @IsString()
-  @IsNotEmpty()
-  correctAnswer: string;
-  questions: any;
+//   @IsString()
+//   @IsNotEmpty()
+//   correctAnswer: string;
+//   questions: any;
 
-  // Other fields as necessary
-}
+//   // Other fields as necessary
+// }
 
-export class CreatemanualAssessmentDto {
-  @IsString()
-  @IsNotEmpty()
-  title: string;
+// export class CreatemanualAssessmentDto {
+//   @IsString()
+//   @IsNotEmpty()
+//   title: string;
 
-  @IsString()
-  @IsNotEmpty()
-  description: string;
+//   @IsString()
+//   @IsNotEmpty()
+//   description: string;
 
-  @IsInt()
-  courseId: number;
+//   @IsInt()
+//   courseId: number;
 
-  @IsString()
-  @IsNotEmpty()
-  courseUnit: string;
+//   @IsString()
+//   @IsNotEmpty()
+//   courseUnit: string;
 
-  @IsString()
-  @IsNotEmpty()
-  courseUnitCode: string;
+//   @IsString()
+//   @IsNotEmpty()
+//   courseUnitCode: string;
 
-  @IsInt()
-  duration: number; // in minutes
+//   @IsInt()
+//   duration: number; // in minutes
 
-  @IsDateString()
-  scheduledDate: Date;
+//   @IsDateString()
+//   scheduledDate: Date;
 
-  @IsDateString()
-  startTime: Date;
+//   @IsDateString()
+//   startTime: Date;
 
-  @IsDateString()
-  endTime: Date;
+//   @IsDateString()
+//   endTime: Date;
 
-  @IsString()
-  createdBy: string; // Use number for ID, not String
-  status?: string; // Optional status field
-  isDraft?: boolean; // Optional boolean pro
-  @IsArray() // Ensure this is an array
-  questions: QuestionManual[]; // This should now expect an array of QuestionManual
-}
+//   @IsString()
+  
+
+
+
+//   // @IsDateString()
+//   // createdAt?: Date;
+
+//   // @IsDateString()
+//   // updatedAt?: Date;
+
+//   questions?: QuestionManual[]; // Assuming QuestionManual is defined elsewhere
+// }
+
+// export class QuestionManual {
+//   id: number;
+//   questionText: string;
+//   options: any;
+//   correctAnswer: any;
+//   // other fields as necessary
+// }
