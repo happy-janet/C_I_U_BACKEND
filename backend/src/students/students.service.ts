@@ -195,7 +195,7 @@ async submitManualAssessment(studentId: number, assessmentId: number, studentAns
   // Iterate through each question and compare student's answers
   assessment.questions.forEach((question) => {
     const studentAnswer = studentAnswers[question.id];
-    if (studentAnswer === question.correctAnswer) {
+    if (studentAnswer === question.answer) {
       score++;  // Increase score if the student's answer is correct
     }
   });
