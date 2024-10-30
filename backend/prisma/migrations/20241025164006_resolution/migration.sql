@@ -130,10 +130,9 @@ CREATE TABLE "ManualAssessment" (
     "scheduledDate" TIMESTAMP(3) NOT NULL,
     "startTime" TIMESTAMP(3) NOT NULL,
     "endTime" TIMESTAMP(3) NOT NULL,
-    "createdBy" INTEGER NOT NULL,
+    "createdBy" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "examRules" TEXT NOT NULL,
 
     CONSTRAINT "ManualAssessment_pkey" PRIMARY KEY ("id")
 );

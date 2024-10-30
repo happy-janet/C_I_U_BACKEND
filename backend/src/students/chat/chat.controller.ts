@@ -26,7 +26,7 @@
 //   }
 // }
 
-// chat.controller.ts
+
 import { Controller, Get, Param } from '@nestjs/common';
 import { ChatService } from './chat.service';
 
@@ -40,5 +40,5 @@ export class ChatController {
     return this.chatService.getMessages(chatId);
   }
 
-  // You can add more endpoints as needed, like listing active chats
+  
 }

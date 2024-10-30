@@ -25,10 +25,11 @@ import { AuthModule } from './lectures/auth.module';
 import { AdminAuthModule } from './admin/AuthModule';
 
 
-import { ManualAssessmentModule } from './lectures/addAssessment.module';
+// import { ManualAssessmentModule } from './lectures/addAssessment.module';
 import { ExamPaperModule } from './lectures/exam-paper.module';
+import { ManualExamPaperModule } from './lectures/manual-exam-paper.module';
 import { QuestionsModule } from './lectures/questions.module'; 
-import { ManualQuestionModule } from './lectures/manualquestion.module';
+// import { ManualQuestionModule } from './lectures/manualquestion.module';
 
 
 @Module({
@@ -43,9 +44,10 @@ import { ManualQuestionModule } from './lectures/manualquestion.module';
     PrismaModule,
     CoursesModule,
     // AssessmentModule,
-    ManualAssessmentModule, // <-- Add the ManualAssessmentModule here
+    // ManualAssessmentModule, // <-- Add the ManualAssessmentModule here
      // <-- Add the CoursesModule here
-    ManualQuestionModule,
+    // ManualQuestionModule,
+    ManualExamPaperModule,
     ExamPaperModule,
     QuestionsModule,
     NotificationModule,

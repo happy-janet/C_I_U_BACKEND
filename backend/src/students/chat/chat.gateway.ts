@@ -1,11 +1,20 @@
-import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  OnGatewayInit,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from '../chat/chat.service';
 
 @WebSocketGateway({
-  namespace: '/chat', // namespace for chat connections
+  namespace: '/chat', 
   cors: {
-    origin: '*', // adjust as needed
+    origin: '*',
   },
 })
 export class ChatGateway

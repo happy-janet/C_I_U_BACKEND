@@ -7,8 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// registering a Lecturer
-
 model LecturerSignUp {
   id               Int       @id @default(autoincrement())
   first_name       String
@@ -44,27 +42,11 @@ model users {
   role             String
   resetToken       String?       @unique
   resetTokenExpiry DateTime?
+  courseId         Int
   issueReports     IssueReport[] @relation("StudentReports")
   submissions      Submission[]
-  courseId         Int? // Foreign key to courses model, nullable if needed
-  course           courses?      @relation(fields: [courseId], references: [id])
+  course           courses       @relation(fields: [courseId], references: [id])
   courses          courses[]     @relation("UserCourses")
-
-  notifications Notification[] // Relation to Notification model
-  chats         Chat[]         @relation("UserChats") // Many-to-many with Chat
-  messages      Message[]      @relation("UserMessages") // One-to-many with Message
-}
-
-model Notification {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  title     String
-  message   String
-  eventType String
-  read      Boolean  @default(false) // Add this line to track read status
-  createdAt DateTime @default(now())
-
-  user users @relation(fields: [userId], references: [id])
 }
 
 model IssueReport {
@@ -84,85 +66,83 @@ model FAQ {
 
 model Submission {
   id           Int              @id @default(autoincrement())
-  studentId    Int // Foreign key to the student (users model)
-  student      users            @relation(fields: [studentId], references: [id])
-  assessmentId Int // Foreign key to the assessment
+  studentId    Int
+  assessmentId Int
+  answers      Json
+  score        Int
+  percentage   Float
+  submittedAt  DateTime
   assessment   ManualAssessment @relation(fields: [assessmentId], references: [id])
-  answers      Json // Stores the student's answers in JSON format
-  score        Int // The score the student achieved
-  percentage   Float // Percentage of correct answers
-  submittedAt  DateTime // When the student submitted the exam
+  student      users            @relation(fields: [studentId], references: [id])
 }
 
-// Adding courses and course units
 model courses {
-  id             Int      @id @default(autoincrement())
-  facultyName    String
-  courseName     String
-  courseUnits    String[]
-  courseUnitCode String
-
-  addAssessments    addAssessment[] // Corresponding relation field to addAssessment model
-  manualAssessments ManualAssessment[] // Corresponding relation field to manualAssessment model
-
-  // New field for relation to users
-  students users[] @relation("UserCourses") // Relation to users model
-  users    users[]
+  id                Int                @id @default(autoincrement())
+  facultyName       String
+  courseName        String
+  courseUnits       String[]
+  courseUnitCode    String
+  manualAssessments ManualAssessment[]
+  addAssessments    addAssessment[]
+  users             users[]
+  students          users[]            @relation("UserCourses")
 }
 
-//caters for the uploa CSV file
 model addAssessment {
   id             Int        @id @default(autoincrement())
   title          String
   description    String
-  courseId       Int // Explicit foreign key to courses model
-  course         courses    @relation(fields: [courseId], references: [id]) // Relation to courses model
+  courseId       Int
   courseUnit     String
   courseUnitCode String
-  duration       String // in minutes
+  duration       String
   scheduledDate  DateTime
   startTime      DateTime
   endTime        DateTime
   createdBy      String
   createdAt      DateTime   @default(now())
   questions      Question[] @relation("AssessmentQuestions")
+  course         courses    @relation(fields: [courseId], references: [id])
+  status         String     @default("draft") // New field to track status
+  isDraft        Boolean    @default(true) // Add this line
 }
 
 model Question {
   id           Int           @id @default(autoincrement())
   content      String
   answer       String?
-  options      Json // Store options for multiple choice questions
-  assessmentId Int // Foreign key to addAssessment model
+  options      Json
+  assessmentId Int
   assessment   addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
 }
 
 model ManualAssessment {
-  id             Int              @id @default(autoincrement())
+ id             Int        @id @default(autoincrement())
   title          String
   description    String
   courseId       Int
-  course         courses          @relation(fields: [courseId], references: [id]) // Relation to `courses`
   courseUnit     String
   courseUnitCode String
-  duration       Int // in minutes
+  duration       String
   scheduledDate  DateTime
   startTime      DateTime
   endTime        DateTime
-  createdBy      Int
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  questions      QuestionManual[] // One-to-Many relationship to QuestionManual
-  submissions    Submission[] // Submissions related to this assessment
+  createdBy      String
+  createdAt      DateTime   @default(now())
+  questions      QuestionManual[]
+  course         courses    @relation(fields: [courseId], references: [id])
+  status         String     @default("draft") // New field to track status
+  isDraft        Boolean    @default(true) // Add this line
+  submissions    Submission[]
 }
 
 model QuestionManual {
-  id            Int              @id @default(autoincrement())
-  questions     String // Stores the question details
-  options       Json // Stores options for the questions
-  correctAnswer Json // The correct answer for the question
-  assessmentId  Int // Foreign key to ManualAssessment
-  assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
+   id           Int           @id @default(autoincrement())
+  content      String
+  answer       String?
+  options      Json
+  assessmentId Int
+  assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
 }
 
 model Chat {
