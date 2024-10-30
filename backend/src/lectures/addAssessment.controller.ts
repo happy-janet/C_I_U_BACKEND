@@ -13,13 +13,25 @@ export class ManualAssessmentController {
     return this.manualAssessmentService.create(createAddAssessmentDto);
   }
 
-  // FIND ALL
-  @Get()
-  async findAll() {
-    return this.manualAssessmentService.findAll();
+  // FIND ALL (Assessments with Questions)
+  @Get('with-questions')
+  async findAllWithQuestions() {
+    return this.manualAssessmentService.findAllWithQuestions();
   }
 
-  // FIND ONE BY ID
+  // FIND ALL (Assessments without Questions)
+  @Get('assessments-only')
+  async findAllAssessmentsOnly() {
+    return this.manualAssessmentService.findAllAssessmentsOnly();
+  }
+
+  // FIND ALL (Questions Only)
+  @Get('questions-only')
+  async findAllQuestionsOnly() {
+    return this.manualAssessmentService.findAllQuestionsOnly();
+  }
+
+  // FIND ONE BY ID (Assessment with Questions)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.manualAssessmentService.findOne(+id);
@@ -40,4 +52,3 @@ export class ManualAssessmentController {
     return this.manualAssessmentService.remove(+id);
   }
 }
-

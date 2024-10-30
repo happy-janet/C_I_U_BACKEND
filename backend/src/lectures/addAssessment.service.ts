@@ -9,7 +9,6 @@ export class ManualAssessmentService {
 
   // CREATE
   async create(data: CreatemanualAssessmentDto) {
-    // Validate that the courseId exists in the courses table
     const course = await this.prisma.courses.findUnique({
       where: { id: data.courseId },
     });
@@ -18,16 +17,13 @@ export class ManualAssessmentService {
       throw new NotFoundException(`Course with ID ${data.courseId} not found`);
     }
 
-    // Ensure `data.questions` is an array, or default to an empty array
     const questionsArray = Array.isArray(data.questions) ? data.questions : [];
-
     const questions = questionsArray.map((question) => ({
-      questions: question.questionText, // Adjust according to your Prisma model
-      options: JSON.stringify(question.options), // Ensure this matches your expected format
+      questions: question.questions,
+      options: JSON.stringify(question.options),
       correctAnswer: question.correctAnswer,
     }));
 
-    // Parse dates and convert to ISO strings
     const scheduledDate = new Date(data.scheduledDate);
     const startTime = new Date(data.startTime);
     const endTime = new Date(data.endTime);
@@ -36,29 +32,64 @@ export class ManualAssessmentService {
       data: {
         title: data.title,
         description: data.description,
-        course: { connect: { id: data.courseId } },
+        courseId: data.courseId,
         courseUnit: data.courseUnit,
         courseUnitCode: data.courseUnitCode,
         duration: data.duration,
-        scheduledDate: scheduledDate,
-        startTime: startTime,
-        endTime: endTime,
+        scheduledDate,
+        startTime,
+        endTime,
         createdBy: String(data.createdBy),
-        questions: {
-          create: questions, // Creates related questions in the QuestionManual model
-        },
+        status: data.status || 'Pending', // Add default status if not provided
+        questions: { create: questions },
       },
     });
   }
 
-  // FIND ALL
-  async findAll() {
+  // FIND ALL (Assessments with Questions)
+  async findAllWithQuestions() {
     return this.prisma.manualAssessment.findMany({
       include: { questions: true },
     });
   }
 
-  // FIND ONE BY ID
+  // FIND ALL (Assessments without Questions)
+  async findAllAssessmentsOnly() {
+    return this.prisma.manualAssessment.findMany({
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        courseId: true,
+        courseUnit: true,
+        courseUnitCode: true,
+        duration: true,
+        scheduledDate: true,
+        startTime: true,
+        endTime: true,
+        createdBy: true,
+        status: true, // Include status field
+        createdAt: true,
+        updatedAt: true,
+        questions: false, // Exclude questions field
+      },
+    });
+  }
+
+  // FIND ALL (Questions Only)
+  async findAllQuestionsOnly() {
+    return this.prisma.questionManual.findMany({
+      select: {
+        id: true,
+        questions: true,
+        options: true,
+        correctAnswer: true,
+        assessmentId: true,
+      },
+    });
+  }
+
+  // FIND ONE BY ID (Assessment with Questions)
   async findOne(id: number) {
     const assessment = await this.prisma.manualAssessment.findUnique({
       where: { id },
@@ -77,7 +108,6 @@ export class ManualAssessmentService {
     const assessment = await this.findOne(id);
 
     const questionsArray = Array.isArray(data.questions) ? data.questions : [];
-
     const questions = questionsArray.map((question) => ({
       questions: question.questions,
       options: JSON.stringify(question.options),
@@ -100,6 +130,7 @@ export class ManualAssessmentService {
         startTime: startTime || assessment.startTime,
         endTime: endTime || assessment.endTime,
         createdBy: data.createdBy || assessment.createdBy,
+        status: data.status || assessment.status, // Update status field
         questions: {
           create: questions,
         },
@@ -107,24 +138,20 @@ export class ManualAssessmentService {
     });
   }
 
+  // FIND UPCOMING EXAMS
   async findUpcomingExams(studentId: number) {
     const currentDate = new Date();
-    
     return this.prisma.manualAssessment.findMany({
       where: {
         scheduledDate: { gte: currentDate },
-        course: {
-          students: { some: { id: studentId } },
-        },
+        course: { students: { some: { id: studentId } } },
       },
       select: {
         title: true,
         scheduledDate: true,
         startTime: true,
         endTime: true,
-        course: {
-          select: { courseName: true },
-        },
+        course: { select: { courseName: true } },
       },
       orderBy: { scheduledDate: 'asc' },
     });

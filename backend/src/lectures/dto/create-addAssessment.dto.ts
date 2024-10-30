@@ -1,9 +1,25 @@
-// manual-assessment.dto.ts
+import { IsArray, IsDateString, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
-import { IsDateString, IsInt, IsNotEmpty, IsString } from 'class-validator';
+export class QuestionManual {
+  @IsInt()
+  id: number; // This can be optional if you're not expecting an ID for new questions
+
+  @IsString()
+  @IsNotEmpty()
+  questionText: string;
+
+  @IsArray() // Assuming options is an array
+  options: string[];
+
+  @IsString()
+  @IsNotEmpty()
+  correctAnswer: string;
+  questions: any;
+
+  // Other fields as necessary
+}
 
 export class CreatemanualAssessmentDto {
-
   @IsString()
   @IsNotEmpty()
   title: string;
@@ -35,27 +51,10 @@ export class CreatemanualAssessmentDto {
   @IsDateString()
   endTime: Date;
 
-  @IsInt()
-  createdBy: number;
-
   @IsString()
-  
-
-
-
-  // @IsDateString()
-  // createdAt?: Date;
-
-  // @IsDateString()
-  // updatedAt?: Date;
-
-  questions?: QuestionManual[]; // Assuming QuestionManual is defined elsewhere
-}
-
-export class QuestionManual {
-  id: number;
-  questionText: string;
-  options: any;
-  correctAnswer: any;
-  // other fields as necessary
+  createdBy: string; // Use number for ID, not String
+  status?: string; // Optional status field
+  isDraft?: boolean; // Optional boolean pro
+  @IsArray() // Ensure this is an array
+  questions: QuestionManual[]; // This should now expect an array of QuestionManual
 }
