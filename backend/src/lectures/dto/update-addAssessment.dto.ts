@@ -56,6 +56,7 @@ export class UpdatemanualAssessmentDto {
   @ValidateNested({ each: true })
   @Type(() => QuestionManualDto) // Transform and validate each question object
   questions?: QuestionManualDto[];
+  status: any;
 }
 
 export class QuestionManualDto {
