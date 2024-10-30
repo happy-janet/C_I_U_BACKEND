@@ -21,7 +21,7 @@ export class ManualExamPaperService {
     const startTime = new Date(data.startTime);
     const endTime = new Date(data.endTime);
 
-    return this.prisma.manualAssessment.create({
+    return this.prisma.addAssessment.create({
       data: {
         title: data.title,
         description: data.description,
@@ -57,7 +57,7 @@ export class ManualExamPaperService {
     });
 
     if (questions.length > 0) {
-      throw new ConflictException('Delete all questions within and try again☠️');
+      throw new ConflictException('Delete all questions within and try again☠');
     }
 
     // Proceed to delete the exam paper

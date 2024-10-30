@@ -142,7 +142,5 @@ model QuestionManual {
   answer       String?
   options      Json
   assessmentId Int
-  assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
+  assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
 }
-
-
