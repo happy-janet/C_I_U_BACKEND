@@ -29,6 +29,7 @@ import { Roles } from './role.decorator';
 import { CreateFAQDto } from  './dto/create-faq.dto'
 import { ReportIssueDto } from './dto/report-issue.dto';
 import {SubmissionDto} from './dto/SubmitAssessmentDto.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('students')
 export class StudentsController {
@@ -50,14 +51,15 @@ export class StudentsController {
   }
 
   @Post()
-  createStudent(@Body() createUserDto: CreateUserDto) {
-    return this.studentsService.create(createUserDto);
-  }
+createStudent(@Body() createUserDto: CreateUserDto) {
+  return this.studentsService.create(createUserDto);
+}
 
-  @Patch(':id')
-  updateStudent(@Param('id') id: string, @Body() updateUserDto: CreateUserDto) {
-    return this.studentsService.update(Number(id), updateUserDto);
-  }
+
+@Patch(':id')
+updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  return this.studentsService.update(Number(id), updateUserDto);
+}
 
   
 

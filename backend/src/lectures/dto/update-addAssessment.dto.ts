@@ -1,6 +1,5 @@
-// manual-assessment.dto.ts
-
-import { IsDate, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsDate, IsInt, IsNotEmpty, IsOptional, IsString, ValidateNested, IsBoolean } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class UpdatemanualAssessmentDto {
   @IsInt()
@@ -37,22 +36,36 @@ export class UpdatemanualAssessmentDto {
   @IsDate()
   endTime: Date;
 
-  @IsInt()
-  createdBy: number;
+  @IsString()
+  createdBy: string;
 
+  @IsOptional()
   @IsDate()
   createdAt?: Date;
 
+  @IsOptional()
   @IsDate()
   updatedAt?: Date;
 
-  questions?: QuestionManual[]; // Assuming QuestionManual is defined elsewhere
+  @IsBoolean()
+  @IsOptional()
+  isDraft?: boolean; // Ensure this property is included
+
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => QuestionManualDto) // Transform and validate each question object
+  questions?: QuestionManualDto[];
 }
 
-export class QuestionManual {
-  id: number;
-  questionText: string;
-  options: any;
-  correctAnswer: any;
-  // other fields as necessary
+export class QuestionManualDto {
+  @IsString()
+  @IsNotEmpty()
+  questions: string;
+
+  @IsNotEmpty()
+  options: string[]; // Since your schema stores it as JSON
+
+  @IsNotEmpty()
+  correctAnswer: string; // Since your schema stores it as JSON
 }

@@ -1,6 +1,6 @@
+// update-manual-assessment.dto.ts
 import { IsNotEmpty, IsString, IsInt, IsArray, IsDateString, IsOptional, Matches, ValidateNested } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
-import { QuestionManualDto} from './UpdateManualAssessment.dto';
 import * as moment from 'moment';
 
 // Helper class for time validation
@@ -13,101 +13,91 @@ export class TimeDto {
 }
 
 
-// DTO for creating a new manual assessment
-export class CreateManualAssessmentDto {
+//DTO for updating a manual assessment
+export class UpdateManualAssessmentDto {
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description?: string;
 
+  @IsOptional()
   @IsInt()
   @Transform(({ value }) => parseInt(value))
-  courseId: number;
+  courseId?: number;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  courseUnit: string;
+  courseUnit?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  courseUnitCode: string;
+  courseUnitCode?: string;
 
+  @IsOptional()
   @IsInt()
   @Transform(({ value }) => parseInt(value))
-  duration: number;
+  duration?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsDateString()
   @Transform(({ value }) => {
-    // Transform the date string to ISO format
+    if (!value) return undefined;
     const date = moment(value).format('YYYY-MM-DD');
     return date;
   })
-  scheduledDate: string;
+  scheduledDate?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Transform(({ value }) => {
-    // Ensure time is in HH:MM:SS format
+    if (!value) return undefined;
     const time = moment(value, 'HH:mm:ss').format('HH:mm:ss');
     if (time === 'Invalid date') {
       throw new Error('Invalid time format. Use HH:MM:SS');
     }
     return time;
   })
-  startTime: string;
+  startTime?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Transform(({ value }) => {
-    // Ensure time is in HH:MM:SS format
+    if (!value) return undefined;
     const time = moment(value, 'HH:mm:ss').format('HH:mm:ss');
     if (time === 'Invalid date') {
       throw new Error('Invalid time format. Use HH:MM:SS');
     }
     return time;
   })
-  endTime: string;
+  endTime?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  createdBy: string;
+  createdBy?: string;
 
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => QuestionManualDto)
-  questions: QuestionManualDto[];
+  questions?: QuestionManualDto[];
 }
 
 
-
-
-export class CreateQuestionManualDto {
+// Base question DTO
+export class QuestionManualDto {
   @IsString()
   @IsNotEmpty()
   questions: string;
 
+  @IsArray()
   @IsNotEmpty()
-  options: any[]; // Assuming options can be an array of strings or objects
+  options: string[];
 
   @IsNotEmpty()
-  correctAnswer: any; // Correct answer can be a string or object, based on your structure
+  correctAnswer: any;
 }
-
-
-
-export class UpdateQuestionManualDto {
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  questions?: string;
-
-  @IsOptional()
-  options?: any[];
-
-  @IsOptional()
-  correctAnswer?: any;
-}
-
-
