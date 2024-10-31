@@ -44,3 +44,15 @@ export class CreateAssessmentDto {
   @IsOptional() // This allows the property to be optional
   isDraft?: boolean; 
 }
+
+
+// Create a new interface for the frontend to use
+export interface CourseDropdownData {
+  id: number;
+  courseName: string;
+}
+
+export interface CourseUnitData {
+  courseUnits: string[];
+  courseUnitCode: string;
+}

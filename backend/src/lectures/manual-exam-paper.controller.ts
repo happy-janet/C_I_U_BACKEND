@@ -19,6 +19,16 @@ import {
     constructor(private readonly examPaperService: ManualExamPaperService) {}
   
   
+    @Get('/courses')
+    async getCourses() {
+      return this.examPaperService.getCourses();
+    }
+  
+    @Get('/courses/:courseId/units')
+    async getCourseUnits(@Param('courseId') courseId: string) {
+      return this.examPaperService.getCourseUnits(parseInt(courseId));
+    }
+
 
     @Post()
     async create(@Body() createExamPaperDto: CreateExamPaperDto) {
