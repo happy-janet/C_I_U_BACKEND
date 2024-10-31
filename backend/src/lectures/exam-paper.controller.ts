@@ -22,6 +22,17 @@ export class ExamPaperController {
   constructor(private readonly examPaperService: ExamPaperService) {}
 
 
+  @Get('/courses')
+  async getCourses() {
+    return this.examPaperService.getCourses();
+  }
+
+  @Get('/courses/:courseId/units')
+  async getCourseUnits(@Param('courseId') courseId: string) {
+    return this.examPaperService.getCourseUnits(parseInt(courseId));
+  }
+
+
   @Patch(':id/publish')
   async publishExamPaper(@Param('id') id: string, @Res() res: Response) {
     try {

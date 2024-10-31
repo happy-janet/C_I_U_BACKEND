@@ -7,6 +7,9 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
+
+  
+
   // Create a new course
   @Post()
   async create(@Body() createCourseDto: CreateCourseDto) {

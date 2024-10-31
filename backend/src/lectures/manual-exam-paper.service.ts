@@ -8,6 +8,49 @@ import * as moment from 'moment';
 export class ManualExamPaperService {
   constructor(private readonly prisma: PrismaService) {}
 
+
+
+    // Fetch all available courses
+async getCourses() {
+  return this.prisma.courses.findMany({
+    select: {
+      id: true,
+      courseName: true,
+    },
+  });
+}
+
+// Fetch course units for a selected course
+async getCourseUnits(courseId: number) {
+  try {
+    const course = await this.prisma.courses.findUnique({
+      where: { id: courseId },
+      select: {
+        courseUnits: true,
+        courseUnitCode: true
+      },
+    });
+    
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    // Transform the courseUnits array into the expected format
+    const formattedUnits = course.courseUnits.map((unitName, index) => ({
+      id: index + 1,
+      unitName: unitName,
+      unitCode: course.courseUnitCode // You might want to adjust this based on your data structure
+    }));
+
+    return {
+      courseUnits: formattedUnits
+    };
+  } catch (error) {
+    console.error('Error fetching course units:', error);
+    throw error;
+  }
+}
+
   async create(data: CreateExamPaperDto) {
 
     const questionsArray = Array.isArray(data.questions) ? data.questions : [];
