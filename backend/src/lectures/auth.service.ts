@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
-import { sendEmail } from '../students/sendEmail'; // Ensure this path is correct
+import { sendEmail } from '../students/sendEmail';
 import { generateNumericToken } from './token-generator';
 
 @Injectable()
