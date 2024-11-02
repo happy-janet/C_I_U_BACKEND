@@ -15,6 +15,7 @@ model LecturerSignUp {
   role             String
   token            String?
   tokenExpiry      DateTime?
+  password       String?   // Password field for storing hashed password
   resetToken       String?   @unique
   resetTokenExpiry DateTime?
 }
