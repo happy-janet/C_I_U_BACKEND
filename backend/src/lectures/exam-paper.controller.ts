@@ -50,6 +50,15 @@ export class ExamPaperController {
    }
   
 
+   @Get('count')
+   async countAllExamPapers(): Promise<{
+       coursesCount: number;
+       studentsCount: number;
+       upcomingExamsCount: number;
+   }> {
+       return this.examPaperService.countAllExamPapers();
+   }
+
    // Retrieve a specific question by questionId from a specific exam paper
   @Get(':id/question/:questionId')
   async getQuestionById(
