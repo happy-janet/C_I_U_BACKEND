@@ -1,5 +1,5 @@
 // src/assessments/dto/create-assessment.dto.ts
-import { IsDate, IsInt, IsString } from 'class-validator';
+import { IsDate, IsInt, IsString, IsBoolean, IsOptional } from 'class-validator';
 
 export class CreateAssessmentDto {
   @IsString()
@@ -13,7 +13,6 @@ export class CreateAssessmentDto {
 
   @IsString()
   courseUnit: string;
-
   @IsString()
   courseUnitCode: string;
 
@@ -40,4 +39,20 @@ export class CreateAssessmentDto {
 
   @IsString()
   correctAnswer: string; 
+
+  @IsBoolean()
+  @IsOptional() // This allows the property to be optional
+  isDraft?: boolean; 
+}
+
+
+// Create a new interface for the frontend to use
+export interface CourseDropdownData {
+  id: number;
+  courseName: string;
+}
+
+export interface CourseUnitData {
+  courseUnits: string[];
+  courseUnitCode: string;
 }

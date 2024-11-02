@@ -13,6 +13,5 @@ export class CreateLecturerSignUpDto {
   @IsString()
   role: string;
 
-  @IsString()
-  password: string;
+  // Removed password field since it's not part of the LecturerSignUp model
 }
