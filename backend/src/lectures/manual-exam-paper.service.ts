@@ -1,12 +1,55 @@
 import { Injectable, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UpdateQuestionDto, CreateExamPaperDto } from '../lectures/dto/create-exam-paper.dto';
+import * as moment from 'moment';
 
 
 @Injectable()
 export class ManualExamPaperService {
   constructor(private readonly prisma: PrismaService) {}
 
+
+
+    // Fetch all available courses
+async getCourses() {
+  return this.prisma.courses.findMany({
+    select: {
+      id: true,
+      courseName: true,
+    },
+  });
+}
+
+// Fetch course units for a selected course
+async getCourseUnits(courseId: number) {
+  try {
+    const course = await this.prisma.courses.findUnique({
+      where: { id: courseId },
+      select: {
+        courseUnits: true,
+        courseUnitCode: true
+      },
+    });
+    
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    // Transform the courseUnits array into the expected format
+    const formattedUnits = course.courseUnits.map((unitName, index) => ({
+      id: index + 1,
+      unitName: unitName,
+      unitCode: course.courseUnitCode // You might want to adjust this based on your data structure
+    }));
+
+    return {
+      courseUnits: formattedUnits
+    };
+  } catch (error) {
+    console.error('Error fetching course units:', error);
+    throw error;
+  }
+}
 
   async create(data: CreateExamPaperDto) {
 
@@ -17,11 +60,27 @@ export class ManualExamPaperService {
       answer: question.answer,
     }));
 
-    const scheduledDate = new Date(data.scheduledDate);
-    const startTime = new Date(data.startTime);
-    const endTime = new Date(data.endTime);
 
-    return this.prisma.manualAssessment.create({
+    const scheduledDate = moment(data.scheduledDate, 'YYYY-MM-DD HH:mm:ss', true);
+    if (!scheduledDate.isValid()) {
+        throw new BadRequestException('Invalid scheduled date format. Use YYYY-MM-DD HH:mm:ss.');
+    }
+
+    const startTimeParts = data.startTime.split(':').map(Number);
+    const endTimeParts = data.endTime.split(':').map(Number);
+
+    if (startTimeParts.length !== 3 || endTimeParts.length !== 3) {
+      throw new BadRequestException('Invalid time format for startTime or endTime. Use HH:MM:SS.');
+    }
+
+    const startTime = moment(scheduledDate).set({ hour: startTimeParts[0], minute: startTimeParts[1], second: startTimeParts[2] });
+    const endTime = moment(scheduledDate).set({ hour: endTimeParts[0], minute: endTimeParts[1], second: endTimeParts[2] });
+
+    if (!startTime.isValid() || !endTime.isValid()) {
+      throw new BadRequestException('Invalid time format for startTime or endTime. Use HH:MM:SS.');
+    }
+
+    return this.prisma.addAssessment.create({
       data: {
         title: data.title,
         description: data.description,
@@ -29,9 +88,9 @@ export class ManualExamPaperService {
         courseUnit: data.courseUnit,
         courseUnitCode: data.courseUnitCode,
         duration: data.duration,
-        scheduledDate,
-        startTime,
-        endTime,
+        scheduledDate: scheduledDate.toDate(), 
+        startTime: startTime.toDate(),         
+        endTime: endTime.toDate(),
         createdBy: String(data.createdBy),
         questions: { create: questions },
       },
