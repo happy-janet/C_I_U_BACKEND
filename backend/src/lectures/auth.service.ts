@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
-
+import { LecturesService } from './lectures.service'; 
 import { sendEmail } from '../students/sendEmail';
 import { generateNumericToken } from './token-generator';
 import * as bcrypt from 'bcrypt';
@@ -27,12 +27,32 @@ export class AuthService {
     return result;
   }
 
-  async login(user: any) {
+  async login(email: string, password: string) {
+    // Find the user by email
+    const user = await this.prisma.lecturerSignUp.findUnique({
+        where: { email },
+    });
+
+    // Check if user exists
+    if (!user) {
+        throw new UnauthorizedException('Invalid email or password');
+    }
+
+    // Check if the password matches
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid email or password');
+    }
+
+    // Create a payload for JWT
     const payload = { email: user.email, sub: user.id };
+
+    // Generate the JWT token
     return {
-      access_token: this.jwtService.sign(payload),
+        access_token: this.jwtService.sign(payload),
     };
-  }
+}
+
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
     const user = await this.prisma.lecturerSignUp.findUnique({

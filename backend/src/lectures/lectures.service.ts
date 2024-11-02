@@ -1,15 +1,20 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common'; 
+import { Injectable, NotFoundException, UnauthorizedException, BadRequestException, HttpException, HttpStatus } from '@nestjs/common'; 
 import { PrismaService } from '../../prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
 import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { sendEmail } from '../students/sendEmail';
 import { generateNumericToken } from './token-generator';
 import * as bcrypt from 'bcrypt';
 import { SetInitialPasswordDto } from './dto/set-password.dto';
+import { LoginDto } from './dto/login.dto'; // Import your DTO
 
 @Injectable()
 export class LecturesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService 
+  ) {}
 
   async create(createLecturerSignUpDto: CreateLecturerSignUpDto): Promise<{ message: string }> {
     const emailPattern = /^[a-zA-Z]+@ciu\.ac\.ug$/;
@@ -79,7 +84,25 @@ async setPassword(setupPasswordDto: SetInitialPasswordDto): Promise<{ message: s
   return { message: 'Password created successfully' };
 }
 
+async login(email: string, password: string) {
+  const user = await this.prisma.lecturerSignUp.findUnique({
+      where: { email },
+  });
 
+  if (!user) {
+      throw new UnauthorizedException('Invalid email or password');
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid email or password');
+  }
+
+  const payload = { email: user.email, sub: user.id };
+  return {
+      access_token: this.jwtService.sign(payload),
+  };
+}
   // Fetch all lecturers
   async findAll() {
     return this.prisma.lecturerSignUp.findMany();
