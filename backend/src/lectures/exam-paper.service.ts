@@ -196,6 +196,19 @@ async publishExamPaper(id: number) {
 }
 
 
+async countAllExamPapers() {
+  const coursesCount = await this.prisma.courses.count();
+  const studentsCount = await this.prisma.users.count();
+  const upcomingExamsCount = await this.prisma.addAssessment.count({
+    where: {  scheduledDate: { gt: new Date() } },
+  });
+
+  return {
+    coursesCount,
+    studentsCount,
+    upcomingExamsCount,
+  };
+}
 
 
   // Upload exam paper (CSV parsing)
