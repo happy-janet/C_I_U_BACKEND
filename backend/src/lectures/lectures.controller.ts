@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Patch, Param, Get, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Get, Delete, BadRequestException  } from '@nestjs/common';
 import { CreateLecturerSignUpDto } from './dto/create-lecturer.dto';
 import { LecturesService } from './lectures.service'; 
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { PrismaService } from '../../prisma/prisma.service';
+import { SetInitialPasswordDto } from './dto/set-password.dto';
 
 @Controller('lecturerReg')
 export class LecturesController {
@@ -15,7 +16,11 @@ export class LecturesController {
   async create(@Body() createLecturerSignUpDto: CreateLecturerSignUpDto) {
     return await this.lecturesService.create(createLecturerSignUpDto); 
   }
-
+  @Post('set-password')
+  async setPassword(@Body() setInitialPasswordDto: SetInitialPasswordDto) {
+      return this.lecturesService.setPassword(setInitialPasswordDto);
+  }
+  
   // Update user by ID
   @Patch(':id')
   async updateUser(

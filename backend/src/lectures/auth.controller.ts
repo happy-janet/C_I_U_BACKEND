@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Res, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { LoginDto } from './dto/login.dto'; // Import the DTO
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+
 
 @Controller('lecturer_auth')
 export class AuthController {
@@ -32,4 +33,5 @@ export class AuthController {
     // Ensure that the token is passed correctly in the resetPasswordDto
     return this.authService.resetPassword(resetPasswordDto);
 }
+
 }
