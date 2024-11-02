@@ -5,6 +5,7 @@ import { LecturesModule } from './lectures/lectures.module';
 import { ConfigModule } from '@nestjs/config';
 import { StudentsModule } from './students/students.module';
 import { AdminModule } from './admin/admin.module';
+import { ExamModule } from './students/exam.module';
 
 // import { AuthModule } from './lectures/auth.module'; 
 import { PrismaModule } from '../prisma/prisma.module';
@@ -40,6 +41,8 @@ import { QuestionsModule } from './lectures/questions.module';
     AdminModule,
     PrismaModule,
     CoursesModule,
+    ExamModule,
+
     // AssessmentModule,
     // ManualAssessmentModule, // <-- Add the ManualAssessmentModule here
      // <-- Add the CoursesModule here
