@@ -144,3 +144,18 @@ model QuestionManual {
   assessmentId Int
   assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
 }
+
+
+model ExamProgress {
+  id             Int    @id @default(autoincrement())
+  studentId      Int
+  examId         Int
+  currentQuestion Int
+  answers        Json
+  timeSpent      Int
+  status         String // or an enum if defined
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([studentId, examId])
+}
