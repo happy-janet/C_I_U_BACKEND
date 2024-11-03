@@ -337,4 +337,26 @@ async countAllExamPapers() {
         .on('error', (error) => reject(new BadRequestException('Error reading CSV: ' + error.message)));
     });
   }
+
+
+  async getOngoingAssessmentsCount(): Promise<number> {
+    const now = new Date();
+    return this.prisma.addAssessment.count({
+      where: {
+        isDraft: false,
+        startTime: { lte: now },
+        endTime: { gte: now },
+      },
+    });
+  }
+
+  async getUpcomingAssessmentsCount(): Promise<number> {
+    const now = new Date();
+    return this.prisma.addAssessment.count({
+      where: {
+        isDraft: false,
+        scheduledDate: { gt: now },
+      },
+    });
+  }
 }
