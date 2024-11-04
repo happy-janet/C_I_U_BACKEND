@@ -49,6 +49,24 @@ export class ExamPaperController {
      return this.examPaperService.getAllExamPapers(); // Call the service method
    }
   
+   @Get('upcoming')
+   async getUpcomingAssessmentsCount() {
+     return this.examPaperService.getUpcomingAssessmentsCount(); 
+   }
+
+   @Get('ongoing')
+   async getOngoingAssessmentsCount() {
+     return this.examPaperService.getOngoingAssessmentsCount();
+   }
+
+   @Get('count')
+   async countAllExamPapers(): Promise<{
+       coursesCount: number;
+       studentsCount: number;
+       upcomingExamsCount: number;
+   }> {
+       return this.examPaperService.countAllExamPapers();
+   }
 
    // Retrieve a specific question by questionId from a specific exam paper
   @Get(':id/question/:questionId')

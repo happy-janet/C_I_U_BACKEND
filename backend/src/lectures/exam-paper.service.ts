@@ -196,6 +196,19 @@ async publishExamPaper(id: number) {
 }
 
 
+async countAllExamPapers() {
+  const coursesCount = await this.prisma.courses.count();
+  const studentsCount = await this.prisma.users.count();
+  const upcomingExamsCount = await this.prisma.addAssessment.count({
+    where: {  scheduledDate: { gt: new Date() } },
+  });
+
+  return {
+    coursesCount,
+    studentsCount,
+    upcomingExamsCount,
+  };
+}
 
 
   // Upload exam paper (CSV parsing)
@@ -322,6 +335,28 @@ async publishExamPaper(id: number) {
         })
         .on('end', () => resolve(results))
         .on('error', (error) => reject(new BadRequestException('Error reading CSV: ' + error.message)));
+    });
+  }
+
+
+  async getOngoingAssessmentsCount(): Promise<number> {
+    const now = new Date();
+    return this.prisma.addAssessment.count({
+      where: {
+        isDraft: false,
+        startTime: { lte: now },
+        endTime: { gte: now },
+      },
+    });
+  }
+
+  async getUpcomingAssessmentsCount(): Promise<number> {
+    const now = new Date();
+    return this.prisma.addAssessment.count({
+      where: {
+        isDraft: false,
+        scheduledDate: { gt: now },
+      },
     });
   }
 }

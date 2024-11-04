@@ -133,4 +133,8 @@ async login(email: string, password: string) {
       where: { id },
     });
   }
+
+  async getLecturerCount() {
+    return this.prisma.lecturerSignUp.count();
+  }
 }

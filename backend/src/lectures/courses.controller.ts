@@ -24,6 +24,20 @@ export class CoursesController {
     return this.coursesService.updateCourse(id, updateCourseDto); // Ensure id is numeric
   }
 
+  @Get('units/count')
+  async getCourseUnitCount() {
+    const count = await this.coursesService.getCourseUnitCount(); // Await the promise
+    return { count }; // Return the count directly
+  }
+
+  
+  @Get('count')
+  async getCourseCount() {
+    return this.coursesService.getCourseCount(); // Await the promise
+    
+  }
+
+
   // Retrieve all courses
   @Get()
   async findAll() {

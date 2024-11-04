@@ -50,5 +50,24 @@ export class CoursesService {
       }
     
       
+      async getCourseCount() {
+        return this.prisma.courses.count();
+      }
+
+
+      async getCourseUnitCount() {
+        const uniqueCourseUnits = await this.prisma.courses.findMany({
+          select: {
+            courseUnits: true,
+          },
+        });
+      
+        // Flatten the array of course units and get unique values
+        const allCourseUnits = uniqueCourseUnits.flatMap(course => course.courseUnits);
+        const uniqueUnits = new Set(allCourseUnits);
+      
+        return uniqueUnits.size;
+      }
+      
     }
     
