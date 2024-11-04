@@ -1,44 +1,21 @@
-// import { Controller, Post, Body, Get, Param, InternalServerErrorException } from '@nestjs/common';
-// import { ChatService } from './chat.service';
-// import { CreateMessageDto } from '../dto/create-message.dto';
+// import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 
 // @Controller('chat')
 // export class ChatController {
 //   constructor(private chatService: ChatService) {}
 
-//   @Post('start')
-//   async startChat(@Body() body: { participants: number[] }) {
-//     return this.chatService.getOrCreateChat(body.participants);
-//   }
-
+//   // Get all messages for a specific chat
 //   @Get(':chatId/messages')
-//   async getChatMessages(@Param('chatId') chatId: number) {
-//     return this.chatService.getChatMessages(chatId);
+//   async getMessages(@Param('chatId') chatId: number) {
+//     return this.chatService.getMessages(chatId);
 //   }
 
-//   @Post('messages')
-//   async sendMessage(@Body() createMessageDto: CreateMessageDto) {
-//     try {
-//       return await this.chatService.createMessage(createMessageDto);
-//     } catch (error) {
-//       throw new InternalServerErrorException('Failed to send message');
+//   // Create a new chat between student and admin
+//   @Post()
+//   async createChat(@Body('participants') participants: number[]) {
+//     if (participants.length !== 2) {
+//       throw new BadRequestException('A chat must include exactly two participants.');
 //     }
+//     return this.chatService.createChat(participants);
 //   }
 // }
-
-
-import { Controller, Get, Param } from '@nestjs/common';
-import { ChatService } from './chat.service';
-
-@Controller('chat')
-export class ChatController {
-  constructor(private chatService: ChatService) {}
-
-  // Get all messages for a specific chat
-  @Get(':chatId/messages')
-  async getMessages(@Param('chatId') chatId: number) {
-    return this.chatService.getMessages(chatId);
-  }
-
-  
-}

@@ -49,6 +49,9 @@ model users {
   submissions      Submission[]
   course           courses       @relation(fields: [courseId], references: [id])
   courses          courses[]     @relation("UserCourses")
+  notifications Notification[] // Relation to Notification model
+  chats         Chat[]         @relation("UserChats") // Many-to-many with Chat
+  messages      Message[]      @relation("UserMessages") // One-to-many with Message
 }
 
 model IssueReport {
@@ -153,6 +156,7 @@ model Chat {
   updatedAt    DateTime  @updatedAt
   participants users[]   @relation("UserChats") // Many-to-many with users
   messages     Message[] @relation("ChatMessages") // One-to-many with Message
+  type         String    // Add a field to specify the type of chat, e.g., "admin-student"
 }
 
 model Message {
@@ -163,4 +167,16 @@ model Message {
   chat      Chat     @relation("ChatMessages", fields: [chatId], references: [id], onDelete: Cascade)
   senderId  Int // ID of the user sending the message
   sender    users    @relation("UserMessages", fields: [senderId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  message   String
+  eventType String
+  read      Boolean  @default(false) // Add this line to track read status
+  createdAt DateTime @default(now())
+
+  user users @relation(fields: [userId], references: [id])
 }

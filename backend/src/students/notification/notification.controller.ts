@@ -1,12 +1,5 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Param,
-  Patch,
-  Body,
-  BadRequestException,
-} from '@nestjs/common';
+// notification.controller.ts
+import { Controller, Post, Get, Param, Patch, Body, BadRequestException } from '@nestjs/common';
 import { NotificationService } from '../notification/notification.service';
 import { CreateNotificationDto } from '../dto/create-notification.dto';
 
@@ -14,16 +7,9 @@ import { CreateNotificationDto } from '../dto/create-notification.dto';
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @Post()
-  async createNotification(
-    @Body() createNotificationDto: CreateNotificationDto,
-  ) {
-    return this.notificationService.createNotification(
-      createNotificationDto.userId,
-      createNotificationDto.title,
-      createNotificationDto.message,
-      createNotificationDto.eventType,
-    );
+  @Post('event')
+  async notifyEvent(@Body() body: { eventType: string; title: string; message: string; courseId?: number }) {
+    return this.notificationService.notifyStudentsForEvent(body.eventType, body.title, body.message, body.courseId);
   }
 
   @Get(':userId')
@@ -32,7 +18,6 @@ export class NotificationController {
     if (isNaN(parsedUserId)) {
       throw new BadRequestException('Invalid userId');
     }
-    console.log(`Fetching notifications for userId: ${parsedUserId}`);
     return this.notificationService.getNotificationsForUser(parsedUserId);
   }
 
