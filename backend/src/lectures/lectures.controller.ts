@@ -35,6 +35,12 @@ async findAll() {
   return this.lecturesService.findAll(); 
 }
 
+@Get('count')
+async getLecturerCount() {
+  return this.lecturesService.getLecturerCount();
+  
+}
+
 // Get a single lecturer by ID
 @Get(':id')
 async findOne(@Param('id') id: string) {
