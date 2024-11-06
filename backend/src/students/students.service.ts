@@ -58,7 +58,7 @@ export class StudentsService {
         registrationNo: updateUserDto.registrationNo,
         password: updateUserDto.password,
         role: updateUserDto.role,
-        courseId: updateUserDto.courseId,  // Include courseId in the update data
+        courseId: updateUserDto.courseId,  
       },
     });
   }
@@ -147,34 +147,50 @@ async create(createUserDto: CreateUserDto) {
   async login(loginUserDto: LoginDto) {
     try {
       const { registrationNo, password } = loginUserDto;
-
+  
+      // Fetch the user and ensure the courseId is selected
       const user = await this.prisma.users.findUnique({
         where: { registrationNo },
+        select: {
+          id: true,
+          registrationNo: true,
+          password: true,
+          courseId: true,  // Ensure courseId is included here
+        },
       });
-
+  
+      // If no user is found, return an error
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
-
+  
+      // Check if password is valid
       const isPasswordValid = await bcrypt.compare(password, user.password);
-
+  
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid credentials');
       }
-
+  
+      // Create the JWT payload
       const payload = { sub: user.id, registrationNo: user.registrationNo };
       const accessToken = this.jwtService.sign(payload);
-
+  
+      // Return response with user details and courseId
       return {
         message: 'Login successful',
         access_token: accessToken,
-        user: { id: user.id, registrationNo: user.registrationNo }, // Include user details if needed
+        user: {
+          id: user.id,
+          registrationNo: user.registrationNo,
+          courseId: user.courseId,  // Return courseId here
+        },
       };
     } catch (error) {
       console.error('Error logging in:', error);
       throw new InternalServerErrorException('Error logging in');
     }
   }
+  
   // students.service.ts
 
 async submitManualAssessment(studentId: number, assessmentId: number, studentAnswers: any) {
