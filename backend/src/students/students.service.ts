@@ -144,45 +144,47 @@ async create(createUserDto: CreateUserDto) {
     }
   }
 
-  async login(loginUserDto: LoginDto) {
+  async login(loginUserDto: LoginDto) { 
     try {
       const { registrationNo, password } = loginUserDto;
   
-      // Fetch the user and ensure the courseId is selected
+      // Retrieve the user with the course data included
       const user = await this.prisma.users.findUnique({
         where: { registrationNo },
-        select: {
-          id: true,
-          registrationNo: true,
-          password: true,
-          courseId: true,  // Ensure courseId is included here
-        },
+        include: { course: true }, // Ensure to include course relationship
       });
   
-      // If no user is found, return an error
+      // Log user data to confirm the courseId and course are fetched
+      console.log("User found:", user);
+  
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
   
-      // Check if password is valid
+      // Verify the password
       const isPasswordValid = await bcrypt.compare(password, user.password);
   
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid credentials');
       }
   
-      // Create the JWT payload
       const payload = { sub: user.id, registrationNo: user.registrationNo };
       const accessToken = this.jwtService.sign(payload);
   
-      // Return response with user details and courseId
+      // Return the login response, including courseId and course details
       return {
         message: 'Login successful',
         access_token: accessToken,
         user: {
           id: user.id,
           registrationNo: user.registrationNo,
-          courseId: user.courseId,  // Return courseId here
+          courseId: user.courseId ?? null, // courseId will be null if not set
+          course: user.course ? { // Check if course data exists
+            id: user.course.id,
+            facultyName: user.course.facultyName,
+            courseName: user.course.courseName,
+            courseUnits: user.course.courseUnits,
+          } : null, // course will be null if not available
         },
       };
     } catch (error) {
@@ -190,6 +192,7 @@ async create(createUserDto: CreateUserDto) {
       throw new InternalServerErrorException('Error logging in');
     }
   }
+  
   
   // students.service.ts
 
