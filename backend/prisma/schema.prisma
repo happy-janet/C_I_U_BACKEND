@@ -107,6 +107,7 @@ model addAssessment {
   course         courses    @relation(fields: [courseId], references: [id])
   status         String     @default("draft") // New field to track status
   isDraft        Boolean    @default(true) // Add this line
+  questionBanks  QuestionBank[]
 }
 
 model Question {
@@ -116,6 +117,7 @@ model Question {
   options      Json
   assessmentId Int
   assessment   addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
+  questionBanks QuestionBank[] // Many-to-many relationship with question banks
 }
 
 model ManualAssessment {
@@ -160,4 +162,16 @@ model ExamProgress {
   updatedAt      DateTime @updatedAt
 
   @@unique([studentId, examId])
+}
+
+
+model QuestionBank {
+  id            Int            @id @default(autoincrement())
+  courseUnit    String
+  courseUnitCode String
+  assessment    addAssessment     @relation(fields: [assessmentId], references: [id])
+  assessmentId  Int
+  questions     Question[]    // Many-to-many relationship with questions
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
