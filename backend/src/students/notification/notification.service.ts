@@ -1,4 +1,3 @@
-// notification.service.ts
 import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { NotificationGateway } from '../notification/notification.gateway';
@@ -11,12 +10,7 @@ export class NotificationService {
     private readonly notificationGateway: NotificationGateway,
   ) {}
 
-  async createNotification(
-    userId: number,
-    title: string,
-    message: string,
-    eventType: string,
-  ) {
+  async createNotification(userId: number, title: string, message: string, eventType: string) {
     const user = await this.prisma.users.findUnique({ where: { id: userId } });
     if (!user) {
       throw new Error(`User with ID ${userId} does not exist`);

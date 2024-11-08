@@ -9,9 +9,7 @@ import { NotificationService } from '../notification/notification.service';
 import { Inject, forwardRef } from '@nestjs/common';
 
 @WebSocketGateway({ cors: true })
-export class NotificationGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class NotificationGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
   constructor(
@@ -38,7 +36,7 @@ export class NotificationGateway
     this.server.to(`user_${userId}`).emit('newNotification', notification);
   }
 
-    joinUserRoom(client: Socket, userId: number) {
+  joinUserRoom(client: Socket, userId: number) {
     client.join(`user_${userId}`);
   }
 }
