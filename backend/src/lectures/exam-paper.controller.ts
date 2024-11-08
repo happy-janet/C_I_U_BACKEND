@@ -186,7 +186,14 @@ async deleteQuestionById(
   return result;
 }
 
-
+@Get(':id/questions-no-answers')
+async allQuestionsNoAnswer(@Param('id') id: string) {
+  const examPaperId = parseInt(id, 10);
+  if (isNaN(examPaperId)) {
+    throw new BadRequestException('Invalid exam paper ID');
+  }
+  return this.examPaperService.allQuestionsNoAnswer(examPaperId);
+}
 
 //get all questions
   @Get(':id/questions')
@@ -197,4 +204,6 @@ async deleteQuestionById(
     }
     return this.examPaperService.previewAllQuestions(examPaperId);
   }
+
+
 }
