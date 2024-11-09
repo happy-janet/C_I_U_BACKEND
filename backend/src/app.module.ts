@@ -18,6 +18,7 @@ import { IssueReportService } from './students/issue-report.service';
 import { RolesGuard } from './students/roles.guard';
 import { StudentAuthModule } from './students/auth.module';
 // import { AssessmentModule } from './students/assessement.module';
+import { QuestionBankModule } from './lectures/question-bank.module';
 
 
 import { AuthModule } from './lectures/auth.module'; 
@@ -42,6 +43,7 @@ import { QuestionsModule } from './lectures/questions.module';
     PrismaModule,
     CoursesModule,
     ExamModule,
+    QuestionBankModule,
 
     // AssessmentModule,
     // ManualAssessmentModule, // <-- Add the ManualAssessmentModule here

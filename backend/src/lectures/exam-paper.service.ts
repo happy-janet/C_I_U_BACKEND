@@ -122,6 +122,7 @@ async getCourseUnits(courseId: number) {
       throw new NotFoundException('Question not found in this exam paper');
     }
 
+
     return question;
   }
 
@@ -298,6 +299,17 @@ async countAllExamPapers() {
     }
 
     return questions;
+  }
+
+  async allQuestionsNoAnswer(assessmentId: number) {
+    const questions = await this.prisma.question.findMany({ where: { assessmentId } });
+
+    if (!questions || questions.length === 0) {
+      throw new NotFoundException('No questions found for this assessment');
+    }
+    const questionsWithoutAnswer = questions.map(({ answer, ...questionWithoutAnswer }) => questionWithoutAnswer);
+
+      return questionsWithoutAnswer;
   }
 
   private async parseCsv(filePath: string): Promise<any[]> {
