@@ -32,3 +32,4 @@ export class NotificationController {
     return this.notificationService.markNotificationAsRead(notificationId);
   }
 }
+
