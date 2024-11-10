@@ -18,9 +18,9 @@ import { IssueReportService } from './students/issue-report.service';
 import { RolesGuard } from './students/roles.guard';
 import { StudentAuthModule } from './students/auth.module';
 // import { AssessmentModule } from './students/assessement.module';
-import { NotificationModule } from './students/notification/notification.module';
-// import { ChatModule } from './students/chat/chat.module';
+import { QuestionBankModule } from './lectures/question-bank.module';
 import { FaqModule } from './students/faq.module';
+import { NotificationModule } from './students/notification/notification.module'
 
 
 import { AuthModule } from './lectures/auth.module'; 
@@ -36,8 +36,7 @@ import { QuestionsModule } from './lectures/questions.module';
 
 @Module({
   imports: [
-    FaqModule, //added
-    // ChatModule,
+    FaqModule, 
     LecturesModule,
     StudentsModule,
     AdminAuthModule,
@@ -47,6 +46,7 @@ import { QuestionsModule } from './lectures/questions.module';
     PrismaModule,
     CoursesModule,
     ExamModule,
+    QuestionBankModule,
 
     // AssessmentModule,
     // ManualAssessmentModule, // <-- Add the ManualAssessmentModule here

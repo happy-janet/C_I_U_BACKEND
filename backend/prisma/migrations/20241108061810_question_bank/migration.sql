@@ -5,7 +5,9 @@ CREATE TABLE "LecturerSignUp" (
     "last_name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "role" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "token" TEXT,
+    "tokenExpiry" TIMESTAMP(3),
+    "password" TEXT,
     "resetToken" TEXT,
     "resetTokenExpiry" TIMESTAMP(3),
 
@@ -103,6 +105,8 @@ CREATE TABLE "addAssessment" (
     "endTime" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "status" TEXT NOT NULL DEFAULT 'draft',
+    "isDraft" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "addAssessment_pkey" PRIMARY KEY ("id")
 );
@@ -126,13 +130,14 @@ CREATE TABLE "ManualAssessment" (
     "courseId" INTEGER NOT NULL,
     "courseUnit" TEXT NOT NULL,
     "courseUnitCode" TEXT NOT NULL,
-    "duration" INTEGER NOT NULL,
+    "duration" TEXT NOT NULL,
     "scheduledDate" TIMESTAMP(3) NOT NULL,
     "startTime" TIMESTAMP(3) NOT NULL,
     "endTime" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'draft',
+    "isDraft" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "ManualAssessment_pkey" PRIMARY KEY ("id")
 );
@@ -140,16 +145,49 @@ CREATE TABLE "ManualAssessment" (
 -- CreateTable
 CREATE TABLE "QuestionManual" (
     "id" SERIAL NOT NULL,
-    "questions" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "answer" TEXT,
     "options" JSONB NOT NULL,
-    "correctAnswer" JSONB NOT NULL,
     "assessmentId" INTEGER NOT NULL,
 
     CONSTRAINT "QuestionManual_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
+CREATE TABLE "ExamProgress" (
+    "id" SERIAL NOT NULL,
+    "studentId" INTEGER NOT NULL,
+    "examId" INTEGER NOT NULL,
+    "currentQuestion" INTEGER NOT NULL,
+    "answers" JSONB NOT NULL,
+    "timeSpent" INTEGER NOT NULL,
+    "status" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ExamProgress_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "QuestionBank" (
+    "id" SERIAL NOT NULL,
+    "courseUnit" TEXT NOT NULL,
+    "courseUnitCode" TEXT NOT NULL,
+    "assessmentId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "QuestionBank_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_UserCourses" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_QuestionToQuestionBank" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
 );
@@ -176,10 +214,19 @@ CREATE UNIQUE INDEX "users_registrationNo_key" ON "users"("registrationNo");
 CREATE UNIQUE INDEX "users_resetToken_key" ON "users"("resetToken");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "ExamProgress_studentId_examId_key" ON "ExamProgress"("studentId", "examId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_UserCourses_AB_unique" ON "_UserCourses"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_UserCourses_B_index" ON "_UserCourses"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_QuestionToQuestionBank_AB_unique" ON "_QuestionToQuestionBank"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_QuestionToQuestionBank_B_index" ON "_QuestionToQuestionBank"("B");
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -188,10 +235,10 @@ ALTER TABLE "users" ADD CONSTRAINT "users_courseId_fkey" FOREIGN KEY ("courseId"
 ALTER TABLE "IssueReport" ADD CONSTRAINT "IssueReport_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Submission" ADD CONSTRAINT "Submission_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_assessmentId_fkey" FOREIGN KEY ("assessmentId") REFERENCES "ManualAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Submission" ADD CONSTRAINT "Submission_assessmentId_fkey" FOREIGN KEY ("assessmentId") REFERENCES "ManualAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "addAssessment" ADD CONSTRAINT "addAssessment_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -206,7 +253,16 @@ ALTER TABLE "ManualAssessment" ADD CONSTRAINT "ManualAssessment_courseId_fkey" F
 ALTER TABLE "QuestionManual" ADD CONSTRAINT "QuestionManual_assessmentId_fkey" FOREIGN KEY ("assessmentId") REFERENCES "ManualAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "QuestionBank" ADD CONSTRAINT "QuestionBank_assessmentId_fkey" FOREIGN KEY ("assessmentId") REFERENCES "addAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "_UserCourses" ADD CONSTRAINT "_UserCourses_A_fkey" FOREIGN KEY ("A") REFERENCES "courses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_UserCourses" ADD CONSTRAINT "_UserCourses_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_QuestionToQuestionBank" ADD CONSTRAINT "_QuestionToQuestionBank_A_fkey" FOREIGN KEY ("A") REFERENCES "Question"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_QuestionToQuestionBank" ADD CONSTRAINT "_QuestionToQuestionBank_B_fkey" FOREIGN KEY ("B") REFERENCES "QuestionBank"("id") ON DELETE CASCADE ON UPDATE CASCADE;
