@@ -83,7 +83,7 @@ model courses {
   facultyName       String
   courseName        String
   courseUnits       String[]
-  courseUnitCode    String
+  courseUnitCode    String[]
   manualAssessments ManualAssessment[]
   addAssessments    addAssessment[]
   users             users[]
