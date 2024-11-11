@@ -18,6 +18,7 @@ export class CreateExamPaperDto {
   }
   
   export class CreateQuestionDto {
+    questionNumber: number;
     content: string;
     answer: string;
     options: string; 

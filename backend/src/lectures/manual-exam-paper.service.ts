@@ -54,10 +54,11 @@ async getCourseUnits(courseId: number) {
   async create(data: CreateExamPaperDto) {
 
     const questionsArray = Array.isArray(data.questions) ? data.questions : [];
-    const questions = questionsArray.map((question) => ({
+    const questions = questionsArray.map((question,index) => ({
       content: question.content,
       options: question.options,
       answer: question.answer,
+      questionNumber: index + 1,
     }));
 
 
