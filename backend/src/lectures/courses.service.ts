@@ -32,8 +32,13 @@ export class CoursesService {
       }
       
       async findAll() {
-        return this.prisma.courses.findMany();
-      }
+  const courses = await this.prisma.courses.findMany();
+  return courses.map(course => ({
+    ...course,
+    listFieldName: Array.isArray(course.courseUnitCode) ? course.courseUnitCode : [course.courseUnitCode],
+  }));
+}
+
     
       // Fetch a single course by ID
       async findOne(id: number) {

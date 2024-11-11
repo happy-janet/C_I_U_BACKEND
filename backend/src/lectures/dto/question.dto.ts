@@ -4,6 +4,7 @@ export class CreateQuestionDto {
     options: string[];  // Array for multiple choice options
     answer?: string;
     assessmentId: number;
+    questionNumber: number;
   }
   
   export class UpdateQuestionDto {
