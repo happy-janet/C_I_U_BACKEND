@@ -197,6 +197,70 @@ async publishExamPaper(id: number) {
 }
 
 
+async unpublishExamPaper(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { isDraft: true }, // Set isDraft to false to mark it as published
+  });
+}
+
+
+async requestApproval(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { status: 'pending' },
+  });
+}
+
+async approval(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { status: 'approved' },
+  });
+}  
+
+
+async rejection(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { status: 'rejected' },
+  });
+} 
+
+
+
 async countAllExamPapers() {
   const coursesCount = await this.prisma.courses.count();
   const studentsCount = await this.prisma.users.count();
