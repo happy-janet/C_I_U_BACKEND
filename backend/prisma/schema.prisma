@@ -15,7 +15,7 @@ model LecturerSignUp {
   role             String
   token            String?
   tokenExpiry      DateTime?
-  password       String?   // Password field for storing hashed password
+  password         String?
   resetToken       String?   @unique
   resetTokenExpiry DateTime?
 }
@@ -49,6 +49,8 @@ model users {
   submissions      Submission[]
   course           courses       @relation(fields: [courseId], references: [id])
   courses          courses[]     @relation("UserCourses")
+  // Relationship with Score (opposite relation field)
+  scores           Score[]       @relation("StudentScores")
 }
 
 model IssueReport {
@@ -78,6 +80,20 @@ model Submission {
   student      users            @relation(fields: [studentId], references: [id])
 }
 
+model Score {
+  id            Int      @id @default(autoincrement())
+  examId        Int
+  userId        Int
+  score         Int
+  percentage    Float
+  timeSubmitted DateTime @default(now())
+  createdAt     DateTime @default(now())
+  student       users    @relation("StudentScores", fields: [userId], references: [id])
+  assessment    addAssessment?    @relation("AssessmentScores", fields: [examId], references: [id], map: "Score_examId_fkey") // Unique map name
+  manualAssessment ManualAssessment? @relation("ManualAssessmentScores", fields: [examId], references: [id], map: "Score_examId_manual_fkey") // Unique map name
+}
+
+
 model courses {
   id                Int                @id @default(autoincrement())
   facultyName       String
@@ -103,10 +119,12 @@ model addAssessment {
   endTime        DateTime
   createdBy      String
   createdAt      DateTime   @default(now())
+  status         String     @default("draft")
+  isDraft        Boolean    @default(true)
   questions      Question[] @relation("AssessmentQuestions")
   course         courses    @relation(fields: [courseId], references: [id])
-  status         String     @default("draft") // New field to track status
-  isDraft        Boolean    @default(true) // Add this line
+  // Relationship with Score
+  scores         Score[]    @relation("AssessmentScores")
 }
 
 model Question {
@@ -119,7 +137,7 @@ model Question {
 }
 
 model ManualAssessment {
- id             Int        @id @default(autoincrement())
+  id             Int              @id @default(autoincrement())
   title          String
   description    String
   courseId       Int
@@ -130,34 +148,35 @@ model ManualAssessment {
   startTime      DateTime
   endTime        DateTime
   createdBy      String
-  createdAt      DateTime   @default(now())
+  createdAt      DateTime         @default(now())
+  status         String           @default("draft")
+  isDraft        Boolean          @default(true)
+  course         courses          @relation(fields: [courseId], references: [id])
   questions      QuestionManual[]
-  course         courses    @relation(fields: [courseId], references: [id])
-  status         String     @default("draft") // New field to track status
-  isDraft        Boolean    @default(true) // Add this line
   submissions    Submission[]
+  // Relationship with Score
+  scores         Score[] @relation("ManualAssessmentScores")
 }
 
 model QuestionManual {
-   id           Int           @id @default(autoincrement())
+  id           Int              @id @default(autoincrement())
   content      String
   answer       String?
   options      Json
   assessmentId Int
-  assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
+  assessment   ManualAssessment @relation(fields: [assessmentId], references: [id])
 }
 
-
 model ExamProgress {
-  id             Int    @id @default(autoincrement())
-  studentId      Int
-  examId         Int
+  id              Int      @id @default(autoincrement())
+  studentId       Int
+  examId          Int
   currentQuestion Int
-  answers        Json
-  timeSpent      Int
-  status         String // or an enum if defined
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  answers         Json
+  timeSpent       Int
+  status          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@unique([studentId, examId])
 }
