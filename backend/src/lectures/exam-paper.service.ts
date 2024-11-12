@@ -208,7 +208,9 @@ async unpublishExamPaper(id: number) {
 
   return this.prisma.addAssessment.update({
     where: { id },
-    data: { isDraft: true }, // Set isDraft to false to mark it as published
+    data: { isDraft: true,
+            status: "unpublished"
+          }, // Set isDraft to false to mark it as published
   });
 }
 
