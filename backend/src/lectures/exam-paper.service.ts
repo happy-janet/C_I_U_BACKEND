@@ -122,6 +122,7 @@ async getCourseUnits(courseId: number) {
       throw new NotFoundException('Question not found in this exam paper');
     }
 
+
     return question;
   }
 
@@ -194,6 +195,70 @@ async publishExamPaper(id: number) {
     data: { isDraft: false }, // Set isDraft to false to mark it as published
   });
 }
+
+
+async unpublishExamPaper(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { isDraft: true }, // Set isDraft to false to mark it as published
+  });
+}
+
+
+async requestApproval(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { status: 'pending' },
+  });
+}
+
+async approval(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { status: 'approved' },
+  });
+}  
+
+
+async rejection(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { status: 'rejected' },
+  });
+} 
+
 
 
 async countAllExamPapers() {
@@ -298,6 +363,17 @@ async countAllExamPapers() {
     }
 
     return questions;
+  }
+
+  async allQuestionsNoAnswer(assessmentId: number) {
+    const questions = await this.prisma.question.findMany({ where: { assessmentId } });
+
+    if (!questions || questions.length === 0) {
+      throw new NotFoundException('No questions found for this assessment');
+    }
+    const questionsWithoutAnswer = questions.map(({ answer, ...questionWithoutAnswer }) => questionWithoutAnswer);
+
+      return questionsWithoutAnswer;
   }
 
   private async parseCsv(filePath: string): Promise<any[]> {

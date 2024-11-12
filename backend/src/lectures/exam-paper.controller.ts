@@ -43,6 +43,48 @@ export class ExamPaperController {
     }
   }
 
+  @Patch(':id/unpublish')
+  async unpublishExamPaper(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const unpublishedExamPaper = await this.examPaperService.unpublishExamPaper(parseInt(id));
+      return res.json(unpublishedExamPaper);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+  
+  @Patch(':id/request-approval')
+  async requestApproval(@Param('id') id: string, @Res() res: Response) {
+    try {
+      // Call the service to update the status to 'pending'
+      const approvalRequestedExamPaper = await this.examPaperService.requestApproval(parseInt(id));
+      return res.json(approvalRequestedExamPaper);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
+  @Patch(':id/approve')
+  async approval(@Param('id') id: string, @Res() res: Response) {
+    try {
+      // Call the service to update the status to 'pending'
+      const approvalExamPaper = await this.examPaperService.approval(parseInt(id));
+      return res.json(approvalExamPaper);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+ 
+  @Patch(':id/reject')
+  async rejection(@Param('id') id: string, @Res() res: Response) {
+    try {
+      // Call the service to update the status to 'pending'
+      const rejectionExamPaper = await this.examPaperService.rejection(parseInt(id));
+      return res.json(rejectionExamPaper);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
    // New route to get all exam papers
    @Get()
    async getAllExamPapers() {
@@ -186,7 +228,14 @@ async deleteQuestionById(
   return result;
 }
 
-
+@Get(':id/questions-no-answers')
+async allQuestionsNoAnswer(@Param('id') id: string) {
+  const examPaperId = parseInt(id, 10);
+  if (isNaN(examPaperId)) {
+    throw new BadRequestException('Invalid exam paper ID');
+  }
+  return this.examPaperService.allQuestionsNoAnswer(examPaperId);
+}
 
 //get all questions
   @Get(':id/questions')
@@ -197,4 +246,6 @@ async deleteQuestionById(
     }
     return this.examPaperService.previewAllQuestions(examPaperId);
   }
+
+
 }

@@ -134,6 +134,7 @@ model Question {
   options      Json
   assessmentId Int
   assessment   addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
+  questionBanks QuestionBank[] // Many-to-many relationship with question banks
 }
 
 model ManualAssessment {
