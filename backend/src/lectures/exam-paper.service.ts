@@ -72,7 +72,7 @@ async getCourseUnits(courseId: number) {
     });
 
     if (questions.length > 0) {
-      throw new ConflictException('Delete all questions within and try again☠️');
+      throw new ConflictException('Delete all questions within and try again☠');
     }
 
     // Proceed to delete the exam paper
@@ -210,7 +210,7 @@ async unpublishExamPaper(id: number) {
     where: { id },
     data: { isDraft: true,
             status: "unpublished"
-          }, // Set isDraft to false to mark it as published
+          }, 
   });
 }
 
@@ -323,10 +323,11 @@ async countAllExamPapers() {
       createdBy: uploadExamPaperDto.createdBy,
       course: { connect: { id: parseInt(uploadExamPaperDto.courseId, 10) } },
       questions: {
-        create: questions.map((question) => ({
+        create: questions.map((question,index) => ({
           content: question.content,
           answer: question.answer || '',
           options: question.options,
+          questionNumber: index + 1,
         })),
       },
       isDraft: Boolean(uploadExamPaperDto.isDraft), // Ensure isDraft is a Boolean
@@ -394,10 +395,10 @@ async countAllExamPapers() {
               .trim();
 
             if (!combinedOptions.startsWith('[')) {
-              combinedOptions = `[${combinedOptions}`;
+              combinedOptions = `[${combinedOptions}]`;
             }
             if (!combinedOptions.endsWith(']')) {
-              combinedOptions = `${combinedOptions}]`;
+              combinedOptions = `[${combinedOptions}]`;
             }
 
             const parsedOptions = JSON.parse(combinedOptions);
