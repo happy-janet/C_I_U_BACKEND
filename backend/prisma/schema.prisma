@@ -113,7 +113,8 @@ model addAssessment {
 }
 
 model Question {
-  id           Int           @id @default(autoincrement())
+  id           Int    @id @default(autoincrement())
+  questionNumber Int      
   content      String
   answer       String?
   options      Json

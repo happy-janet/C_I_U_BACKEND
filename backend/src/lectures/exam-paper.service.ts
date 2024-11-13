@@ -38,7 +38,7 @@ async getCourseUnits(courseId: number) {
     const formattedUnits = course.courseUnits.map((unitName, index) => ({
       id: index + 1,
       unitName: unitName,
-      unitCode: course.courseUnitCode // You might want to adjust this based on your data structure
+      unitCode: course.courseUnitCode[index] || null // You might want to adjust this based on your data structure
     }));
 
     return {
@@ -72,7 +72,7 @@ async getCourseUnits(courseId: number) {
     });
 
     if (questions.length > 0) {
-      throw new ConflictException('Delete all questions within and try again☠️');
+      throw new ConflictException('Delete all questions within and try again☠');
     }
 
     // Proceed to delete the exam paper
@@ -208,7 +208,9 @@ async unpublishExamPaper(id: number) {
 
   return this.prisma.addAssessment.update({
     where: { id },
-    data: { isDraft: true }, // Set isDraft to false to mark it as published
+    data: { isDraft: true,
+            status: "unpublished"
+          }, 
   });
 }
 
@@ -321,10 +323,11 @@ async countAllExamPapers() {
       createdBy: uploadExamPaperDto.createdBy,
       course: { connect: { id: parseInt(uploadExamPaperDto.courseId, 10) } },
       questions: {
-        create: questions.map((question) => ({
+        create: questions.map((question,index) => ({
           content: question.content,
           answer: question.answer || '',
           options: question.options,
+          questionNumber: index + 1,
         })),
       },
       isDraft: Boolean(uploadExamPaperDto.isDraft), // Ensure isDraft is a Boolean
@@ -392,10 +395,10 @@ async countAllExamPapers() {
               .trim();
 
             if (!combinedOptions.startsWith('[')) {
-              combinedOptions = `[${combinedOptions}`;
+              combinedOptions = `[${combinedOptions}]`;
             }
             if (!combinedOptions.endsWith(']')) {
-              combinedOptions = `${combinedOptions}]`;
+              combinedOptions = `[${combinedOptions}]`;
             }
 
             const parsedOptions = JSON.parse(combinedOptions);
