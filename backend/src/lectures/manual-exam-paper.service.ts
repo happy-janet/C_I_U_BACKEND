@@ -40,7 +40,7 @@ async getCourseUnits(courseId: number) {
     const formattedUnits = course.courseUnits.map((unitName, index) => ({
       id: index + 1,
       unitName: unitName,
-      unitCode: course.courseUnitCode // You might want to adjust this based on your data structure
+      unitCode: course.courseUnitCode[index] || null// You might want to adjust this based on your data structure
     }));
 
     return {
@@ -55,10 +55,11 @@ async getCourseUnits(courseId: number) {
   async create(data: CreateExamPaperDto) {
 
     const questionsArray = Array.isArray(data.questions) ? data.questions : [];
-    const questions = questionsArray.map((question) => ({
+    const questions = questionsArray.map((question,index) => ({
       content: question.content,
       options: question.options,
       answer: question.answer,
+      questionNumber: index + 1,
     }));
 
 

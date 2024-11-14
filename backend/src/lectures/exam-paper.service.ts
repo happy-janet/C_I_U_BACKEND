@@ -38,7 +38,7 @@ async getCourseUnits(courseId: number) {
     const formattedUnits = course.courseUnits.map((unitName, index) => ({
       id: index + 1,
       unitName: unitName,
-      unitCode: course.courseUnitCode // You might want to adjust this based on your data structure
+      unitCode: course.courseUnitCode[index] || null // You might want to adjust this based on your data structure
     }));
 
     return {
@@ -72,7 +72,7 @@ async getCourseUnits(courseId: number) {
     });
 
     if (questions.length > 0) {
-      throw new ConflictException('Delete all questions within and try again☠️');
+      throw new ConflictException('Delete all questions within and try again☠');
     }
 
     // Proceed to delete the exam paper
@@ -197,6 +197,72 @@ async publishExamPaper(id: number) {
 }
 
 
+async unpublishExamPaper(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { isDraft: true,
+            status: "unpublished"
+          }, 
+  });
+}
+
+
+async requestApproval(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { status: 'pending' },
+  });
+}
+
+async approval(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { status: 'approved' },
+  });
+}  
+
+
+async rejection(id: number) {
+  const examPaper = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaper) {
+    throw new NotFoundException('Exam paper not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { status: 'rejected' },
+  });
+} 
+
+
+
 async countAllExamPapers() {
   const coursesCount = await this.prisma.courses.count();
   const studentsCount = await this.prisma.users.count();
@@ -268,10 +334,11 @@ async countAllExamPapers() {
       createdBy: uploadExamPaperDto.createdBy,
       course: { connect: { id: parseInt(uploadExamPaperDto.courseId, 10) } },
       questions: {
-        create: questions.map((question) => ({
+        create: questions.map((question,index) => ({
           content: question.content,
           answer: question.answer || '',
           options: question.options,
+          questionNumber: index + 1,
         })),
       },
       isDraft: Boolean(uploadExamPaperDto.isDraft), // Ensure isDraft is a Boolean
@@ -339,10 +406,10 @@ async countAllExamPapers() {
               .trim();
 
             if (!combinedOptions.startsWith('[')) {
-              combinedOptions = `[${combinedOptions}`;
+              combinedOptions = `[${combinedOptions}]`;
             }
             if (!combinedOptions.endsWith(']')) {
-              combinedOptions = `${combinedOptions}]`;
+              combinedOptions = `[${combinedOptions}]`;
             }
 
             const parsedOptions = JSON.parse(combinedOptions);
