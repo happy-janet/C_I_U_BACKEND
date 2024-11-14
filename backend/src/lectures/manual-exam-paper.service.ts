@@ -4,6 +4,7 @@ import { UpdateQuestionDto, CreateExamPaperDto } from '../lectures/dto/create-ex
 import * as moment from 'moment';
 
 
+
 @Injectable()
 export class ManualExamPaperService {
   constructor(private readonly prisma: PrismaService) {}
@@ -39,7 +40,7 @@ async getCourseUnits(courseId: number) {
     const formattedUnits = course.courseUnits.map((unitName, index) => ({
       id: index + 1,
       unitName: unitName,
-      unitCode: course.courseUnitCode // You might want to adjust this based on your data structure
+      unitCode: course.courseUnitCode[index] || null// You might want to adjust this based on your data structure
     }));
 
     return {
@@ -54,10 +55,11 @@ async getCourseUnits(courseId: number) {
   async create(data: CreateExamPaperDto) {
 
     const questionsArray = Array.isArray(data.questions) ? data.questions : [];
-    const questions = questionsArray.map((question) => ({
+    const questions = questionsArray.map((question,index) => ({
       content: question.content,
       options: question.options,
       answer: question.answer,
+      questionNumber: index + 1,
     }));
 
 
@@ -67,18 +69,27 @@ async getCourseUnits(courseId: number) {
     }
 
     const startTimeParts = data.startTime.split(':').map(Number);
-    const endTimeParts = data.endTime.split(':').map(Number);
-
-    if (startTimeParts.length !== 3 || endTimeParts.length !== 3) {
-      throw new BadRequestException('Invalid time format for startTime or endTime. Use HH:MM:SS.');
+    if (startTimeParts.length !== 3) {
+      throw new BadRequestException('Invalid time format for startTime. Use HH:MM:SS.');
     }
 
     const startTime = moment(scheduledDate).set({ hour: startTimeParts[0], minute: startTimeParts[1], second: startTimeParts[2] });
-    const endTime = moment(scheduledDate).set({ hour: endTimeParts[0], minute: endTimeParts[1], second: endTimeParts[2] });
 
-    if (!startTime.isValid() || !endTime.isValid()) {
-      throw new BadRequestException('Invalid time format for startTime or endTime. Use HH:MM:SS.');
+    if (!startTime.isValid()) {
+      throw new BadRequestException('Invalid time format for startTime. Use HH:MM:SS.');
     }
+
+    const durationParts = data.duration.split(':').map(Number);
+    if (durationParts.length !== 2) {
+      throw new BadRequestException('Invalid duration format. Use HH:MM.');
+    }
+  
+    const [durationHours, durationMinutes] = durationParts;
+  
+    // Calculate endTime based on startTime and parsed duration
+    const endTime = moment(startTime)
+      .add(durationHours, 'hours')
+      .add(durationMinutes, 'minutes');
 
     return this.prisma.addAssessment.create({
       data: {
