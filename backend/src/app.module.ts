@@ -7,6 +7,11 @@ import { StudentsModule } from './students/students.module';
 import { AdminModule } from './admin/admin.module';
 import { ExamModule } from './students/exam.module';
 
+
+// proctoring livestream
+import { SignalingModule } from './signaling/signaling.module';
+
+
 // import { AuthModule } from './lectures/auth.module'; 
 import { PrismaModule } from '../prisma/prisma.module';
 import { CoursesModule } from './lectures/courses.module'; 
@@ -44,6 +49,9 @@ import { QuestionsModule } from './lectures/questions.module';
     CoursesModule,
     ExamModule,
     QuestionBankModule,
+
+    //proctoring livestream
+    SignalingModule,
 
     // AssessmentModule,
     // ManualAssessmentModule, // <-- Add the ManualAssessmentModule here
