@@ -128,12 +128,13 @@ model addAssessment {
 }
 
 model Question {
-  id            Int            @id @default(autoincrement())
-  content       String
-  answer        String?
-  options       Json
-  assessmentId  Int
-  assessment    addAssessment  @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
+  id           Int    @id @default(autoincrement())
+  questionNumber Int      
+  content      String
+  answer       String?
+  options      Json
+  assessmentId Int
+  assessment   addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
   questionBanks QuestionBank[] // Many-to-many relationship with question banks
 }
 
