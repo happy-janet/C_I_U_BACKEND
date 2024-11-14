@@ -231,20 +231,31 @@ async countAllExamPapers() {
     }
 
     const startTimeParts = uploadExamPaperDto.startTime.split(':').map(Number);
-    const endTimeParts = uploadExamPaperDto.endTime.split(':').map(Number);
-
-    if (startTimeParts.length !== 3 || endTimeParts.length !== 3) {
-      throw new BadRequestException('Invalid time format for startTime or endTime. Use HH:MM:SS.');
+    if (startTimeParts.length !== 3) {
+      throw new BadRequestException('Invalid time format for startTime. Use HH:MM:SS.');
     }
 
     const startTime = moment(scheduledDate).set({ hour: startTimeParts[0], minute: startTimeParts[1], second: startTimeParts[2] });
-    const endTime = moment(scheduledDate).set({ hour: endTimeParts[0], minute: endTimeParts[1], second: endTimeParts[2] });
 
-    if (!startTime.isValid() || !endTime.isValid()) {
-      throw new BadRequestException('Invalid time format for startTime or endTime. Use HH:MM:SS.');
+    if (!startTime.isValid()) {
+      throw new BadRequestException('Invalid time format for startTime. Use HH:MM:SS.');
     }
 
+    const durationParts = uploadExamPaperDto.duration.split(':').map(Number);
+    if (durationParts.length !== 2) {
+      throw new BadRequestException('Invalid duration format. Use HH:MM.');
+    }
+  
+    const [durationHours, durationMinutes] = durationParts;
+  
+    // Calculate endTime based on startTime and parsed duration
+    const endTime = moment(startTime)
+      .add(durationHours, 'hours')
+      .add(durationMinutes, 'minutes')
     // Prepare exam paper data
+
+
+    
     const examPaperData = {
       title: uploadExamPaperDto.title,
       description: uploadExamPaperDto.description,

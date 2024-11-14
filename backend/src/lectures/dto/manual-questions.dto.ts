@@ -3,6 +3,7 @@ import { Type, Transform } from 'class-transformer';
 import { QuestionManualDto} from './UpdateManualAssessment.dto';
 import * as moment from 'moment';
 
+
 // Helper class for time validation
 export class TimeDto {
   @IsNotEmpty()
@@ -48,27 +49,27 @@ export class CreateManualAssessmentDto {
   })
   scheduledDate: string;
 
-  @IsNotEmpty()
-  @Transform(({ value }) => {
-    // Ensure time is in HH:MM:SS format
-    const time = moment(value, 'HH:mm:ss').format('HH:mm:ss');
-    if (time === 'Invalid date') {
-      throw new Error('Invalid time format. Use HH:MM:SS');
-    }
-    return time;
-  })
-  startTime: string;
+  // @IsNotEmpty()
+  // @Transform(({ value }) => {
+  //   // Ensure time is in HH:MM:SS format
+  //   const time = moment(value, 'HH:mm:ss').format('HH:mm:ss');
+  //   if (time === 'Invalid date') {
+  //     throw new Error('Invalid time format. Use HH:MM:SS');
+  //   }
+  //   return time;
+  // })
+  // startTime: string;
 
-  @IsNotEmpty()
-  @Transform(({ value }) => {
-    // Ensure time is in HH:MM:SS format
-    const time = moment(value, 'HH:mm:ss').format('HH:mm:ss');
-    if (time === 'Invalid date') {
-      throw new Error('Invalid time format. Use HH:MM:SS');
-    }
-    return time;
-  })
-  endTime: string;
+  // @IsNotEmpty()
+  // @Transform(({ value }) => {
+  //   // Ensure time is in HH:MM:SS format
+  //   const time = moment(value, 'HH:mm:ss').format('HH:mm:ss');
+  //   if (time === 'Invalid date') {
+  //     throw new Error('Invalid time format. Use HH:MM:SS');
+  //   }
+  //   return time;
+  // })
+  // endTime: string;
 
   @IsString()
   @IsNotEmpty()
