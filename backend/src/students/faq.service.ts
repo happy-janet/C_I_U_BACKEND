@@ -82,34 +82,3 @@ export class FAQService {
 }
 
 
-//   async findUpcomingExams(studentId: number) {
-//     const currentDate = new Date();
-    
-//     const studentExists = await this.prisma.users.findUnique({
-//         where: { id: studentId },
-//     });
-
-//     if (!studentExists) {
-//         return []; // Return an empty array if the student doesn't exist
-//     }
-
-//     return this.prisma.manualAssessment.findMany({
-//         where: {
-//             scheduledDate: { gte: currentDate },
-//             course: {
-//                 students: { some: { id: studentId } },
-//             },
-//         },
-//         select: {
-//             title: true,
-//             scheduledDate: true,
-//             startTime: true,
-//             endTime: true,
-//             course: {
-//                 select: { courseName: true },
-//             },
-//         },
-//         orderBy: { scheduledDate: 'asc' },
-//     });
-// }
-// }

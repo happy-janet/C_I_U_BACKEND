@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { StudentsModule } from './students/students.module';
 import { AdminModule } from './admin/admin.module';
 import { ExamModule } from './students/exam.module';
-
+import { ScoresModule } from './students/scores.module';
 // import { AuthModule } from './lectures/auth.module'; 
 import { PrismaModule } from '../prisma/prisma.module';
 import { CoursesModule } from './lectures/courses.module'; 
@@ -46,6 +46,7 @@ import { QuestionsModule } from './lectures/questions.module';
     PrismaModule,
     CoursesModule,
     ExamModule,
+    ScoresModule,
     QuestionBankModule,
 
     // AssessmentModule,
@@ -63,7 +64,7 @@ import { QuestionsModule } from './lectures/questions.module';
       isGlobal: true, // Makes the config globally available
     }),
   ],
-  controllers: [AppController,IssueReportController, FAQController],
+  controllers: [AppController,IssueReportController, FAQController,],
   providers: [AppService,IssueReportService, FAQService, NotificationGateway,RolesGuard],
 })
 export class AppModule {}

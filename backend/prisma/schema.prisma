@@ -15,7 +15,7 @@ model LecturerSignUp {
   role             String
   token            String?
   tokenExpiry      DateTime?
-  password       String?   // Password field for storing hashed password
+  password         String?
   resetToken       String?   @unique
   resetTokenExpiry DateTime?
 }
@@ -49,8 +49,8 @@ model users {
   submissions      Submission[]
   course           courses       @relation(fields: [courseId], references: [id])
   courses          courses[]     @relation("UserCourses")
-  notifications Notification[] // Relation to Notification model
-  
+  // Relationship with Score (opposite relation field)
+  scores           Score[]       @relation("StudentScores")
 }
 
 model IssueReport {
@@ -80,6 +80,19 @@ model Submission {
   student      users            @relation(fields: [studentId], references: [id])
 }
 
+model Score {
+  id               Int               @id @default(autoincrement())
+  score            Int
+  percentage       Float
+  userId           Int
+  examId           Int? // Optional if it can be null for either type
+  student          users             @relation(fields: [userId], references: [id], name: "StudentScores")
+  assessment       addAssessment?    @relation(fields: [examId], references: [id], name: "AssessmentScores", map: "Score_examId_assessment_fkey")
+  manualAssessment ManualAssessment? @relation(fields: [examId], references: [id], name: "ManualAssessmentScores", map: "Score_examId_manualAssessment_fkey")
+
+  @@unique([examId, userId]) // Ensure one exam score per user
+}
+
 model courses {
   id                Int                @id @default(autoincrement())
   facultyName       String
@@ -93,7 +106,7 @@ model courses {
 }
 
 model addAssessment {
-  id             Int        @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   title          String
   description    String
   courseId       Int
@@ -104,11 +117,13 @@ model addAssessment {
   startTime      DateTime
   endTime        DateTime
   createdBy      String
-  createdAt      DateTime   @default(now())
-  questions      Question[] @relation("AssessmentQuestions")
-  course         courses    @relation(fields: [courseId], references: [id])
-  status         String     @default("draft") // New field to track status
-  isDraft        Boolean    @default(true) // Add this line
+  createdAt      DateTime       @default(now())
+  status         String         @default("draft")
+  isDraft        Boolean        @default(true)
+  questions      Question[]     @relation("AssessmentQuestions")
+  course         courses        @relation(fields: [courseId], references: [id])
+  // Relationship with Score
+  scores         Score[]        @relation("AssessmentScores")
   questionBanks  QuestionBank[]
 }
 
@@ -124,7 +139,7 @@ model Question {
 }
 
 model ManualAssessment {
- id             Int        @id @default(autoincrement())
+  id             Int              @id @default(autoincrement())
   title          String
   description    String
   courseId       Int
@@ -135,58 +150,46 @@ model ManualAssessment {
   startTime      DateTime
   endTime        DateTime
   createdBy      String
-  createdAt      DateTime   @default(now())
+  createdAt      DateTime         @default(now())
+  status         String           @default("draft")
+  isDraft        Boolean          @default(true)
+  course         courses          @relation(fields: [courseId], references: [id])
   questions      QuestionManual[]
-  course         courses    @relation(fields: [courseId], references: [id])
-  status         String     @default("draft") // New field to track status
-  isDraft        Boolean    @default(true) // Add this line
   submissions    Submission[]
+  // Relationship with Score
+  scores         Score[]          @relation("ManualAssessmentScores")
 }
 
 model QuestionManual {
-   id           Int           @id @default(autoincrement())
+  id           Int              @id @default(autoincrement())
   content      String
   answer       String?
   options      Json
   assessmentId Int
-  assessment    ManualAssessment @relation(fields: [assessmentId], references: [id])
+  assessment   ManualAssessment @relation(fields: [assessmentId], references: [id])
 }
 
-
 model ExamProgress {
-  id             Int    @id @default(autoincrement())
-  studentId      Int
-  examId         Int
+  id              Int      @id @default(autoincrement())
+  studentId       Int
+  examId          Int
   currentQuestion Int
-  answers        Json
-  timeSpent      Int
-  status         String // or an enum if defined
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  answers         Json
+  timeSpent       Int
+  status          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@unique([studentId, examId])
 }
 
-
 model QuestionBank {
-  id            Int            @id @default(autoincrement())
-  courseUnit    String
+  id             Int           @id @default(autoincrement())
+  courseUnit     String
   courseUnitCode String
-  assessment    addAssessment     @relation(fields: [assessmentId], references: [id])
-  assessmentId  Int
-  questions     Question[]    // Many-to-many relationship with questions
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-}
-
-model Notification {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  title     String
-  message   String
-  eventType String
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  user      users @relation(fields: [userId], references: [id])
+  assessment     addAssessment @relation(fields: [assessmentId], references: [id])
+  assessmentId   Int
+  questions      Question[] // Many-to-many relationship with questions
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
