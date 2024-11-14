@@ -1,9 +1,12 @@
+// scores.module.ts
+
 import { Module } from '@nestjs/common';
-import { ScoreController } from './scores.controller';
-import { ScoreService } from './scores.service';
+import { ScoresService } from './scores.service';
+import { ScoresController } from './scores.controller';
 import { PrismaService } from '../../prisma/prisma.service';
+
 @Module({
-  controllers: [ScoreController],
-  providers: [ScoreService, PrismaService],  // Provide the PrismaService and ScoresService
+  controllers: [ScoresController],
+  providers: [ScoresService, PrismaService],
 })
 export class ScoresModule {}

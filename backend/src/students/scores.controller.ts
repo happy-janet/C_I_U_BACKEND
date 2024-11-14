@@ -1,14 +1,27 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { ScoreService } from './scores.service';
+// scores.controller.ts
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { ScoresService } from './scores.service';
 import { CreateScoreDto } from './dto/create-score.dto';
 
 @Controller('scores')
-export class ScoreController {
-  constructor(private scoreService: ScoreService) {}
+export class ScoresController {
+  constructor(private readonly scoresService: ScoresService) {}
 
-  // Endpoint to submit a score
-  @Post('submit')
-  async createScore(@Body() createScoreDto: CreateScoreDto) {
-    return this.scoreService.createScore(createScoreDto);
+  // Endpoint to add a new score
+  @Post('add')
+  async addScore(@Body() createScoreDto: CreateScoreDto) {
+    return this.scoresService.addScore(createScoreDto);
   }
+
+  // Endpoint to get scores by student ID
+  @Get('student/:userId')
+  async getScoresByStudent(@Param('userId') userId: string) {
+    return this.scoresService.getScoresByStudent(parseInt(userId));
+  }
+
+  // // Endpoint to get scores by assessment ID
+  // @Get('assessment/:examId')
+  // async getScoresByAssessment(@Param('examId') examId: string) {
+  //   return this.scoresService.getScoresByAssessment(parseInt(examId));
+  // }
 }
