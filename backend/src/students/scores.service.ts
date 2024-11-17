@@ -1,6 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateScoreDto } from './dto/create-score.dto'; // Define the DTO for creating a score
+import { Score } from '@prisma/client';  // Import the Score type from Prisma
+
 
 @Injectable()
 export class ScoresService {
@@ -105,3 +107,4 @@ export class ScoresService {
   }
   
 }
+

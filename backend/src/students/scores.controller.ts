@@ -2,6 +2,8 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ScoresService } from './scores.service';
 import { CreateScoreDto } from './dto/create-score.dto';
+import { Score } from '@prisma/client';  // Import the Score type from Prisma
+
 
 @Controller('scores')
 export class ScoresController {
@@ -25,3 +27,4 @@ export class ScoresController {
   //   return this.scoresService.getScoresByAssessment(parseInt(examId));
   // }
 }
+
