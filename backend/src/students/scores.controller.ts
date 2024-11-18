@@ -1,27 +1,49 @@
-// scores.controller.ts
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete,ParseIntPipe } from '@nestjs/common';
 import { ScoresService } from './scores.service';
-import { CreateScoreDto } from './dto/create-score.dto';
+import { Score } from '@prisma/client';
 
 @Controller('scores')
 export class ScoresController {
   constructor(private readonly scoresService: ScoresService) {}
 
-  // Endpoint to add a new score
-  @Post('add')
-  async addScore(@Body() createScoreDto: CreateScoreDto) {
-    return this.scoresService.addScore(createScoreDto);
+  // Create a new score
+  @Post()
+  async createScore(
+    @Body() body: { score: number; percentage: number; userId: number; examId?: number; assessmentType?: 'add' | 'manual' },
+  ): Promise<Score> {
+    const { score, percentage, userId, examId, assessmentType } = body;
+    return this.scoresService.createScore(score, percentage, userId, examId, assessmentType);
   }
 
-  // Endpoint to get scores by student ID
-  @Get('student/:userId')
-  async getScoresByStudent(@Param('userId') userId: string) {
-    return this.scoresService.getScoresByStudent(parseInt(userId));
+  // Get all scores
+  @Get()
+  async getAllScores(): Promise<Score[]> {
+    return this.scoresService.getAllScores();
   }
 
-  // // Endpoint to get scores by assessment ID
-  // @Get('assessment/:examId')
-  // async getScoresByAssessment(@Param('examId') examId: string) {
-  //   return this.scoresService.getScoresByAssessment(parseInt(examId));
-  // }
+  // Get scores by userId (for a specific student)
+  // Get scores by userId (for a specific student)
+  @Get('user/:userId')
+  async getScoresByUserId(
+    @Param('userId', ParseIntPipe) userId: number, // Ensures userId is parsed as a number
+  ): Promise<Score[]> {
+    return this.scoresService.getScoresByUserId(userId);
+  }
+
+
+  // Update an existing score
+  @Put(':scoreId')
+  async updateScore(
+    @Param('scoreId') scoreId: number,
+    @Body() body: { score: number; percentage: number; examId?: number },
+  ): Promise<Score> {
+    const { score, percentage, examId } = body;
+    return this.scoresService.updateScore(scoreId, score, percentage, examId);
+  }
+
+  // Delete a score
+  @Delete(':scoreId')
+  async deleteScore(@Param('scoreId') scoreId: number): Promise<Score> {
+    return this.scoresService.deleteScore(scoreId);
+  }
 }
