@@ -24,7 +24,7 @@ export class IssueReportService {
       throw new Error('Student not found');
     }
 
-    // Create the issue report
+    // Create the issue report in the database
     const issueReport = await this.prisma.issueReport.create({
       data: {
         regno,
@@ -34,7 +34,7 @@ export class IssueReportService {
       },
     });
 
-    // Trigger notification to all connected admins
+    // Notify connected admins
     this.notificationGateway.notifyAdmin(regno, issueDescription);
 
     return issueReport;
