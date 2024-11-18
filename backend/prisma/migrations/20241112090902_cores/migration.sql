@@ -81,6 +81,19 @@ CREATE TABLE "Submission" (
 );
 
 -- CreateTable
+CREATE TABLE "Score" (
+    "id" SERIAL NOT NULL,
+    "examId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "score" INTEGER NOT NULL,
+    "percentage" DOUBLE PRECISION NOT NULL,
+    "timeSubmitted" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Score_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "courses" (
     "id" SERIAL NOT NULL,
     "facultyName" TEXT NOT NULL,
@@ -169,25 +182,7 @@ CREATE TABLE "ExamProgress" (
 );
 
 -- CreateTable
-CREATE TABLE "QuestionBank" (
-    "id" SERIAL NOT NULL,
-    "courseUnit" TEXT NOT NULL,
-    "courseUnitCode" TEXT NOT NULL,
-    "assessmentId" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "QuestionBank_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "_UserCourses" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "_QuestionToQuestionBank" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
 );
@@ -222,12 +217,6 @@ CREATE UNIQUE INDEX "_UserCourses_AB_unique" ON "_UserCourses"("A", "B");
 -- CreateIndex
 CREATE INDEX "_UserCourses_B_index" ON "_UserCourses"("B");
 
--- CreateIndex
-CREATE UNIQUE INDEX "_QuestionToQuestionBank_AB_unique" ON "_QuestionToQuestionBank"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_QuestionToQuestionBank_B_index" ON "_QuestionToQuestionBank"("B");
-
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -239,6 +228,15 @@ ALTER TABLE "Submission" ADD CONSTRAINT "Submission_assessmentId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "Submission" ADD CONSTRAINT "Submission_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Score" ADD CONSTRAINT "Score_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Score" ADD CONSTRAINT "Score_examId_fkey" FOREIGN KEY ("examId") REFERENCES "addAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Score" ADD CONSTRAINT "Score_examId_manual_fkey" FOREIGN KEY ("examId") REFERENCES "ManualAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "addAssessment" ADD CONSTRAINT "addAssessment_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -253,16 +251,7 @@ ALTER TABLE "ManualAssessment" ADD CONSTRAINT "ManualAssessment_courseId_fkey" F
 ALTER TABLE "QuestionManual" ADD CONSTRAINT "QuestionManual_assessmentId_fkey" FOREIGN KEY ("assessmentId") REFERENCES "ManualAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "QuestionBank" ADD CONSTRAINT "QuestionBank_assessmentId_fkey" FOREIGN KEY ("assessmentId") REFERENCES "addAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "_UserCourses" ADD CONSTRAINT "_UserCourses_A_fkey" FOREIGN KEY ("A") REFERENCES "courses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_UserCourses" ADD CONSTRAINT "_UserCourses_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_QuestionToQuestionBank" ADD CONSTRAINT "_QuestionToQuestionBank_A_fkey" FOREIGN KEY ("A") REFERENCES "Question"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_QuestionToQuestionBank" ADD CONSTRAINT "_QuestionToQuestionBank_B_fkey" FOREIGN KEY ("B") REFERENCES "QuestionBank"("id") ON DELETE CASCADE ON UPDATE CASCADE;

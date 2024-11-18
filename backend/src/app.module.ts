@@ -12,6 +12,7 @@ import { ExamModule } from './students/exam.module';
 import { SignalingModule } from './signaling/signaling.module';
 
 
+import { ScoresModule } from './students/scores.module';
 // import { AuthModule } from './lectures/auth.module'; 
 import { PrismaModule } from '../prisma/prisma.module';
 import { CoursesModule } from './lectures/courses.module'; 
@@ -48,6 +49,7 @@ import { QuestionsModule } from './lectures/questions.module';
     PrismaModule,
     CoursesModule,
     ExamModule,
+    ScoresModule,
     QuestionBankModule,
 
     //proctoring livestream
@@ -66,7 +68,7 @@ import { QuestionsModule } from './lectures/questions.module';
       isGlobal: true, // Makes the config globally available
     }),
   ],
-  controllers: [AppController,IssueReportController, FAQController],
+  controllers: [AppController,IssueReportController, FAQController,],
   providers: [AppService,IssueReportService, FAQService, NotificationGateway,RolesGuard],
 })
 export class AppModule {}
