@@ -86,13 +86,17 @@ model Score {
   score            Int
   percentage       Float
   userId           Int
-  examId           Int? // Optional if it can be null for either type
-  student          users             @relation(fields: [userId], references: [id], name: "StudentScores")
-  assessment       addAssessment?    @relation(fields: [examId], references: [id], name: "AssessmentScores", map: "Score_examId_assessment_fkey")
-  manualAssessment ManualAssessment? @relation(fields: [examId], references: [id], name: "ManualAssessmentScores", map: "Score_examId_manualAssessment_fkey")
+  addAssessmentId  Int?              // New field for addAssessment
+  manualAssessmentId Int?            // New field for manualAssessment
 
-  @@unique([examId, userId]) // Ensure one exam score per user
+  student          users             @relation(fields: [userId], references: [id], name: "StudentScores")
+  addAssessment    addAssessment?    @relation(fields: [addAssessmentId], references: [id], name: "AssessmentScores", map: "Score_addAssessmentId_assessment_fkey")
+  manualAssessment ManualAssessment? @relation(fields: [manualAssessmentId], references: [id], name: "ManualAssessmentScores", map: "Score_manualAssessmentId_manual_fkey")
+
+  @@unique([addAssessmentId, userId]) // Prevent duplicate addAssessment scores per user
+  @@unique([manualAssessmentId, userId]) // Prevent duplicate manualAssessment scores per user
 }
+
 
 model courses {
   id                Int                @id @default(autoincrement())

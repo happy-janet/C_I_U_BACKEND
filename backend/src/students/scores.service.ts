@@ -1,110 +1,95 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateScoreDto } from './dto/create-score.dto'; // Define the DTO for creating a score
-import { Score } from '@prisma/client';  // Import the Score type from Prisma
-
+import { Score } from '@prisma/client';
 
 @Injectable()
 export class ScoresService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Add a new score to the database
-   * @param createScoreDto - Data Transfer Object for creating a score
-   * @returns The created score record
-   */
-  async addScore(createScoreDto: CreateScoreDto) {
-    const { score, percentage, userId, examId, isManualAssessment } = createScoreDto;
+  // Create a new score
+  async createScore(
+    score: number,
+    percentage: number,
+    userId: number,
+    examId?: number,
+    assessmentType?: 'add' | 'manual',
+  ): Promise<Score> {
+    const data: any = {
+      score,
+      percentage,
+      student: { connect: { id: userId } },
+    };
 
-    // Step 1: Validate that the examId exists in the correct table (AddAssessment or ManualAssessment)
-    let manualAssessment = null;
-    let addAssessment = null;
+    console.log('Received Parameters:', { score, percentage, userId, examId, assessmentType });
 
-    if (isManualAssessment) {
-      // If it's a manual assessment, check if the examId exists in the ManualAssessment table
-      manualAssessment = await this.prisma.manualAssessment.findUnique({
-        where: { id: examId },
-      });
-      if (!manualAssessment) {
-        throw new BadRequestException(`Manual assessment with ID ${examId} does not exist`);
-      }
-    } else {
-      // If it's an AddAssessment, check if the examId exists in the AddAssessment table
-      addAssessment = await this.prisma.addAssessment.findUnique({
-        where: { id: examId },
-      });
-      if (!addAssessment) {
-        throw new BadRequestException(`Add assessment with ID ${examId} does not exist`);
+    if (examId && assessmentType === 'add') {
+      console.log('Attempting to connect addAssessment');
+      const addAssessment = await this.prisma.addAssessment.findUnique({ where: { id: examId } });
+      if (addAssessment) {
+        data.addAssessment = { connect: { id: examId } };
+        console.log('Connected addAssessmentId:', examId);
+      } else {
+        throw new Error(`addAssessment with ID ${examId} not found.`);
       }
     }
 
-    // Step 2: Create the score record
+    if (examId && assessmentType === 'manual') {
+      console.log('Attempting to connect manualAssessment');
+      const manualAssessment = await this.prisma.manualAssessment.findUnique({ where: { id: examId } });
+      if (manualAssessment) {
+        data.manualAssessment = { connect: { id: examId } };
+        console.log('Connected manualAssessmentId:', examId);
+      } else {
+        throw new Error(`manualAssessment with ID ${examId} not found.`);
+      }
+    }
+
+    console.log('Final Data for Score Creation:', data);
+
     try {
-      const scoreData: any = {
-        score,
-        percentage,
-        user: {
-          connect: { id: userId },
+      const createdScore = await this.prisma.score.create({ data });
+      console.log('Created Score:', createdScore);
+      return createdScore;
+    } catch (error) {
+      console.error('Error creating score:', error.message);
+      throw new Error(`Error creating score: ${error.message}`);
+    }
+  }
+
+  // Get all scores
+  async getAllScores(): Promise<Score[]> {
+    return this.prisma.score.findMany();
+  }
+
+  // Get scores for a specific user
+  async getScoresByUserId(userId: number): Promise<Score[]> {
+    return this.prisma.score.findMany({
+      where: { 
+        student: { 
+          id: userId, // Ensure this matches your Prisma schema
         },
-        ...(isManualAssessment
-          ? { manualAssessment: { connect: { id: examId } } }
-          : { assessment: { connect: { id: examId } } }),
-      };
-
-      // Create the score record
-      const newScore = await this.prisma.score.create({
-        data: scoreData,
-      });
-
-      return newScore;
-    } catch (error) {
-      console.error('Error while creating score:', error);
-      throw new BadRequestException('Failed to create score due to foreign key constraint');
-    }
+      },
+    });
   }
 
-  /**
-   * Get all scores for a specific student
-   * @param studentId - The ID of the student to fetch scores for
-   * @returns A list of the student's scores
-   */
-  async getScoresByStudent(studentId: number) {
-    try {
-      const scores = await this.prisma.score.findMany({
-        where: { userId: studentId },
-        include: {
-          manualAssessment: true,
-          assessment: true,
-        },
-      });
-
-      return scores;
-    } catch (error) {
-      console.error('Error while fetching scores:', error);
-      throw new BadRequestException('Failed to fetch scores');
-    }
-  }
-
-  /**
-   * Get all scores for a specific exam (manual or regular assessment)
-   * @param examId - The ID of the exam to fetch scores for
-   * @param isManualAssessment - Flag to determine if the exam is a manual assessment
-   * @returns A list of scores for the exam
-   */
-  async getScoresByExam(examId: number, isManualAssessment: boolean) {
-    try {
-      const scores = await this.prisma.score.findMany({
-        where: isManualAssessment
-          ? { manualAssessment: { id: examId } }  // Correct relation field
-          : { assessment: { id: examId } },      // Correct relation field
-      });
   
-      return scores;
-    } catch (error) {
-      console.error('Error while fetching exam scores:', error);
-      throw new BadRequestException('Failed to fetch exam scores');
+
+  // Update an existing score
+  async updateScore(scoreId: number, score: number, percentage: number, examId?: number): Promise<Score> {
+    const data: any = { score, percentage };
+    if (examId) {
+      data.examId = examId;
     }
+    return this.prisma.score.update({
+      where: { id: scoreId },
+      data,
+    });
   }
-  
+
+  // Delete a score
+  async deleteScore(scoreId: number): Promise<Score> {
+    return this.prisma.score.delete({
+      where: { id: scoreId },
+    });
+  }
 }
-
