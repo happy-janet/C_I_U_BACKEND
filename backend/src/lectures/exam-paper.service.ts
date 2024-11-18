@@ -167,17 +167,48 @@ async getCourseUnits(courseId: number) {
 
   // Preview an exam paper along with its questions
   async previewExamPaper(id: number) {
+    // Fetch the exam paper details
     const examPaper = await this.prisma.addAssessment.findUnique({
       where: { id },
       include: { questions: true },
     });
-
+  
     if (!examPaper) {
       throw new NotFoundException('Exam paper not found');
     }
-
-    return examPaper;
+  
+    // Fetch the lecturer's details using the createdBy field
+    const lecturer = await this.prisma.lecturerSignUp.findUnique({
+      where: { id: Number(examPaper.createdBy) },
+      select: {
+        first_name: true,
+        last_name: true,
+      },
+    });
+  
+    if (!lecturer) {
+      throw new NotFoundException('Lecturer not found');
+    }
+  
+    // Replace the createdBy field with the lecturer's full name
+    return {
+      ...examPaper,
+      createdBy: `${lecturer.first_name} ${lecturer.last_name}`,
+    };
   }
+  
+  // async previewExamPaper(id: number) {
+  //   const examPaper = await this.prisma.addAssessment.findUnique({
+  //     where: { id },
+  //     include: { questions: true },
+  //   });
+
+  //   if (!examPaper) {
+  //     throw new NotFoundException('Exam paper not found');
+  //   }
+
+  //   return examPaper;
+  // }
 
 
 // In exam-paper.service.ts
