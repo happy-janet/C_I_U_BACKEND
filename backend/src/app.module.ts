@@ -24,6 +24,8 @@ import { IssueReportService } from './students/issue-report.service';
 import { RolesGuard } from './students/roles.guard';
 import { StudentAuthModule } from './students/auth.module';
 // import { AssessmentModule } from './students/assessement.module';
+import { FaqModule } from './students/faq.module';
+import { NotificationModule } from './students/notification/notification.module'
 import { QuestionBankModule } from './questionBank/questionbank.module';
 
 
@@ -40,6 +42,7 @@ import { QuestionsModule } from './Assessments/Assessmentquestion/Assessmentques
 
 @Module({
   imports: [
+    FaqModule, 
     LecturesModule,
     StudentsModule,
     AdminAuthModule,
@@ -62,7 +65,9 @@ import { QuestionsModule } from './Assessments/Assessmentquestion/Assessmentques
     ManualExamPaperModule,
     ExamPaperModule,
     QuestionsModule,
-    CoursesModule, // <-- Add the CoursesModule here
+    NotificationModule,
+    
+    // CoursesModule, // <-- Add the CoursesModule here
 
     ConfigModule.forRoot({
       isGlobal: true, // Makes the config globally available

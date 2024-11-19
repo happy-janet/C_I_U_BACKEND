@@ -51,6 +51,7 @@ model users {
   courses          courses[]     @relation("UserCourses")
   // Relationship with Score (opposite relation field)
   scores           Score[]       @relation("StudentScores")
+  notifications Notification[] // Relation to Notification model
 }
 
 model IssueReport {
@@ -196,4 +197,16 @@ model QuestionBank {
   questions      Question[] // Many-to-many relationship with questions
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  message   String
+  eventType String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      users @relation(fields: [userId], references: [id])
 }

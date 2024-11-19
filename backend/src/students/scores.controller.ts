@@ -47,3 +47,4 @@ export class ScoresController {
     return this.scoresService.deleteScore(scoreId);
   }
 }
+
