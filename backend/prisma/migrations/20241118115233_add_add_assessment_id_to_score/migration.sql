@@ -86,7 +86,8 @@ CREATE TABLE "Score" (
     "score" INTEGER NOT NULL,
     "percentage" DOUBLE PRECISION NOT NULL,
     "userId" INTEGER NOT NULL,
-    "examId" INTEGER,
+    "addAssessmentId" INTEGER,
+    "manualAssessmentId" INTEGER,
 
     CONSTRAINT "Score_pkey" PRIMARY KEY ("id")
 );
@@ -226,7 +227,10 @@ CREATE UNIQUE INDEX "users_registrationNo_key" ON "users"("registrationNo");
 CREATE UNIQUE INDEX "users_resetToken_key" ON "users"("resetToken");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Score_examId_userId_key" ON "Score"("examId", "userId");
+CREATE UNIQUE INDEX "Score_addAssessmentId_userId_key" ON "Score"("addAssessmentId", "userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Score_manualAssessmentId_userId_key" ON "Score"("manualAssessmentId", "userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ExamProgress_studentId_examId_key" ON "ExamProgress"("studentId", "examId");
@@ -259,10 +263,10 @@ ALTER TABLE "Submission" ADD CONSTRAINT "Submission_studentId_fkey" FOREIGN KEY 
 ALTER TABLE "Score" ADD CONSTRAINT "Score_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Score" ADD CONSTRAINT "Score_examId_assessment_fkey" FOREIGN KEY ("examId") REFERENCES "addAssessment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Score" ADD CONSTRAINT "Score_addAssessmentId_assessment_fkey" FOREIGN KEY ("addAssessmentId") REFERENCES "addAssessment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Score" ADD CONSTRAINT "Score_examId_manualAssessment_fkey" FOREIGN KEY ("examId") REFERENCES "ManualAssessment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Score" ADD CONSTRAINT "Score_manualAssessmentId_manual_fkey" FOREIGN KEY ("manualAssessmentId") REFERENCES "ManualAssessment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "addAssessment" ADD CONSTRAINT "addAssessment_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
