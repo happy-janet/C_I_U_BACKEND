@@ -17,12 +17,13 @@ export class CreateExamPaperDto {
     questions: CreateQuestionDto[];
   }
   
-  export class CreateQuestionDto {
+export class CreateQuestionDto {
     questionNumber: number;
     content: string;
     answer: string;
     options: string; 
   }
+
   export class UpdateQuestionDto {
     content: string;
     answer?: string;
