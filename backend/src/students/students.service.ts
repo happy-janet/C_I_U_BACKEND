@@ -239,10 +239,3 @@ async submitManualAssessment(studentId: number, assessmentId: number, studentAns
 }
 
 }
-
-
-
-
-
-  
-

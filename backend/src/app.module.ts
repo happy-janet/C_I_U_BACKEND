@@ -1,21 +1,21 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LecturesModule } from './lectures/lectures.module';
+import { LecturesModule } from './lecturer/lecturerManagement/lecturer.module';
 import { ConfigModule } from '@nestjs/config';
 import { StudentsModule } from './students/students.module';
-import { AdminModule } from './admin/admin.module';
+import { AdminModule } from './admin/adminRegistrationManagement/admin.module';
 import { ExamModule } from './students/exam.module';
-import { ScoresModule } from './students/scores.module';
 
 
 // proctoring livestream
 import { SignalingModule } from './signaling/signaling.module';
 
 
+import { ScoresModule } from './students/scores.module';
 // import { AuthModule } from './lectures/auth.module'; 
 import { PrismaModule } from '../prisma/prisma.module';
-import { CoursesModule } from './lectures/courses.module'; 
+import { CoursesModule } from './Courses/courses.module'; 
 import { IssueReportController } from './students/issue-reprt.controller'; 
 import { FAQService } from './students/faq.service';
 import { FAQController } from './students/faq.controller';
@@ -24,22 +24,25 @@ import { IssueReportService } from './students/issue-report.service';
 import { RolesGuard } from './students/roles.guard';
 import { StudentAuthModule } from './students/auth.module';
 // import { AssessmentModule } from './students/assessement.module';
-import { QuestionBankModule } from './lectures/question-bank.module';
+import { FaqModule } from './students/faq.module';
+import { NotificationModule } from './students/notification/notification.module'
+import { QuestionBankModule } from './questionBank/questionbank.module';
 
 
-import { AuthModule } from './lectures/auth.module'; 
-import { AdminAuthModule } from './admin/AuthModule';
+import { AuthModule } from './lecturer/LecturerAuth/lecturerLogin.module'; 
+import { AdminAuthModule } from './admin/adminAuth/Adminlogin.module';
 
 
 // import { ManualAssessmentModule } from './lectures/addAssessment.module';
-import { ExamPaperModule } from './lectures/exam-paper.module';
-import { ManualExamPaperModule } from './lectures/manual-exam-paper.module';
-import { QuestionsModule } from './lectures/questions.module'; 
+import { ExamPaperModule } from './Assessments/uploadAssessments/uploadExam-paper.module';
+import { ManualExamPaperModule } from './Assessments/manualAssessments/manual-exam-paper.module';
+import { QuestionsModule } from './Assessments/Assessmentquestion/Assessmentquestion.module'; 
 // import { ManualQuestionModule } from './lectures/manualquestion.module';
 
 
 @Module({
   imports: [
+    FaqModule, 
     LecturesModule,
     StudentsModule,
     AdminAuthModule,
@@ -62,7 +65,9 @@ import { QuestionsModule } from './lectures/questions.module';
     ManualExamPaperModule,
     ExamPaperModule,
     QuestionsModule,
-    CoursesModule, // <-- Add the CoursesModule here
+    NotificationModule,
+    
+    // CoursesModule, // <-- Add the CoursesModule here
 
     ConfigModule.forRoot({
       isGlobal: true, // Makes the config globally available

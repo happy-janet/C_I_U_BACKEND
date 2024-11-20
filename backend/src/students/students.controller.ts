@@ -78,10 +78,10 @@ updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
         return this.studentsService.countStudents();
     }
 
-    @Get('count/programs')
-    async getProgramCount() {
-        return this.studentsService.countPrograms();
-    }
+    // @Get('count/programs')
+    // async getProgramCount() {
+    //     return this.studentsService.countPrograms();
+    // }
 
 
   @UseGuards(JwtAuthGuard)

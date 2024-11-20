@@ -1,25 +1,20 @@
-// src/scores/dto/create-score.dto.ts
-import { IsInt, IsOptional, IsBoolean, IsNotEmpty, IsNumber, Min, Max } from 'class-validator';
+import { IsInt, IsOptional, IsNumber, IsIn } from 'class-validator';
 
 export class CreateScoreDto {
   @IsInt()
-  @IsNotEmpty()
-  @Min(0)
-  @Max(100)
-  score: number;  // The score of the student
+  score: number;
 
   @IsNumber()
-  @IsNotEmpty()
-  percentage: number;  // The percentage achieved by the student
+  percentage: number;
 
   @IsInt()
-  @IsNotEmpty()
-  userId: number;  // The ID of the user (student)
+  userId: number;
 
-  @IsInt()
   @IsOptional()
-  examId?: number;  // The ID of the exam (either AddAssessment or ManualAssessment)
+  @IsInt()
+  examId?: number; // Optional, because a score can exist without an assessment
 
-  @IsBoolean()
-  isManualAssessment: boolean;  // Flag to differentiate between Manual and Add assessment
+  @IsOptional()
+  @IsIn(['add', 'manual'])
+  assessmentType?: 'add' | 'manual';
 }
