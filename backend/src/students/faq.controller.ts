@@ -38,13 +38,6 @@ async getAllFaqs() {
     return this.faqService.getProfile(user.userId); // userId comes from decoded JWT payload
   }
 
-//   @Get('student/:studentId/upcoming-exams')
-// async findUpcomingExams(@Param('studentId') studentId: string) {
-//     console.log(`Fetching upcoming exams for student ID: ${studentId}`);
-//     return this.manualAssessmentService.findUpcomingExams(+studentId);
-// }
-
-
 }
     
 

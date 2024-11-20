@@ -9,6 +9,7 @@ import { StudentsService } from './students.service';
 import { FaqModule } from './faq.module'; // Correct import path
 import { IssueReportModule } from './issue-report.module';
 
+
 @Module({
   imports: [
     JwtModule.register({
@@ -19,6 +20,12 @@ import { IssueReportModule } from './issue-report.module';
     IssueReportModule, // Import IssueReportModule to access IssueReportService
   ],
   controllers: [StudentsController],
-  providers: [AuthService, PrismaService, JwtStrategy, StudentsService],
+  providers: [
+    AuthService,
+    PrismaService,
+    JwtStrategy,
+    StudentsService,
+    
+  ],
 })
 export class StudentsModule {}
