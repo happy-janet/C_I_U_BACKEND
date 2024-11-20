@@ -5,7 +5,6 @@ import { AuthService } from './Adminlogin.service';
 import { AuthController } from './Adminlogin.controller';
 import { PrismaModule } from '../../../prisma/prisma.module';
 import { ConfigService, ConfigModule } from '@nestjs/config';
-import { AdminModule } from './admin.module'; 
 
 
 
@@ -13,7 +12,6 @@ import { AdminModule } from './admin.module';
   imports: [
     PrismaModule,
     ConfigModule.forRoot(),
-    AdminModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -24,6 +22,6 @@ import { AdminModule } from './admin.module';
     }),
   ],
   providers: [AuthService],
-  controllers: [AuthController, DashboardController],
+  controllers: [AuthController,DashboardController],
 })
 export class AdminAuthModule {}
