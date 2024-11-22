@@ -5,7 +5,7 @@ import { AuthService } from './Adminlogin.service';
 import { AuthController } from './Adminlogin.controller';
 import { PrismaModule } from '../../../prisma/prisma.module';
 import { ConfigService, ConfigModule } from '@nestjs/config';
-import { AdminModule } from './admin.module'; 
+import { AdminModule } from '../adminRegistrationManagement/admin.module';
 
 
 

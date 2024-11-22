@@ -78,10 +78,10 @@ updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
         return this.studentsService.countStudents();
     }
 
-    // @Get('count/programs')
-    // async getProgramCount() {
-    //     return this.studentsService.countPrograms();
-    // }
+    @Get('count/programs')
+    async getProgramCount() {
+        return this.studentsService.countPrograms();
+    }
 
 
   @UseGuards(JwtAuthGuard)
@@ -122,19 +122,8 @@ updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.issueReportService.reportIssue(reportIssueDto);
   }
 
-// students.controller.ts
-
-@Post('submit-assessment')
-async submitAssessment(
-  @Body() submitAssessmentDto: SubmissionDto,
-  @Req() req: any
-) {
-  const studentId = req.user.id;  // Assuming user authentication is implemented
-  return this.studentsService.submitManualAssessment(studentId, submitAssessmentDto.assessmentId, submitAssessmentDto.answers);
 }
 
-  
-}
   
 
 
