@@ -8,6 +8,3 @@ export class DashboardController {
   getDashboard() {
     return { message: 'Welcome to the Dashboard' }; 
   }
-}
-// To the lecturer dashboard
-

@@ -71,7 +71,7 @@ export class FAQService {
         select: {
           first_name: true,
           last_name: true,
-          role: true, // Assuming the role field exists in the database
+          role: true, 
         },
       });
     } catch (error) {
