@@ -8,4 +8,3 @@ export class DashboardController {
   getDashboard() {
     return { message: 'Welcome to the Dashboard' }; 
   }
-}
