@@ -136,14 +136,14 @@ export class StudentsService {
         select: { program: true },
         distinct: ['program'],
       });
-      return {
-        count: uniquePrograms.length,
-      };
+
+      return { count: uniquePrograms.length };
     } catch (error) {
-      console.error("Error counting programs:", error);
-      throw new Error("Failed to count programs");
+      console.error('Error counting programs:', error.message);
+      throw new Error('Failed to count programs');
     }
   }
+
 
   async login(loginUserDto: LoginDto) { 
     try {
@@ -194,6 +194,9 @@ export class StudentsService {
     }
   }
   
+  
+
+
   
   // students.service.ts
 
