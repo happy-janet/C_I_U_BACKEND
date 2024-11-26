@@ -88,6 +88,7 @@ CREATE TABLE "Score" (
     "userId" INTEGER NOT NULL,
     "addAssessmentId" INTEGER,
     "manualAssessmentId" INTEGER,
+    "isPublished" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Score_pkey" PRIMARY KEY ("id")
 );
@@ -101,6 +102,16 @@ CREATE TABLE "courses" (
     "courseUnitCode" TEXT[],
 
     CONSTRAINT "courses_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "LoginHistory" (
+    "id" SERIAL NOT NULL,
+    "studentId" INTEGER NOT NULL,
+    "loginTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "ipAddress" TEXT,
+
+    CONSTRAINT "LoginHistory_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -194,6 +205,19 @@ CREATE TABLE "QuestionBank" (
 );
 
 -- CreateTable
+CREATE TABLE "Notification" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "title" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "eventType" TEXT NOT NULL,
+    "read" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_UserCourses" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
@@ -269,6 +293,9 @@ ALTER TABLE "Score" ADD CONSTRAINT "Score_addAssessmentId_assessment_fkey" FOREI
 ALTER TABLE "Score" ADD CONSTRAINT "Score_manualAssessmentId_manual_fkey" FOREIGN KEY ("manualAssessmentId") REFERENCES "ManualAssessment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "LoginHistory" ADD CONSTRAINT "LoginHistory_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "addAssessment" ADD CONSTRAINT "addAssessment_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -282,6 +309,9 @@ ALTER TABLE "QuestionManual" ADD CONSTRAINT "QuestionManual_assessmentId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "QuestionBank" ADD CONSTRAINT "QuestionBank_assessmentId_fkey" FOREIGN KEY ("assessmentId") REFERENCES "addAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_UserCourses" ADD CONSTRAINT "_UserCourses_A_fkey" FOREIGN KEY ("A") REFERENCES "courses"("id") ON DELETE CASCADE ON UPDATE CASCADE;

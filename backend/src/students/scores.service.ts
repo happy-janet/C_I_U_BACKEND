@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable ,NotFoundException} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Score } from '@prisma/client';
 
@@ -103,6 +103,20 @@ async getScoresByAssessmentId(addAssessmentId: number): Promise<Score[]> {
       data,
     });
   }
+  async publishExamResults(id: number) {
+    const examPaperResults = await this.prisma.score.findUnique({
+      where: { id },
+    });
+  
+    if (!examPaperResults) {
+      throw new NotFoundException('Exam Result  not found');
+    }
+  
+    return this.prisma.score.update({
+      where: { id },
+      data: { isPublished: true}, 
+    });
+  }
 
   // Delete a score
   async deleteScore(scoreId: number): Promise<Score> {
@@ -111,3 +125,5 @@ async getScoresByAssessmentId(addAssessmentId: number): Promise<Score[]> {
     });
   }
 }
+
+
