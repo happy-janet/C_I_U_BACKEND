@@ -96,6 +96,7 @@ model Score {
 
   @@unique([addAssessmentId, userId]) // Prevent duplicate addAssessment scores per user
   @@unique([manualAssessmentId, userId]) // Prevent duplicate manualAssessment scores per user
+  isPublished       Boolean    @default(false)
 }
 
 
