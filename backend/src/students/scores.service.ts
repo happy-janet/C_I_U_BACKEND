@@ -61,6 +61,24 @@ export class ScoresService {
     return this.prisma.score.findMany();
   }
 
+
+//Get a specific assessment's scores
+async getScoresByAssessmentId(addAssessmentId: number): Promise<Score[]> {
+  return this.prisma.score.findMany({
+    where: {
+      addAssessmentId: addAssessmentId, 
+    },
+    include: {
+      student: true, 
+      addAssessment: true,
+    },
+  });
+}
+
+
+
+
+
   // Get scores for a specific user
   async getScoresByUserId(userId: number): Promise<Score[]> {
     return this.prisma.score.findMany({

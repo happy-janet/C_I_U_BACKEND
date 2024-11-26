@@ -22,7 +22,6 @@ export class ScoresController {
   }
 
   // Get scores by userId (for a specific student)
-  // Get scores by userId (for a specific student)
   @Get('user/:userId')
   async getScoresByUserId(
     @Param('userId', ParseIntPipe) userId: number, // Ensures userId is parsed as a number
@@ -30,6 +29,14 @@ export class ScoresController {
     return this.scoresService.getScoresByUserId(userId);
   }
 
+//Get all scores for a specific assessment using assessment id
+@Get('/:Id')
+async getScoresByAssessmentId(
+  @Param('Id') Id: string
+): Promise<Score[]> {
+  const assessmentId = parseInt(Id, 10);
+  return this.scoresService.getScoresByAssessmentId(assessmentId);
+}
 
   // Update an existing score
   @Put(':scoreId')

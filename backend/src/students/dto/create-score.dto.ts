@@ -12,7 +12,7 @@ export class CreateScoreDto {
 
   @IsOptional()
   @IsInt()
-  examId?: number; // Optional, because a score can exist without an assessment
+  examId?: number; 
 
   @IsOptional()
   @IsIn(['add', 'manual'])
