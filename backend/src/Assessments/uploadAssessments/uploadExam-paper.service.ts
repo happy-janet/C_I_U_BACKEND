@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UpdateQuestionDto, UploadExamPaperDto } from './uploadAssessmentsDto/uploadExam-paper.dto';
+import { CreateQuestionDto } from '../Assessmentquestion/AssessmentquestionDto/Assessmentquestion.dto';
 import * as fs from 'fs';
 import * as csvParser from 'csv-parser';
 import * as moment from 'moment';
@@ -165,50 +166,51 @@ async getCourseUnits(courseId: number) {
     });
   }
 
+    // Add a question in an exam paper
+    async addQuestion(assessmentId: number, createQuestionDto: CreateQuestionDto) {
+      const { content, options, answer, questionNumber } = createQuestionDto;
+  
+      if (!options.includes(answer)) {
+        throw new Error('Answer must be one of the options.');
+      }
+  
+
+        // Get the highest question number for the assessment
+        const maxQuestion = await this.prisma.question.findFirst({
+          where: { assessmentId },
+          orderBy: { questionNumber: 'desc' },
+          select: { questionNumber: true },
+        });
+
+        // Determine the next question number
+        const nextQuestionNumber = maxQuestion ? maxQuestion.questionNumber + 1 : 1;
+
+
+      return this.prisma.question.create({
+        data: {
+          content,
+          options,
+          answer,
+          questionNumber: nextQuestionNumber,
+          assessment: {
+            connect: { id: assessmentId }, 
+          },
+        },
+      });
+    }
   // Preview an exam paper along with its questions
   async previewExamPaper(id: number) {
-    // Fetch the exam paper details
     const examPaper = await this.prisma.addAssessment.findUnique({
       where: { id },
       include: { questions: true },
     });
-  
+
     if (!examPaper) {
       throw new NotFoundException('Exam paper not found');
     }
-  
-    // Fetch the lecturer's details using the createdBy field
-    const lecturer = await this.prisma.lecturerSignUp.findUnique({
-      where: { id: Number(examPaper.createdBy) },
-      select: {
-        first_name: true,
-        last_name: true,
-      },
-    });
-  
-    if (!lecturer) {
-      throw new NotFoundException('Lecturer not found');
-    }
-  
-    // Replace the createdBy field with the lecturer's full name
-    return {
-      ...examPaper,
-      createdBy: `${lecturer.first_name} ${lecturer.last_name}`,
-    };
+
+    return examPaper;
   }
-  
-  // async previewExamPaper(id: number) {
-  //   const examPaper = await this.prisma.addAssessment.findUnique({
-  //     where: { id },
-  //     include: { questions: true },
-  //   });
-
-  //   if (!examPaper) {
-  //     throw new NotFoundException('Exam paper not found');
-  //   }
-
-  //   return examPaper;
-  // }
 
 
 // In exam-paper.service.ts
@@ -223,9 +225,84 @@ async publishExamPaper(id: number) {
 
   return this.prisma.addAssessment.update({
     where: { id },
-    data: { isDraft: false }, // Set isDraft to false to mark it as published
+    data: { isDraft: false }, 
   });
 }
+
+
+async getCompletedAssessments() {
+  return this.prisma.addAssessment.findMany({
+    where: {
+      isDraft: false,
+      endTime: {
+        lte: new Date(),
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      courseUnit: true,
+      endTime: true,
+    },
+  });
+}
+
+// async getCompletedAssessmentsByCourseUnit(courseId: number, courseUnit: string) {
+//   const currentDateTime = new Date();
+
+//   // Log to ensure correct values
+//   console.log('Checking courseId:', courseId, 'courseUnit:', courseUnit);
+
+//   // Fetch the course and validate the courseUnit exists
+//   const course = await this.prisma.courses.findUnique({
+//     where: { id: courseId },
+//     select: {
+//       courseName: true,
+//       facultyName: true,
+//       courseUnits: true,
+//     },
+//   });
+
+//   if (!course) {
+//     throw new Error(`Course with ID ${courseId} does not exist.`);
+//   }
+
+//   // Log course units available
+//   console.log('Course units available:', course.courseUnits);
+
+//   // Validate courseUnit
+//   if (!course.courseUnits.some(unit => unit.trim().toLowerCase() === courseUnit.trim().toLowerCase())) {
+//     throw new Error(`Course unit "${courseUnit}" does not exist for the course "${course.courseName}".`);
+//   }
+
+//   // Fetch all completed assessments for the course and courseUnit
+//   const completedAssessments = await this.prisma.addAssessment.findMany({
+//     where: {
+//       courseId, // Match the course ID
+//       courseUnit, // Match the specific course unit
+//       endTime: {
+//         lte: currentDateTime, // End time has passed (completed assessments)
+//       },
+//     },
+//     select: {
+//       title: true,
+//       courseUnit: true,
+//       endTime: true, // Just an additional check to make sure it's in the past
+//     },
+//   });
+
+//   // If no completed assessments are found, return a helpful message
+//   if (completedAssessments.length === 0) {
+//     return { message: `No completed assessments found for course unit "${courseUnit}" in course "${course.courseName}".` };
+//   }
+
+//   // Return the list of completed assessments
+//   return completedAssessments;
+// }
+
+
+
+
 
 
 async unpublishExamPaper(id: number) {

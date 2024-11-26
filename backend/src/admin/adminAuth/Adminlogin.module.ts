@@ -13,7 +13,6 @@ import { AdminModule } from '../adminRegistrationManagement/admin.module';
   imports: [
     PrismaModule,
     ConfigModule.forRoot(),
-    AdminModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -24,6 +23,6 @@ import { AdminModule } from '../adminRegistrationManagement/admin.module';
     }),
   ],
   providers: [AuthService],
-  controllers: [AuthController, DashboardController],
+  controllers: [AuthController,DashboardController],
 })
 export class AdminAuthModule {}
