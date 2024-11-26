@@ -9,6 +9,7 @@ import {
   Put,
   Delete,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -27,10 +28,17 @@ export class ExamPaperController {
     return this.examPaperService.getCourses();
   }
 
+
+  @Get('completedAssessments')
+  async getCompletedAssessments() {
+    return this.examPaperService.getCompletedAssessments();
+  }
+  
   @Get('/courses/:courseId/units')
   async getCourseUnits(@Param('courseId') courseId: string) {
     return this.examPaperService.getCourseUnits(parseInt(courseId));
   }
+
 
 
   @Patch(':id/publish')
@@ -174,6 +182,19 @@ async updateQuestion(
     }
     return this.examPaperService.previewExamPaper(examPaperId);
   }
+
+
+
+
+  // @Get('completedAssessments')
+  // async getCompletedAssessments(
+  //   @Query('courseId') courseId: number,
+  //   @Query('courseUnit') courseUnit: string,
+  // ) {
+  //   return this.examPaperService.getCompletedAssessmentsByCourseUnit(courseId, courseUnit);
+  // }
+  
+  
 
    
 //update exam paper
