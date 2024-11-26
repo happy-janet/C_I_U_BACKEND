@@ -15,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ExamPaperService } from './uploadExam-paper.service';
 import { UploadExamPaperDto, UpdateQuestionDto } from './uploadAssessmentsDto/uploadExam-paper.dto';
+import { CreateQuestionDto } from '../Assessmentquestion/AssessmentquestionDto/Assessmentquestion.dto';
 import { Response } from 'express';
 import { Patch, Res } from '@nestjs/common';
 
@@ -148,6 +149,17 @@ async updateQuestion(
   }
   return this.examPaperService.updateQuestion(examPaperId, parsedQuestionId, updateQuestionDto);
 }
+
+
+//Add a question in the exam paper
+@Post(':id/add-question')
+  async addQuestion(
+    @Param('id') assessmentId: string, 
+    @Body() createQuestionDto: CreateQuestionDto, 
+  ) {
+    return this.examPaperService.addQuestion(+assessmentId, createQuestionDto);
+  }
+
 
 //upload exam paper
   @Post('upload')
