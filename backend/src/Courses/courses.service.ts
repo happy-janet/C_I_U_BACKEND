@@ -1,4 +1,4 @@
-import { Injectable , NotFoundException } from '@nestjs/common';
+import { Injectable , NotFoundException,ConflictException} from '@nestjs/common';
 // import { Injectable,  } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCourseDto } from './CoursesDto/Register-course.dto';
@@ -9,13 +9,27 @@ export class CoursesService {
     constructor(private readonly prisma: PrismaService) {}
 
 
-    
-
     async create(createCourseDto: CreateCourseDto) {
-        return this.prisma.courses.create({
-            data: createCourseDto,
-        });
-    }
+      // Check if a course with the same name already exists
+      const existingCourse = await this.prisma.courses.findFirst({
+          where: {
+              courseName: createCourseDto.courseName,
+              facultyName: createCourseDto.facultyName
+          }
+      });
+
+      // If course exists, throw a conflict exception
+      if (existingCourse) {
+          throw new ConflictException('Course with this name already exists in the specified faculty');
+      }
+
+      // If no existing course, proceed with creation
+      return this.prisma.courses.create({
+          data: createCourseDto,
+      });
+  }
+
+    
 
 
     async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
