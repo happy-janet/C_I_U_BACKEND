@@ -9,11 +9,13 @@ import {
   Put,
   Delete,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ExamPaperService } from './uploadExam-paper.service';
 import { UploadExamPaperDto, UpdateQuestionDto } from './uploadAssessmentsDto/uploadExam-paper.dto';
+import { CreateQuestionDto } from '../Assessmentquestion/AssessmentquestionDto/Assessmentquestion.dto';
 import { Response } from 'express';
 import { Patch, Res } from '@nestjs/common';
 
@@ -27,10 +29,17 @@ export class ExamPaperController {
     return this.examPaperService.getCourses();
   }
 
+
+  @Get('completedAssessments')
+  async getCompletedAssessments() {
+    return this.examPaperService.getCompletedAssessments();
+  }
+  
   @Get('/courses/:courseId/units')
   async getCourseUnits(@Param('courseId') courseId: string) {
     return this.examPaperService.getCourseUnits(parseInt(courseId));
   }
+
 
 
   @Patch(':id/publish')
@@ -141,6 +150,17 @@ async updateQuestion(
   return this.examPaperService.updateQuestion(examPaperId, parsedQuestionId, updateQuestionDto);
 }
 
+
+//Add a question in the exam paper
+@Post(':id/add-question')
+  async addQuestion(
+    @Param('id') assessmentId: string, 
+    @Body() createQuestionDto: CreateQuestionDto, 
+  ) {
+    return this.examPaperService.addQuestion(+assessmentId, createQuestionDto);
+  }
+
+
 //upload exam paper
   @Post('upload')
   @UseInterceptors(
@@ -174,6 +194,19 @@ async updateQuestion(
     }
     return this.examPaperService.previewExamPaper(examPaperId);
   }
+
+
+
+
+  // @Get('completedAssessments')
+  // async getCompletedAssessments(
+  //   @Query('courseId') courseId: number,
+  //   @Query('courseUnit') courseUnit: string,
+  // ) {
+  //   return this.examPaperService.getCompletedAssessmentsByCourseUnit(courseId, courseUnit);
+  // }
+  
+  
 
    
 //update exam paper

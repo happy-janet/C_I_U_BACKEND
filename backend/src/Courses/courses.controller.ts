@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch, Param, Get, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Get, Delete,HttpException, HttpStatus,  } from '@nestjs/common';
 import { CreateCourseDto } from './CoursesDto/Register-course.dto';
 import { CoursesService } from './courses.service';
 import { UpdateCourseDto } from './CoursesDto/update-course.dto';
@@ -10,11 +10,19 @@ export class CoursesController {
 
   
 
-  // Create a new course
-  @Post()
-  async create(@Body() createCourseDto: CreateCourseDto) {
-    return await this.coursesService.create(createCourseDto);
-  }
+   // Create a new course
+   @Post()
+   async create(@Body() createCourseDto: CreateCourseDto) {
+     try {
+       return await this.coursesService.create(createCourseDto);
+     } catch (error) {
+       // Handle the conflict exception
+       if (error.response && error.response.statusCode === HttpStatus.CONFLICT) {
+         throw new HttpException(error.response.message, HttpStatus.CONFLICT);
+       }
+       throw error;
+     }
+   }
 
   // Update an existing course by ID
   @Patch(':id')

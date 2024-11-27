@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsNumber, IsIn } from 'class-validator';
+import { IsInt, IsOptional, IsNumber, IsIn, IsBoolean } from 'class-validator';
 
 export class CreateScoreDto {
   @IsInt()
@@ -12,7 +12,12 @@ export class CreateScoreDto {
 
   @IsOptional()
   @IsInt()
-  examId?: number; // Optional, because a score can exist without an assessment
+  examId?: number; 
+
+
+  @IsOptional()
+  @IsBoolean()
+  isPublished?: boolean; 
 
   @IsOptional()
   @IsIn(['add', 'manual'])

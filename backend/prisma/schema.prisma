@@ -49,10 +49,11 @@ model users {
   submissions      Submission[]
   course           courses       @relation(fields: [courseId], references: [id])
   courses          courses[]     @relation("UserCourses")
-  // Relationship with Score (opposite relation field)
   scores           Score[]       @relation("StudentScores")
-  notifications Notification[] // Relation to Notification model
+  notifications    Notification[] // Relation to Notification model
+  loginHistory     LoginHistory[] @relation("StudentLoginHistory") // Corrected relation field
 }
+
 
 model IssueReport {
   id               Int      @id @default(autoincrement())
@@ -95,6 +96,7 @@ model Score {
 
   @@unique([addAssessmentId, userId]) // Prevent duplicate addAssessment scores per user
   @@unique([manualAssessmentId, userId]) // Prevent duplicate manualAssessment scores per user
+  isPublished       Boolean    @default(false)
 }
 
 
@@ -108,7 +110,20 @@ model courses {
   addAssessments    addAssessment[]
   users             users[]
   students          users[]            @relation("UserCourses")
+
 }
+
+
+model LoginHistory {
+  id         Int      @id @default(autoincrement())
+  studentId  Int
+  loginTime  DateTime @default(now())
+  ipAddress  String?
+
+  // Relation to the `users` model
+  student    users    @relation("StudentLoginHistory", fields: [studentId], references: [id])
+}
+
 
 model addAssessment {
   id             Int            @id @default(autoincrement())
@@ -184,6 +199,7 @@ model ExamProgress {
   status          String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
 
   @@unique([studentId, examId])
 }
