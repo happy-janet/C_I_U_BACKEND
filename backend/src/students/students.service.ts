@@ -5,7 +5,8 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt'; 
 import { UpdateUserDto } from './dto/update-user.dto';
-
+import { generateNumericToken } from './token-generator';
+import { sendEmail } from './sendEmail';
 @Injectable()
 export class StudentsService {
   constructor(
@@ -79,18 +80,25 @@ export class StudentsService {
 
   // Delete a student
   async delete(id: number) {
-    await this.findOneById(id); 
+    await this.findOneById(id);
+  
+    // Delete related LoginHistory records first
+    await this.prisma.loginHistory.deleteMany({
+      where: { studentId: id },
+    });
+  
+    // Delete the user
     return this.prisma.users.delete({
       where: { id },
     });
   }
-
+  
  
 
   
   async create(createUserDto: CreateUserDto) {
     try {
-      // Find the course name using the courseId
+      // Find course name
       const course = await this.prisma.courses.findUnique({
         where: { id: createUserDto.courseId },
         select: { courseName: true },
@@ -100,30 +108,101 @@ export class StudentsService {
         throw new BadRequestException('Course not found');
       }
   
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-  
-      // Format the email address
       const formattedEmail = `${createUserDto.first_name.toLowerCase()}@student.ciu.ac.ug`;
   
-      return await this.prisma.users.create({
+      // Generate a 6-digit token
+      const token = generateNumericToken(6);
+  
+      // Save user with token
+      const newUser = await this.prisma.users.create({
         data: {
           first_name: createUserDto.first_name,
           last_name: createUserDto.last_name,
-          email: formattedEmail, // Use the formatted email
+          email: formattedEmail,
           program: course.courseName,
           registrationNo: createUserDto.registrationNo,
-          password: hashedPassword,
+          password: '', // Leave blank initially
           role: createUserDto.role,
           courseId: createUserDto.courseId,
+          resetToken: token,
+          resetTokenExpiry: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Token valid for 7 days
         },
       });
+  
+      const resetLink = `http://localhost:5173/studenttoken-password-reset?token=${token}`;
+  
+      // Prepare email content with a clickable button
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2>Welcome ${newUser.first_name},</h2>
+          <p>Your registration is successful. Please use the button below to reset your password:</p>
+          <p>Your setup token is: <strong>${token}</strong></p>
+          <a href="${resetLink}" style="
+            display: inline-block; 
+            padding: 10px 20px; 
+            background-color: #106053; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px;
+            margin: 20px 0;
+          ">Confirm Email</a>
+          <p>If the button doesn't work, copy and paste this link in your browser:</p>
+          <p>${resetLink}</p>
+          <p>This link will expire in 7 days.</p>
+        </div>
+      `;
+  
+      // Send email
+      const subject = 'Set Your Password';
+      const text = `Dear ${newUser.first_name},\n\nUse this token to set your password: ${token}\n\nThe token is valid for 7 days.`;
+      await sendEmail(formattedEmail, subject, text, emailHtml);
+  
+      return { message: 'Student registered successfully. Token sent to email.' };
     } catch (error) {
-      console.error('Error creating user:', error);
+      console.error('Error creating user:', error.message || error);
       throw new InternalServerErrorException('Error creating user');
     }
   }
   
-  
+
+  async findByToken(token: string) {
+    return this.prisma.users.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: {
+          gte: new Date(), 
+        },
+      },
+    });
+  }
+
+  async updatePassword(userId: number, hashedPassword: string) {
+    return this.prisma.users.update({
+      where: { id: userId },
+      data: {
+        password: hashedPassword,
+        resetToken: null, // Clear token after use
+        resetTokenExpiry: null,
+      },
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Login method
    async countStudents() {
@@ -145,6 +224,10 @@ export class StudentsService {
   }
 
 
+
+
+
+  
   async login(loginUserDto: LoginDto) { 
     try {
       const { registrationNo, password } = loginUserDto;
@@ -240,5 +323,7 @@ async submitManualAssessment(studentId: number, assessmentId: number, studentAns
 
   return { score, totalQuestions, percentage };
 }
+
+
 
 }

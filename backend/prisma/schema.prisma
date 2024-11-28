@@ -26,7 +26,7 @@ model AdminSignUp {
   last_name        String
   email            String    @unique
   role             String
-  password         String
+  password         String?
   resetToken       String?   @unique
   resetTokenExpiry DateTime?
 }
