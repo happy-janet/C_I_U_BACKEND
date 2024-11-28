@@ -375,13 +375,28 @@ async countAllExamPapers() {
   const coursesCount = await this.prisma.courses.count();
   const studentsCount = await this.prisma.users.count();
   const upcomingExamsCount = await this.prisma.addAssessment.count({
-    where: {  scheduledDate: { gt: new Date() } },
+    where: {  scheduledDate: { gt: new Date() } ,
+              isDraft: false ,
+            },
   });
+  const questionBankCount = await this.prisma.questionBank.count();
+  const ongoingAssessmentCount = await this.prisma.addAssessment.count({
+    where: {
+      isDraft: false, 
+      AND: [
+        { scheduledDate: { lte: new Date() } },
+        { endTime: { gte: new Date() } },
+      ],
+    },
+  });
+  
 
   return {
     coursesCount,
     studentsCount,
     upcomingExamsCount,
+    questionBankCount,
+    ongoingAssessmentCount,
   };
 }
 
