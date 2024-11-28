@@ -40,14 +40,38 @@ export class LecturesService {
         },
     });
 
-    // Prepare email content
-    const emailText = `Welcome ${first_name}, your registration is successful. Your initial setup token is: ${setupToken}.`;
-    const emailHtml = `<p>Welcome ${first_name}, your registration is successful. Your initial setup token is: <strong>${setupToken}</strong>.</p>`;
+    // Create a direct link to the token reset page
+    const resetLink = `http://localhost:5173/token-password-reset?token=${setupToken}`;
 
-    await sendEmail(email, 'Registration Successful', emailText, emailHtml);
+    // Prepare email content with a clickable button
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2>Welcome ${first_name},</h2>
+        <p>Your registration is successful. Please use the button below to reset your password:</p>
+        <p>Your setup token is: <strong>${setupToken}</strong></p>
+        <a href="${resetLink}" style="
+          display: inline-block; 
+          padding: 10px 20px; 
+          background-color: #106053; 
+          color: white; 
+          text-decoration: none; 
+          border-radius: 5px;
+          margin: 20px 0;
+        ">Confirm Email</a>
+        <p>If the button doesn't work, copy and paste this link in your browser:</p>
+        <p>${resetLink}</p>
+        <p>This link will expire in 7 days.</p>
+      </div>
+    `;
 
-    return { message: 'Lecturer registered successfully. A confirmation token has been sent to your email.' };
-}
+    const emailText = `Welcome ${first_name}, your registration is successful. 
+    Use this link to reset your password: ${resetLink}
+    Your setup token is: ${setupToken}`;
+
+    await sendEmail(email, 'Registration Successful - Reset Password', emailText, emailHtml);
+
+    return { message: 'Lecturer registered successfully. A confirmation email has been sent.' };
+  }
 
 
 
