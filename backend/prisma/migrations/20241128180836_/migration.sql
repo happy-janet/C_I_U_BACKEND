@@ -21,7 +21,7 @@ CREATE TABLE "AdminSignUp" (
     "last_name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "role" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "password" TEXT,
     "resetToken" TEXT,
     "resetTokenExpiry" TIMESTAMP(3),
 
