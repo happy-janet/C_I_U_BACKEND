@@ -73,6 +73,15 @@ export class LecturesService {
     return { message: 'Lecturer registered successfully. A confirmation email has been sent.' };
   }
 
+
+
+
+
+
+
+
+
+
 async setPassword(setupPasswordDto: SetInitialPasswordDto): Promise<{ message: string }> {
   const { setupToken, newPassword, confirmPassword } = setupPasswordDto;
 

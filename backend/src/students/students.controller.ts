@@ -9,7 +9,9 @@ import {
   Request,
   UseGuards,
   Query,
+  HttpException,
   Req,
+  HttpStatus,
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -30,7 +32,9 @@ import { CreateFAQDto } from  './dto/create-faq.dto'
 import { ReportIssueDto } from './dto/report-issue.dto';
 import {SubmissionDto} from './dto/SubmitAssessmentDto.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-
+import { generateNumericToken } from './token-generator';
+import { sendEmail } from './sendEmail';
+import * as bcrypt from 'bcrypt';
 @Controller('students')
 export class StudentsController {
   constructor(
@@ -121,8 +125,30 @@ updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
   ): Promise<IssueReport> {
     return this.issueReportService.reportIssue(reportIssueDto);
   }
+  @Post('set-password')
+  async setPassword(@Body() body: { token: string; newPassword: string; confirmPassword: string }) {
+    const { token, newPassword, confirmPassword } = body;
 
+    if (newPassword !== confirmPassword) {
+      throw new HttpException('Passwords do not match', HttpStatus.BAD_REQUEST);
+    }
+
+    const student = await this.studentsService.findByToken(token);
+
+    if (!student) {
+      throw new HttpException('Invalid or expired token', HttpStatus.UNAUTHORIZED);
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await this.studentsService.updatePassword(student.id, hashedPassword);
+
+    return { message: 'Password set successfully' };
+  }
 }
+   
+
+
 
   
 
