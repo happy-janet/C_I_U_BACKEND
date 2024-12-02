@@ -300,6 +300,20 @@ async getCompletedAssessments() {
 //   return completedAssessments;
 // }
 
+async publishExamResults(id: number) {
+  const examPaperResults = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaperResults) {
+    throw new NotFoundException('Exam Result  not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { isPublished: true}, 
+  });
+}
 
 
 
