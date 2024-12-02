@@ -103,21 +103,7 @@ async getScoresByAssessmentId(addAssessmentId: number): Promise<Score[]> {
       data,
     });
   }
-  async publishExamResults(id: number) {
-    const examPaperResults = await this.prisma.score.findUnique({
-      where: { id },
-    });
   
-    if (!examPaperResults) {
-      throw new NotFoundException('Exam Result  not found');
-    }
-  
-    return this.prisma.score.update({
-      where: { id },
-      data: { isPublished: true}, 
-    });
-  }
-
   // Delete a score
   async deleteScore(scoreId: number): Promise<Score> {
     return this.prisma.score.delete({
