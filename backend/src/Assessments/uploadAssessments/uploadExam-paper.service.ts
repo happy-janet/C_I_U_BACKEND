@@ -243,62 +243,11 @@ async getCompletedAssessments() {
       title: true,
       courseUnit: true,
       endTime: true,
+      isPublished: true,
     },
   });
 }
 
-// async getCompletedAssessmentsByCourseUnit(courseId: number, courseUnit: string) {
-//   const currentDateTime = new Date();
-
-//   // Log to ensure correct values
-//   console.log('Checking courseId:', courseId, 'courseUnit:', courseUnit);
-
-//   // Fetch the course and validate the courseUnit exists
-//   const course = await this.prisma.courses.findUnique({
-//     where: { id: courseId },
-//     select: {
-//       courseName: true,
-//       facultyName: true,
-//       courseUnits: true,
-//     },
-//   });
-
-//   if (!course) {
-//     throw new Error(`Course with ID ${courseId} does not exist.`);
-//   }
-
-//   // Log course units available
-//   console.log('Course units available:', course.courseUnits);
-
-//   // Validate courseUnit
-//   if (!course.courseUnits.some(unit => unit.trim().toLowerCase() === courseUnit.trim().toLowerCase())) {
-//     throw new Error(`Course unit "${courseUnit}" does not exist for the course "${course.courseName}".`);
-//   }
-
-//   // Fetch all completed assessments for the course and courseUnit
-//   const completedAssessments = await this.prisma.addAssessment.findMany({
-//     where: {
-//       courseId, // Match the course ID
-//       courseUnit, // Match the specific course unit
-//       endTime: {
-//         lte: currentDateTime, // End time has passed (completed assessments)
-//       },
-//     },
-//     select: {
-//       title: true,
-//       courseUnit: true,
-//       endTime: true, // Just an additional check to make sure it's in the past
-//     },
-//   });
-
-//   // If no completed assessments are found, return a helpful message
-//   if (completedAssessments.length === 0) {
-//     return { message: `No completed assessments found for course unit "${courseUnit}" in course "${course.courseName}".` };
-//   }
-
-//   // Return the list of completed assessments
-//   return completedAssessments;
-// }
 
 async publishExamResults(id: number) {
   const examPaperResults = await this.prisma.addAssessment.findUnique({
