@@ -6,8 +6,8 @@ import { AuthService } from './auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
-import { FaqModule } from './faq.module'; // Correct import path
-import { IssueReportModule } from './issue-report.module';
+import { FaqModule } from '../FAQ/faq.module'; // Correct import path
+import { IssueReportModule } from '../reports/issue-report.module';
 
 
 @Module({

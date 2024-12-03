@@ -1,7 +1,7 @@
 // src/faq/faq.service.ts
 import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateFAQDto } from './dto/create-faq.dto'; // Ensure DTO is imported
+import { CreateFAQDto } from './faqDTO/create-faq.dto'; // Ensure DTO is imported
 import { FAQ } from '@prisma/client';
 
 @Injectable()

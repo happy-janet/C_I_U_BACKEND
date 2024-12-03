@@ -22,14 +22,14 @@ import { LoginDto } from './dto/login.dto';
 import { AuthService } from '../students/auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { FAQService } from '../students/faq.service';
+import { FAQService } from '../FAQ/faq.service';
 import { FAQ } from '@prisma/client';
-import { IssueReportService } from '../students/issue-report.service';
+import { IssueReportService } from '../reports/issue-report.service';
 import { IssueReport } from '@prisma/client';
 import { RolesGuard } from './roles.guard';
 import { Roles } from './role.decorator';
-import { CreateFAQDto } from  './dto/create-faq.dto'
-import { ReportIssueDto } from './dto/report-issue.dto';
+import { CreateFAQDto } from  '../FAQ/faqDTO/create-faq.dto'
+import { ReportIssueDto } from '../reports/reportsDTO/report-issue.dto';
 import {SubmissionDto} from './dto/SubmitAssessmentDto.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { generateNumericToken } from './token-generator';

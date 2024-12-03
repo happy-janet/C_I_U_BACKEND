@@ -4,8 +4,8 @@ import {
   Inject,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { NotificationGateway } from '../notification/notification.gateway';
+import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationGateway } from './notification.gateway';
 
 @Injectable()
 export class NotificationService {

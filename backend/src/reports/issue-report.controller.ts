@@ -2,7 +2,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { IssueReportService } from './issue-report.service';
 import { IssueReport } from '@prisma/client';
-import { ReportIssueDto } from './dto/report-issue.dto';
+import { ReportIssueDto } from './reportsDTO/report-issue.dto';
 
 @Controller('issues')
 export class IssueReportController {
