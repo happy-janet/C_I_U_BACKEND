@@ -1,7 +1,14 @@
 import { Module } from '@nestjs/common';
-import { SignalingGateway } from './signaling.gateway';
+import {  ExamMonitoringService } from './signaling.service';
+import { ConfigModule } from '@nestjs/config';
+
 
 @Module({
-  providers: [SignalingGateway],
+  providers: [ ExamMonitoringService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
+  ],
 })
 export class SignalingModule {}
