@@ -2,9 +2,9 @@
 import { Controller, Post, Body, Get, UseGuards,Query,Req ,Param} from '@nestjs/common'; // Import UseGuards
 import { FAQService } from './faq.service';
 import { CreateFAQDto } from './faqDTO/create-faq.dto';
-import { JwtAuthGuard } from '../students/jwt-auth.guard'; // Correct import path
-import { RolesGuard } from '../students/roles.guard'; // Correct import path
-import { Roles } from '../students/role.decorator'; // Correct import path
+import { JwtAuthGuard } from '../students/studentauth/jwt-auth.guard'; // Correct import path
+import { RolesGuard } from '../students/studentmanagement/roles.guard'; // Correct import path
+import { Roles } from '../students/studentmanagement/role.decorator'; // Correct import path
 import { FAQ } from '@prisma/client';
 // import { ManualAssessmentService } from '../lectures/addAssessment.service';
 @Controller('faqs')

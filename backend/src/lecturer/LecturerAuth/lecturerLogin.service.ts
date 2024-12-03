@@ -5,7 +5,7 @@ import { ForgotPasswordDto } from './LecturerForgotPasswordDto/forgot-password.d
 import { ResetPasswordDto } from './LecturerForgotPasswordDto/reset-password.dto';
 import { CreateLecturerSignUpDto } from '../lecturerManagement/lecturerManagementDto/Register-lecturer.dto';
 import { LecturesService } from '../lecturerManagement/lecturer.service'; 
-import { sendEmail } from '../../students/sendEmail';
+import { sendEmail } from '../../students/studentmanagement/sendEmail';
 import { generateNumericToken } from '../token-generator';
 import * as bcrypt from 'bcrypt';
 

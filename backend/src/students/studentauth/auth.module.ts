@@ -4,9 +4,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service'; // Correct path for AuthService
 import { AuthController } from './auth.controller'; // Import AuthController
 import { JwtStrategy } from './jwt.strategy';
-import { PrismaService } from '../../prisma/prisma.service';
-import { DashboardController } from './studentsdashboard.controller'; // Import DashboardController
-import { RolesGuard } from './roles.guard'; // Import RolesGuard
+import { PrismaService } from '../../../prisma/prisma.service';
+import { DashboardController } from '../studentmanagement/studentsdashboard.controller'; // Import DashboardController
+import { RolesGuard } from '../studentmanagement/roles.guard'; // Import RolesGuard
 import { Reflector } from '@nestjs/core';
 
 @Module({

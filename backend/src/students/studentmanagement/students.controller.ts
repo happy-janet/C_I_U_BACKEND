@@ -16,22 +16,22 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { StudentsService } from './students.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { LoginDto } from './dto/login.dto';
-import { AuthService } from '../students/auth.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { FAQService } from '../FAQ/faq.service';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { ResetPasswordDto } from '../dto/reset-password.dto';
+import { LoginDto } from '../dto/login.dto';
+import { AuthService } from '../studentauth/auth.service';
+import { JwtAuthGuard } from '../studentauth/jwt-auth.guard';
+import { ForgotPasswordDto } from '../dto/forgot-password.dto';
+import { FAQService } from '../../FAQ/faq.service';
 import { FAQ } from '@prisma/client';
-import { IssueReportService } from '../reports/issue-report.service';
+import { IssueReportService } from '../../reports/issue-report.service';
 import { IssueReport } from '@prisma/client';
 import { RolesGuard } from './roles.guard';
 import { Roles } from './role.decorator';
-import { CreateFAQDto } from  '../FAQ/faqDTO/create-faq.dto'
-import { ReportIssueDto } from '../reports/reportsDTO/report-issue.dto';
-import {SubmissionDto} from './dto/SubmitAssessmentDto.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateFAQDto } from  '../../FAQ/faqDTO/create-faq.dto'
+import { ReportIssueDto } from '../../reports/reportsDTO/report-issue.dto';
+import {SubmissionDto} from '../dto/SubmitAssessmentDto.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { generateNumericToken } from './token-generator';
 import { sendEmail } from './sendEmail';
 import * as bcrypt from 'bcrypt';

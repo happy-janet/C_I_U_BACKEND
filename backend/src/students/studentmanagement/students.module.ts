@@ -1,13 +1,13 @@
 // src/students/students.module.ts
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './jwt.strategy';
-import { AuthService } from './auth.service';
-import { PrismaService } from '../../prisma/prisma.service';
+import { JwtStrategy } from '../studentauth/jwt.strategy';
+import { AuthService } from '../studentauth/auth.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
-import { FaqModule } from '../FAQ/faq.module'; // Correct import path
-import { IssueReportModule } from '../reports/issue-report.module';
+import { FaqModule } from '../../FAQ/faq.module'; // Correct import path
+import { IssueReportModule } from '../../reports/issue-report.module';
 
 
 @Module({
