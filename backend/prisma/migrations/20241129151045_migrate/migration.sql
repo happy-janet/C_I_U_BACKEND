@@ -21,7 +21,7 @@ CREATE TABLE "AdminSignUp" (
     "last_name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "role" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "password" TEXT,
     "resetToken" TEXT,
     "resetTokenExpiry" TIMESTAMP(3),
 
@@ -88,7 +88,6 @@ CREATE TABLE "Score" (
     "userId" INTEGER NOT NULL,
     "addAssessmentId" INTEGER,
     "manualAssessmentId" INTEGER,
-    "isPublished" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Score_pkey" PRIMARY KEY ("id")
 );
@@ -130,6 +129,7 @@ CREATE TABLE "addAssessment" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "status" TEXT NOT NULL DEFAULT 'draft',
     "isDraft" BOOLEAN NOT NULL DEFAULT true,
+    "isPublished" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "addAssessment_pkey" PRIMARY KEY ("id")
 );
