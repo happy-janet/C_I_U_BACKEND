@@ -9,3 +9,5 @@ export class DashboardController {
     return { message: 'Welcome to the Dashboard' }; 
   }
 }
+// To the lecturer dashboard
+

@@ -2,10 +2,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
+
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 
 model LecturerSignUp {
   id               Int       @id @default(autoincrement())
@@ -26,7 +29,7 @@ model AdminSignUp {
   last_name        String
   email            String    @unique
   role             String
-  password         String
+  password         String?
   resetToken       String?   @unique
   resetTokenExpiry DateTime?
 }
@@ -64,11 +67,14 @@ model IssueReport {
   student          users    @relation("StudentReports", fields: [studentId], references: [id])
 }
 
+
+
 model FAQ {
   id       Int    @id @default(autoincrement())
   question String
   answer   String
 }
+
 
 model Submission {
   id           Int              @id @default(autoincrement())
@@ -82,6 +88,7 @@ model Submission {
   student      users            @relation(fields: [studentId], references: [id])
 }
 
+
 model Score {
   id               Int               @id @default(autoincrement())
   score            Int
@@ -89,11 +96,9 @@ model Score {
   userId           Int
   addAssessmentId  Int?              // New field for addAssessment
   manualAssessmentId Int?            // New field for manualAssessment
-
   student          users             @relation(fields: [userId], references: [id], name: "StudentScores")
   addAssessment    addAssessment?    @relation(fields: [addAssessmentId], references: [id], name: "AssessmentScores", map: "Score_addAssessmentId_assessment_fkey")
   manualAssessment ManualAssessment? @relation(fields: [manualAssessmentId], references: [id], name: "ManualAssessmentScores", map: "Score_manualAssessmentId_manual_fkey")
-
   @@unique([addAssessmentId, userId]) // Prevent duplicate addAssessment scores per user
   @@unique([manualAssessmentId, userId]) // Prevent duplicate manualAssessment scores per user
 }
@@ -109,7 +114,6 @@ model courses {
   addAssessments    addAssessment[]
   users             users[]
   students          users[]            @relation("UserCourses")
-
 }
 
 
@@ -118,7 +122,6 @@ model LoginHistory {
   studentId  Int
   loginTime  DateTime @default(now())
   ipAddress  String?
-
   // Relation to the `users` model
   student    users    @relation("StudentLoginHistory", fields: [studentId], references: [id])
 }
@@ -141,10 +144,11 @@ model addAssessment {
   isDraft        Boolean        @default(true)
   questions      Question[]     @relation("AssessmentQuestions")
   course         courses        @relation(fields: [courseId], references: [id])
-  // Relationship with Score
+  isPublished       Boolean    @default(false)
   scores         Score[]        @relation("AssessmentScores")
   questionBanks  QuestionBank[]
 }
+
 
 model Question {
   id           Int    @id @default(autoincrement())
@@ -156,6 +160,7 @@ model Question {
   assessment   addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
   questionBanks QuestionBank[] // Many-to-many relationship with question banks
 }
+
 
 model ManualAssessment {
   id             Int              @id @default(autoincrement())
@@ -179,6 +184,8 @@ model ManualAssessment {
   scores         Score[]          @relation("ManualAssessmentScores")
 }
 
+
+
 model QuestionManual {
   id           Int              @id @default(autoincrement())
   content      String
@@ -187,6 +194,8 @@ model QuestionManual {
   assessmentId Int
   assessment   ManualAssessment @relation(fields: [assessmentId], references: [id])
 }
+
+
 
 model ExamProgress {
   id              Int      @id @default(autoincrement())
@@ -198,10 +207,10 @@ model ExamProgress {
   status          String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-
-
   @@unique([studentId, examId])
 }
+
+
 
 model QuestionBank {
   id             Int           @id @default(autoincrement())
@@ -214,6 +223,8 @@ model QuestionBank {
   updatedAt      DateTime      @updatedAt
 }
 
+
+
 model Notification {
   id        Int      @id @default(autoincrement())
   userId    Int
@@ -222,6 +233,5 @@ model Notification {
   eventType String
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
-
   user      users @relation(fields: [userId], references: [id])
 }

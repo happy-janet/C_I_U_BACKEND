@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { UpdateQuestionDto, UploadExamPaperDto } from './uploadAssessmentsDto/uploadExam-paper.dto';
+import { CreateQuestionDto } from '../Assessmentquestion/AssessmentquestionDto/Assessmentquestion.dto';
 import * as fs from 'fs';
 import * as csvParser from 'csv-parser';
 import * as moment from 'moment';
@@ -165,50 +166,51 @@ async getCourseUnits(courseId: number) {
     });
   }
 
+    // Add a question in an exam paper
+    async addQuestion(assessmentId: number, createQuestionDto: CreateQuestionDto) {
+      const { content, options, answer, questionNumber } = createQuestionDto;
+  
+      if (!options.includes(answer)) {
+        throw new Error('Answer must be one of the options.');
+      }
+  
+
+        // Get the highest question number for the assessment
+        const maxQuestion = await this.prisma.question.findFirst({
+          where: { assessmentId },
+          orderBy: { questionNumber: 'desc' },
+          select: { questionNumber: true },
+        });
+
+        // Determine the next question number
+        const nextQuestionNumber = maxQuestion ? maxQuestion.questionNumber + 1 : 1;
+
+
+      return this.prisma.question.create({
+        data: {
+          content,
+          options,
+          answer,
+          questionNumber: nextQuestionNumber,
+          assessment: {
+            connect: { id: assessmentId }, 
+          },
+        },
+      });
+    }
   // Preview an exam paper along with its questions
   async previewExamPaper(id: number) {
-    // Fetch the exam paper details
     const examPaper = await this.prisma.addAssessment.findUnique({
       where: { id },
       include: { questions: true },
     });
-  
+
     if (!examPaper) {
       throw new NotFoundException('Exam paper not found');
     }
-  
-    // Fetch the lecturer's details using the createdBy field
-    const lecturer = await this.prisma.lecturerSignUp.findUnique({
-      where: { id: Number(examPaper.createdBy) },
-      select: {
-        first_name: true,
-        last_name: true,
-      },
-    });
-  
-    if (!lecturer) {
-      throw new NotFoundException('Lecturer not found');
-    }
-  
-    // Replace the createdBy field with the lecturer's full name
-    return {
-      ...examPaper,
-      createdBy: `${lecturer.first_name} ${lecturer.last_name}`,
-    };
+
+    return examPaper;
   }
-  
-  // async previewExamPaper(id: number) {
-  //   const examPaper = await this.prisma.addAssessment.findUnique({
-  //     where: { id },
-  //     include: { questions: true },
-  //   });
-
-  //   if (!examPaper) {
-  //     throw new NotFoundException('Exam paper not found');
-  //   }
-
-  //   return examPaper;
-  // }
 
 
 // In exam-paper.service.ts
@@ -298,6 +300,20 @@ async getCompletedAssessments() {
 //   return completedAssessments;
 // }
 
+async publishExamResults(id: number) {
+  const examPaperResults = await this.prisma.addAssessment.findUnique({
+    where: { id },
+  });
+
+  if (!examPaperResults) {
+    throw new NotFoundException('Exam Result  not found');
+  }
+
+  return this.prisma.addAssessment.update({
+    where: { id },
+    data: { isPublished: true}, 
+  });
+}
 
 
 
@@ -373,13 +389,28 @@ async countAllExamPapers() {
   const coursesCount = await this.prisma.courses.count();
   const studentsCount = await this.prisma.users.count();
   const upcomingExamsCount = await this.prisma.addAssessment.count({
-    where: {  scheduledDate: { gt: new Date() } },
+    where: {  scheduledDate: { gt: new Date() } ,
+              isDraft: false ,
+            },
   });
+  const questionBankCount = await this.prisma.questionBank.count();
+  const ongoingAssessmentCount = await this.prisma.addAssessment.count({
+    where: {
+      isDraft: false, 
+      AND: [
+        { scheduledDate: { lte: new Date() } },
+        { endTime: { gte: new Date() } },
+      ],
+    },
+  });
+  
 
   return {
     coursesCount,
     studentsCount,
     upcomingExamsCount,
+    questionBankCount,
+    ongoingAssessmentCount,
   };
 }
 
