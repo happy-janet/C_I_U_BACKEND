@@ -40,15 +40,6 @@ async getScoresByAssessmentId(
 }
 
 
-@Patch(':id/publishResults')
-    async publishExamResults(@Param('id') id: string, @Res() res: Response) {
-      try {
-        const publishedExamResults = await this.scoresService.publishExamResults(parseInt(id));
-        return res.json(publishedExamResults);
-      } catch (error) {
-        return res.status(500).json({ message: error.message });
-      }
-    }
 
   // Update an existing score
   @Put(':scoreId')

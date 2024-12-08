@@ -11,6 +11,7 @@ export class UploadExamPaperDto {
   courseId: string; // Ensure this field exists in the database
   status?: string; // Optional status field
   isDraft?: boolean; // Optional boolean property to indicate draft status
+  isPublished?: boolean; // Optional boolean property to indicate draft status
   startTime: any;
 }
 

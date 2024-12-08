@@ -1,12 +1,12 @@
 import { Injectable, UnauthorizedException, Logger, HttpException, HttpStatus,InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from '../../prisma/prisma.service';
-import { LoginDto } from './dto/login.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { generateNumericToken } from './token-generator';
-import { sendEmail } from './sendEmail';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { LoginDto } from '../dto/login.dto';
+import { ForgotPasswordDto } from '../dto/forgot-password.dto';
+import { ResetPasswordDto } from '../dto/reset-password.dto';
+import { generateNumericToken } from '../studentmanagement/token-generator';
+import { sendEmail } from '../studentmanagement/sendEmail';
 
 @Injectable()
 export class AuthService {

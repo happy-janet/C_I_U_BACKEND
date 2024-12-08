@@ -3,7 +3,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateAdminSignUpDto } from './adminRegistrationManagementDto/create-admin.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from '../../lecturer/lecturerManagement/lecturerManagementDto/update-lecturer.dto';
-import { sendEmail } from '../../students/sendEmail';
+import { sendEmail } from '../../students/studentmanagement/sendEmail';
 import { generateNumericToken } from './token';
 import { SetPasswordDto } from './adminRegistrationManagementDto/set-password.dto';
 

@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ForgotPasswordDto } from './adminForgot-resetPasswordDto/forgot-password.dto';
 import { ResetPasswordDto } from './adminForgot-resetPasswordDto/reset-password.dto';
-import { sendEmail } from '../../students/sendEmail';
+import { sendEmail } from '../../students/studentmanagement/sendEmail';
 import { generateNumericToken } from './adminForgot-resetPassword/token-generator';
 
 

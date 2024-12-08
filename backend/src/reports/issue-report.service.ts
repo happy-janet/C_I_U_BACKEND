@@ -1,9 +1,9 @@
 // src/issue-report/issue-report.service.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { NotificationGateway } from './notification.gateway';
+import { NotificationGateway } from './issue_reportnotification.gateway';
 import { IssueReport } from '@prisma/client';
-import { ReportIssueDto } from './dto/report-issue.dto';
+import { ReportIssueDto } from './reportsDTO/report-issue.dto';
 
 @Injectable()
 export class IssueReportService {

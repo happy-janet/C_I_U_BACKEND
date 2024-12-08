@@ -51,6 +51,10 @@ export class UpdatemanualAssessmentDto {
   @IsOptional()
   isDraft?: boolean; // Ensure this property is included
 
+  @IsBoolean()
+  @IsOptional()
+  isPublished?: boolean; // Ensure this property is included
+
 
   @IsOptional()
   @ValidateNested({ each: true })

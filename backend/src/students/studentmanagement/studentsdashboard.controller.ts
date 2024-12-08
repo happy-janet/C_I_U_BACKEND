@@ -1,5 +1,5 @@
 import { Controller, Get, UseGuards, Request } from '@nestjs/common';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from '../studentauth/jwt-auth.guard';
 
 @Controller('dashboard')
 export class DashboardController {

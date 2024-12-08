@@ -7,7 +7,7 @@ import {
   Body,
   BadRequestException,
 } from '@nestjs/common';
-import { NotificationService } from '../notification/notification.service';
+import { NotificationService } from './notification.service';
 
 @Controller('notifications')
 export class NotificationController {

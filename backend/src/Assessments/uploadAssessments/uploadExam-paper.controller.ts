@@ -30,6 +30,17 @@ export class ExamPaperController {
   }
 
 
+
+  @Patch(':id/publishResults')
+    async publishExamResults(@Param('id') id: string, @Res() res: Response) {
+      try {
+        const publishedExamResults = await this.examPaperService.publishExamResults(parseInt(id));
+        return res.json(publishedExamResults);
+      } catch (error) {
+        return res.status(500).json({ message: error.message });
+      }
+    }
+
   @Get('completedAssessments')
   async getCompletedAssessments() {
     return this.examPaperService.getCompletedAssessments();

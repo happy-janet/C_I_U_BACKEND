@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LecturesModule } from './lecturer/lecturerManagement/lecturer.module';
 import { ConfigModule } from '@nestjs/config';
-import { StudentsModule } from './students/students.module';
+import { StudentsModule } from './students/studentmanagement/students.module';
 import { AdminModule } from './admin/adminRegistrationManagement/admin.module';
 import { ExamProgressModule } from './students/exam-progress.module';
 
@@ -12,20 +12,20 @@ import { ExamProgressModule } from './students/exam-progress.module';
 import { SignalingModule } from './signaling/signaling.module';
 
 
-import { ScoresModule } from './students/scores.module';
+import { ScoresModule } from './scores/scores.module';
 // import { AuthModule } from './lectures/auth.module'; 
 import { PrismaModule } from '../prisma/prisma.module';
 import { CoursesModule } from './Courses/courses.module'; 
-import { IssueReportController } from './students/issue-reprt.controller'; 
-import { FAQService } from './students/faq.service';
-import { FAQController } from './students/faq.controller';
-import { NotificationGateway } from './students/notification.gateway';
-import { IssueReportService } from './students/issue-report.service';
-import { RolesGuard } from './students/roles.guard';
-import { StudentAuthModule } from './students/auth.module';
+import { IssueReportController } from './reports/issue-report.controller'; 
+import { FAQService } from './FAQ/faq.service';
+import { FAQController } from './FAQ/faq.controller';
+import { NotificationGateway } from './reports/issue_reportnotification.gateway';
+import { IssueReportService } from './reports/issue-report.service';
+import { RolesGuard } from './students/studentmanagement/roles.guard';
+import { StudentAuthModule } from './students/studentauth/auth.module';
 // import { AssessmentModule } from './students/assessement.module';
-import { FaqModule } from './students/faq.module';
-import { NotificationModule } from './students/notification/notification.module'
+import { FaqModule } from './FAQ/faq.module';
+import { NotificationModule } from './notifications/notification.module'
 import { QuestionBankModule } from './questionBank/questionbank.module';
 
 
