@@ -5,7 +5,7 @@ import { LecturesModule } from './lecturer/lecturerManagement/lecturer.module';
 import { ConfigModule } from '@nestjs/config';
 import { StudentsModule } from './students/students.module';
 import { AdminModule } from './admin/adminRegistrationManagement/admin.module';
-import { ExamModule } from './students/exam.module';
+import { ExamProgressModule } from './students/exam-progress.module';
 
 
 // proctoring livestream
@@ -51,7 +51,7 @@ import { QuestionsModule } from './Assessments/Assessmentquestion/Assessmentques
     AdminModule,
     PrismaModule,
     CoursesModule,
-    ExamModule,
+    ExamProgressModule,
     ScoresModule,
     QuestionBankModule,
 

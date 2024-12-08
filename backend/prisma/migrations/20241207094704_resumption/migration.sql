@@ -181,11 +181,14 @@ CREATE TABLE "QuestionManual" (
 CREATE TABLE "ExamProgress" (
     "id" SERIAL NOT NULL,
     "studentId" INTEGER NOT NULL,
+    "addAssessmentId" INTEGER,
+    "manualAssessmentId" INTEGER,
     "examId" INTEGER NOT NULL,
-    "currentQuestion" INTEGER NOT NULL,
-    "answers" JSONB NOT NULL,
-    "timeSpent" INTEGER NOT NULL,
-    "status" TEXT NOT NULL,
+    "currentQuestion" INTEGER NOT NULL DEFAULT 1,
+    "answers" JSONB,
+    "timeSpent" INTEGER NOT NULL DEFAULT 0,
+    "isCompleted" BOOLEAN NOT NULL DEFAULT false,
+    "status" TEXT NOT NULL DEFAULT 'in-progress',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -257,6 +260,12 @@ CREATE UNIQUE INDEX "Score_addAssessmentId_userId_key" ON "Score"("addAssessment
 CREATE UNIQUE INDEX "Score_manualAssessmentId_userId_key" ON "Score"("manualAssessmentId", "userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "ExamProgress_studentId_addAssessmentId_key" ON "ExamProgress"("studentId", "addAssessmentId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ExamProgress_studentId_manualAssessmentId_key" ON "ExamProgress"("studentId", "manualAssessmentId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "ExamProgress_studentId_examId_key" ON "ExamProgress"("studentId", "examId");
 
 -- CreateIndex
@@ -306,6 +315,15 @@ ALTER TABLE "ManualAssessment" ADD CONSTRAINT "ManualAssessment_courseId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "QuestionManual" ADD CONSTRAINT "QuestionManual_assessmentId_fkey" FOREIGN KEY ("assessmentId") REFERENCES "ManualAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ExamProgress" ADD CONSTRAINT "ExamProgress_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ExamProgress" ADD CONSTRAINT "ExamProgress_addAssessmentId_fkey" FOREIGN KEY ("addAssessmentId") REFERENCES "addAssessment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ExamProgress" ADD CONSTRAINT "ExamProgress_manualAssessmentId_fkey" FOREIGN KEY ("manualAssessmentId") REFERENCES "ManualAssessment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "QuestionBank" ADD CONSTRAINT "QuestionBank_assessmentId_fkey" FOREIGN KEY ("assessmentId") REFERENCES "addAssessment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
