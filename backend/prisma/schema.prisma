@@ -35,28 +35,28 @@ model AdminSignUp {
 }
 
 model users {
-  id               Int           @id @default(autoincrement())
+  id               Int            @id @default(autoincrement())
   first_name       String
   last_name        String
-  email            String        @unique
+  email            String         @unique
   program          String
-  createdAt        DateTime      @default(now())
+  createdAt        DateTime       @default(now())
   lastLogin        DateTime?
-  registrationNo   String        @unique
+  registrationNo   String         @unique
   password         String
   role             String
-  resetToken       String?       @unique
+  resetToken       String?        @unique
   resetTokenExpiry DateTime?
   courseId         Int
-  issueReports     IssueReport[] @relation("StudentReports")
+  issueReports     IssueReport[]  @relation("StudentReports")
   submissions      Submission[]
-  course           courses       @relation(fields: [courseId], references: [id])
-  courses          courses[]     @relation("UserCourses")
-  scores           Score[]       @relation("StudentScores")
+  course           courses        @relation(fields: [courseId], references: [id])
+  courses          courses[]      @relation("UserCourses")
+  scores           Score[]        @relation("StudentScores")
   notifications    Notification[] // Relation to Notification model
   loginHistory     LoginHistory[] @relation("StudentLoginHistory") // Corrected relation field
+  examProgress     ExamProgress[] @relation("UserExamProgress")
 }
-
 
 model IssueReport {
   id               Int      @id @default(autoincrement())
@@ -103,7 +103,6 @@ model Score {
   @@unique([manualAssessmentId, userId]) // Prevent duplicate manualAssessment scores per user
 }
 
-
 model courses {
   id                Int                @id @default(autoincrement())
   facultyName       String
@@ -116,16 +115,14 @@ model courses {
   students          users[]            @relation("UserCourses")
 }
 
-
 model LoginHistory {
   id         Int      @id @default(autoincrement())
   studentId  Int
   loginTime  DateTime @default(now())
   ipAddress  String?
   // Relation to the `users` model
-  student    users    @relation("StudentLoginHistory", fields: [studentId], references: [id])
+  student users @relation("StudentLoginHistory", fields: [studentId], references: [id])
 }
-
 
 model addAssessment {
   id             Int            @id @default(autoincrement())
@@ -147,18 +144,19 @@ model addAssessment {
   isPublished       Boolean    @default(false)
   scores         Score[]        @relation("AssessmentScores")
   questionBanks  QuestionBank[]
+  examProgress   ExamProgress[] @relation("AddAssessmentProgress")
 }
 
 
 model Question {
-  id           Int    @id @default(autoincrement())
-  questionNumber Int      
-  content      String
-  answer       String?
-  options      Json
-  assessmentId Int
-  assessment   addAssessment @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
-  questionBanks QuestionBank[] // Many-to-many relationship with question banks
+  id             Int            @id @default(autoincrement())
+  questionNumber Int
+  content        String
+  answer         String?
+  options        Json
+  assessmentId   Int
+  assessment     addAssessment  @relation("AssessmentQuestions", fields: [assessmentId], references: [id])
+  questionBanks  QuestionBank[] // Many-to-many relationship with question banks
 }
 
 
@@ -182,6 +180,7 @@ model ManualAssessment {
   submissions    Submission[]
   // Relationship with Score
   scores         Score[]          @relation("ManualAssessmentScores")
+  examProgress   ExamProgress[]   @relation("ManualAssessmentProgress")
 }
 
 
@@ -198,18 +197,32 @@ model QuestionManual {
 
 
 model ExamProgress {
-  id              Int      @id @default(autoincrement())
-  studentId       Int
-  examId          Int
-  currentQuestion Int
-  answers         Json
-  timeSpent       Int
-  status          String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  @@unique([studentId, examId])
-}
+  id                 Int      @id @default(autoincrement())
+  studentId          Int
+  addAssessmentId    Int? // Nullable for ManualAssessment progress
+  manualAssessmentId Int? // Nullable for AddAssessment progress
+  examId             Int      // Add examId field here (if required)
+  currentQuestion    Int      @default(1) // Default to the first question
+  answers            Json?
+  timeSpent          Int      @default(0) // Time in seconds or minutes
+  isCompleted        Boolean  @default(false) // Track exam completion status
+  status             String   @default("in-progress") // Add status field
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
+  // Relation to the `users` model (student)
+  student            users   @relation(fields: [studentId], references: [id], name: "UserExamProgress")
+
+  // Relation to the `addAssessment` model
+  addAssessment      addAssessment? @relation(fields: [addAssessmentId], references: [id], name: "AddAssessmentProgress")
+  // Relation to the `ManualAssessment` model
+  manualAssessment   ManualAssessment? @relation(fields: [manualAssessmentId], references: [id], name: "ManualAssessmentProgress")
+
+  // Ensure each student can have only one progress entry per assessment type
+  @@unique([studentId, addAssessmentId])
+  @@unique([studentId, manualAssessmentId])
+  @@unique([studentId, examId]) // Add a unique constraint for studentId and examId if needed
+}
 
 
 model QuestionBank {
