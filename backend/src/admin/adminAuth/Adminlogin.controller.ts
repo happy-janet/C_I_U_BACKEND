@@ -21,8 +21,9 @@ export class AuthController {
 
       const token = await this.authService.login(user);
       return res.status(200).json({ message: 'Login successful', token, user });
-    } catch (error) {
-      return res.status(error.status || HttpStatus.UNAUTHORIZED).json({ message: error.message });
+    } catch (error: any) {
+      return res.status(error.status || HttpStatus.UNAUTHORIZED)
+        .json({ message: error.message || 'Unauthorized' });
     }
   }
   @Post('forgot-password')
