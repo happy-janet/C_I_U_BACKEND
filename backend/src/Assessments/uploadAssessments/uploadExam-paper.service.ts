@@ -581,13 +581,14 @@ export class ExamPaperService {
               answer: data.answer || '',
               options: parsedOptions,
             });
-          } catch (error) {
+          } catch (error: any) {
             console.error(
               'Error parsing row:',
-              error.message,
+              error.message || 'Unknown error',
               'Row data:',
-              data,
+              data
             );
+            throw error;
           }
         })
         .on('end', () => resolve(results))
