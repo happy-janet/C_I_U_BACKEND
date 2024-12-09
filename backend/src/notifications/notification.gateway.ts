@@ -5,7 +5,7 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { NotificationService } from '../notification/notification.service';
+import { NotificationService } from './notification.service';
 import { Inject, forwardRef } from '@nestjs/common';
 
 @WebSocketGateway({ cors: true })

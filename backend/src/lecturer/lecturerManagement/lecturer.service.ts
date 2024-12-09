@@ -3,7 +3,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateLecturerSignUpDto } from './lecturerManagementDto/Register-lecturer.dto';
 import { UpdateUserDto } from './lecturerManagementDto/update-lecturer.dto';
-import { sendEmail } from '../../students/sendEmail';
+import { sendEmail } from '../../students/studentmanagement/sendEmail';
 import { generateNumericToken } from '../token-generator';
 import * as bcrypt from 'bcrypt';
 import { SetInitialPasswordDto } from '../LecturerAuth/LecturerAuthDto/set-password.dto';
