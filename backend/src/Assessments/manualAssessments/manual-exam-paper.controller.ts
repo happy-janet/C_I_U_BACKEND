@@ -41,7 +41,8 @@ import {
         const publishedExamPaper = await this.examPaperService.publishExamPaper(parseInt(id));
         return res.json(publishedExamPaper);
       } catch (error) {
-        return res.status(500).json({ message: error.message });
+        const err = error as any;
+        return res.status(500).json({ message: err.message || 'Internal server error' });
       }
     }
   

@@ -37,9 +37,10 @@ export class ExamPaperController {
         const publishedExamResults = await this.examPaperService.publishExamResults(parseInt(id));
         return res.json(publishedExamResults);
       } catch (error) {
-        return res.status(500).json({ message: error.message });
-      }
-    }
+        const err = error as any;
+        return res.status(500).json({ message: err.message || 'Internal server error' });
+      }
+    }
 
   @Get('completedAssessments')
   async getCompletedAssessments() {
@@ -59,7 +60,8 @@ export class ExamPaperController {
       const publishedExamPaper = await this.examPaperService.publishExamPaper(parseInt(id));
       return res.json(publishedExamPaper);
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      const err = error as any;
+      return res.status(500).json({ message: err.message || 'Internal server error' });
     }
   }
 
@@ -69,7 +71,8 @@ export class ExamPaperController {
       const unpublishedExamPaper = await this.examPaperService.unpublishExamPaper(parseInt(id));
       return res.json(unpublishedExamPaper);
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      const err = error as any;
+      return res.status(500).json({ message: err.message || 'Internal server error' });
     }
   }
   
@@ -80,7 +83,8 @@ export class ExamPaperController {
       const approvalRequestedExamPaper = await this.examPaperService.requestApproval(parseInt(id));
       return res.json(approvalRequestedExamPaper);
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      const err = error as any;
+      return res.status(500).json({ message: err.message || 'Internal server error' });
     }
   }
 
@@ -91,7 +95,8 @@ export class ExamPaperController {
       const approvalExamPaper = await this.examPaperService.approval(parseInt(id));
       return res.json(approvalExamPaper);
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      const err = error as any;
+      return res.status(500).json({ message: err.message || 'Internal server error' });
     }
   }
  
@@ -102,7 +107,8 @@ export class ExamPaperController {
       const rejectionExamPaper = await this.examPaperService.rejection(parseInt(id));
       return res.json(rejectionExamPaper);
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      const err = error as any;
+      return res.status(500).json({ message: err.message || 'Internal server error' });
     }
   }
    // New route to get all exam papers

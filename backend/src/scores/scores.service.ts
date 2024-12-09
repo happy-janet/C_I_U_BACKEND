@@ -51,8 +51,9 @@ export class ScoresService {
       console.log('Created Score:', createdScore);
       return createdScore;
     } catch (error) {
-      console.error('Error creating score:', error.message);
-      throw new Error(`Error creating score: ${error.message}`);
+      const err = error as any;
+      console.error('Error creating score:', err.message);
+      throw new Error(`Error creating score: ${err.message}`);
     }
   }
 
