@@ -20,7 +20,7 @@ import {
   @WebSocketGateway({
     namespace: 'proctor',
     cors: {
-      origin: 'http://localhost:5173', // Your frontend URL
+      origin: 'https://ciu-online-exam-monitoring-system.netlify.app', // Your frontend URL
       methods: ['GET', 'POST'],
       credentials: true,
     },

@@ -6,7 +6,7 @@ export class WebSocketAdapter extends IoAdapter {
     const server = super.createIOServer(port, {
       ...options,
       cors: {
-        origin: 'http://localhost:5173',
+        origin: 'https://ciu-online-exam-monitoring-system.netlify.app',
         methods: ['GET', 'POST'],
         credentials: true,
       },

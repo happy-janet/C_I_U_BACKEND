@@ -51,7 +51,7 @@ export class AdminService {
       },
     });
 
-    const resetLink = `http://localhost:5173/admintoken-password-reset?token=${setupToken}`;
+    const resetLink = `https://ciu-online-exam-monitoring-system.netlify.app/admintoken-password-reset?token=${setupToken}`;
 
     // Prepare email content with a clickable button
     const emailHtml = `

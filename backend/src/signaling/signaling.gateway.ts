@@ -3,7 +3,7 @@
 
 // @WebSocketGateway({
 //   cors: {
-//     origin: 'http://localhost:5173', // Allow connections from your frontend's URL
+//     origin: 'https://ciu-online-exam-monitoring-system.netlify.app', // Allow connections from your frontend's URL
 //     methods: ['GET', 'POST'],
 //     allowedHeaders: ['Content-Type'],
 //     credentials: true,
@@ -40,7 +40,7 @@ import { Server, Socket } from 'socket.io';
 @WebSocketGateway({
   namespace: 'proctor',
   cors: {
-    origin: 'http://localhost:5173', // Adjust for your frontend URL
+    origin: 'https://ciu-online-exam-monitoring-system.netlify.app', // Adjust for your frontend URL
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     credentials: true,

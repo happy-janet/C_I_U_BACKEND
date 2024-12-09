@@ -129,7 +129,7 @@ export class StudentsService {
         },
       });
   
-      const resetLink = `http://localhost:5173/studenttoken-password-reset?token=${token}`;
+      const resetLink = `https://ciu-online-exam-monitoring-system.netlify.app/studenttoken-password-reset?token=${token}`;
   
       // Prepare email content with a clickable button
       const emailHtml = `

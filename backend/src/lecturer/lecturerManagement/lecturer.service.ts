@@ -41,7 +41,7 @@ export class LecturesService {
     });
 
     // Create a direct link to the token reset page
-    const resetLink = `http://localhost:5173/token-password-reset?token=${setupToken}`;
+    const resetLink = `https://ciu-online-exam-monitoring-system.netlify.app/token-password-reset?token=${setupToken}`;
 
     // Prepare email content with a clickable button
     const emailHtml = `
