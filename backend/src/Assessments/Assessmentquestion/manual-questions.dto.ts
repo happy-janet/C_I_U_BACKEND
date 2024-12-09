@@ -1,8 +1,16 @@
-import { IsNotEmpty, IsString, IsInt, IsArray, IsDateString, IsOptional, Matches, ValidateNested } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsArray,
+  IsDateString,
+  IsOptional,
+  Matches,
+  ValidateNested,
+} from 'class-validator';
 import { Type, Transform } from 'class-transformer';
-import { QuestionManualDto} from '../manualAssessments/manualAssessmentsDto/UpdateManualAssessment.dto';
-import * as moment from 'moment';
-
+import { QuestionManualDto } from '../manualAssessments/manualAssessmentsDto/UpdateManualAssessment.dto';
+import moment from 'moment';
 
 // Helper class for time validation
 export class TimeDto {
@@ -12,7 +20,6 @@ export class TimeDto {
   })
   time: string;
 }
-
 
 // DTO for creating a new manual assessment
 export class CreateManualAssessmentDto {
@@ -81,9 +88,6 @@ export class CreateManualAssessmentDto {
   questions: QuestionManualDto[];
 }
 
-
-
-
 export class CreateQuestionManualDto {
   @IsString()
   @IsNotEmpty()
@@ -95,8 +99,6 @@ export class CreateQuestionManualDto {
   @IsNotEmpty()
   correctAnswer: any; // Correct answer can be a string or object, based on your structure
 }
-
-
 
 export class UpdateQuestionManualDto {
   @IsOptional()
@@ -110,5 +112,3 @@ export class UpdateQuestionManualDto {
   @IsOptional()
   correctAnswer?: any;
 }
-
-
