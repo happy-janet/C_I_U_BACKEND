@@ -56,6 +56,8 @@ export class ScoresService {
     }
   }
 
+  
+
   // Get all scores
   async getAllScores(): Promise<Score[]> {
     return this.prisma.score.findMany();
