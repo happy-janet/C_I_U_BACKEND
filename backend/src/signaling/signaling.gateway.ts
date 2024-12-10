@@ -38,6 +38,7 @@ import { WebSocketGateway, SubscribeMessage, WebSocketServer, OnGatewayConnectio
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
+  namespace: 'proctor',
   cors: {
     origin: 'http://localhost:5173', // Adjust for your frontend URL
     methods: ['GET', 'POST'],

@@ -4,16 +4,34 @@ import { CreateAdminSignUpDto } from './adminRegistrationManagementDto/create-ad
 import { AdminService } from './admin.service'; 
 import { UpdateUserDto } from '../../lecturer/lecturerManagement/lecturerManagementDto/update-lecturer.dto';
 import { JwtAuthGuard } from '../adminAuth/JwtAuthGuard';
+import { SetPasswordDto } from './adminRegistrationManagementDto/set-password.dto';
+
 @Controller('adminReg')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {} 
 
   @Post()
-  async create(@Body() createAdminSignUpDto: CreateAdminSignUpDto) {
-    return await this.adminService.create(createAdminSignUpDto); 
+  async register(@Body() createAdminSignUpDto: CreateAdminSignUpDto) {
+    return this.adminService.registerAdmin(createAdminSignUpDto);
   }
 
-  // Update admin by ID
+  
+  
+  
+  @Post('set-password')
+    async setPassword(@Body() body: { token: string; password: string; confirmPassword: string }): Promise<{ message: string }> {
+        const { token, password, confirmPassword } = body;
+
+        // Delegate to the service layer
+        const message = await this.adminService.setPassword(token, password, confirmPassword);
+
+        return { message };
+    }
+
+
+
+
+// Update admin by ID
   @Patch(':id')
   async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.adminService.updateUser(id, updateUserDto);
