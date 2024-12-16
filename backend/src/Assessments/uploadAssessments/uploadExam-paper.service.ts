@@ -510,6 +510,8 @@ export class ExamPaperService {
     };
   }
 
+  
+
   // Delete all questions associated with an assessment
   async deleteAllQuestions(assessmentId: number) {
     const assessment = await this.prisma.addAssessment.findUnique({

@@ -17,14 +17,21 @@ import {
     proctors: Set<string>;
   }
   
+
+  const isProduction = process.env.NODE_ENV === 'production';
+  const frontendUrl = isProduction
+    ? 'https://ciu-online-exam-monitoring-system.netlify.app' // Production URL
+    : 'http://localhost:3000'; // Localhost URL for development
+  
   @WebSocketGateway({
     namespace: 'proctor',
     cors: {
-      origin: 'https://ciu-online-exam-monitoring-system.netlify.app', // Your frontend URL
+      origin: frontendUrl,
       methods: ['GET', 'POST'],
       credentials: true,
     },
   })
+  
   export class ProctorGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
     server: Server;
