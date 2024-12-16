@@ -18,10 +18,22 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: 'https://ciu-online-exam-monitoring-system.netlify.app', // Allow your React app's URL
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        'http://localhost:5173', // Local development
+        'https://ciu-online-exam-monitoring-system.netlify.app', // Production
+      ];
+  
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow the request
+      } else {
+        callback(new Error('Not allowed by CORS')); // Block the request
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    credentials: true, // Allow cookies and credentials
   });
+  
 
 
 
