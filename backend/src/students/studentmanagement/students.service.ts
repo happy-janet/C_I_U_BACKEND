@@ -129,7 +129,7 @@ export class StudentsService {
         },
       });
   
-      const resetLink = `http://localhost:5173/studenttoken-password-reset?token=${token}`;
+      const resetLink = `https://ciu-online-exam-monitoring-system.netlify.app/studenttoken-password-reset?token=${token}`;
   
       // Prepare email content with a clickable button
       const emailHtml = `
@@ -158,9 +158,9 @@ export class StudentsService {
       await sendEmail(formattedEmail, subject, text, emailHtml);
   
       return { message: 'Student registered successfully. Token sent to email.' };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating user:', error.message || error);
-      throw new InternalServerErrorException('Error creating user');
+      throw error;
     }
   }
   
@@ -217,9 +217,9 @@ export class StudentsService {
       });
 
       return { count: uniquePrograms.length };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error counting programs:', error.message);
-      throw new Error('Failed to count programs');
+      throw error;
     }
   }
 
