@@ -16,9 +16,9 @@ export class CoursesController {
      try {
        return await this.coursesService.create(createCourseDto);
      } catch (error) {
-       // Handle the conflict exception
-       if (error.response && error.response.statusCode === HttpStatus.CONFLICT) {
-         throw new HttpException(error.response.message, HttpStatus.CONFLICT);
+       const err = error as any;
+       if (err.response?.statusCode === HttpStatus.CONFLICT) {
+         throw new HttpException(err.response.message || 'Conflict', HttpStatus.CONFLICT);
        }
        throw error;
      }

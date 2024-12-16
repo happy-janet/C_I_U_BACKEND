@@ -1,7 +1,16 @@
 // update-manual-assessment.dto.ts
-import { IsNotEmpty, IsString, IsInt, IsArray, IsDateString, IsOptional, Matches, ValidateNested } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsArray,
+  IsDateString,
+  IsOptional,
+  Matches,
+  ValidateNested,
+} from 'class-validator';
 import { Type, Transform } from 'class-transformer';
-import * as moment from 'moment';
+import moment from 'moment';
 
 // Helper class for time validation
 export class TimeDto {
@@ -11,7 +20,6 @@ export class TimeDto {
   })
   time: string;
 }
-
 
 //DTO for updating a manual assessment
 export class UpdateManualAssessmentDto {
@@ -86,7 +94,6 @@ export class UpdateManualAssessmentDto {
   @Type(() => QuestionManualDto)
   questions?: QuestionManualDto[];
 }
-
 
 // Base question DTO
 export class QuestionManualDto {
