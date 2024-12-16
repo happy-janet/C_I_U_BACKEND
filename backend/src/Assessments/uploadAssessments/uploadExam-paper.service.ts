@@ -586,7 +586,7 @@ export class ExamPaperService {
               'Error parsing row:',
               error.message || 'Unknown error',
               'Row data:',
-              data
+              data,
             );
             throw error;
           }

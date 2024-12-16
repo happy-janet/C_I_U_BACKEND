@@ -6,14 +6,9 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 //swagger logic  implementation
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-
-
-
-
-
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  
+
   app.useGlobalPipes(new ValidationPipe()); // Use validation pipe globally
 
   // Enable CORS
@@ -22,8 +17,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
-
-
 
   // Create Swagger options
   const options = new DocumentBuilder()
@@ -35,7 +28,7 @@ async function bootstrap() {
 
   // Create the Swagger document
   const document = SwaggerModule.createDocument(app, options);
-  
+
   // Set up Swagger UI
   SwaggerModule.setup('api', app, document);
 

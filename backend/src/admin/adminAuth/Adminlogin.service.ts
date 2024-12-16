@@ -1,4 +1,11 @@
-import { Injectable, UnauthorizedException, InternalServerErrorException, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  InternalServerErrorException,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -6,8 +13,6 @@ import { ForgotPasswordDto } from './adminForgot-resetPasswordDto/forgot-passwor
 import { ResetPasswordDto } from './adminForgot-resetPasswordDto/reset-password.dto';
 import { sendEmail } from '../../students/studentmanagement/sendEmail';
 import { generateNumericToken } from './adminForgot-resetPassword/token-generator';
-
-
 
 @Injectable()
 export class AuthService {
@@ -19,7 +24,7 @@ export class AuthService {
   // Validate user credentials
   async validateUser(email: string, password: string) {
     const user = await this.prisma.adminSignUp.findUnique({ where: { email } });
-    
+
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
     }
@@ -37,20 +42,19 @@ export class AuthService {
   async login(user: any) {
     const payload = { email: user.email, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload), 
+      access_token: this.jwtService.sign(payload),
     };
   }
 
-
-  
-  
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<{ message: string }> {
     const user = await this.prisma.adminSignUp.findUnique({
-        where: {email: forgotPasswordDto.email },
+      where: { email: forgotPasswordDto.email },
     });
 
     if (!user) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     // Create a 6-digit numeric token
@@ -61,11 +65,11 @@ export class AuthService {
     tokenExpiry.setHours(tokenExpiry.getHours() + 1); // Set expiration to 1 hour
 
     await this.prisma.adminSignUp.update({
-        where: { id: user.id },
-        data: {
-            resetToken: resetToken,
-            resetTokenExpiry: tokenExpiry,
-        },
+      where: { id: user.id },
+      data: {
+        resetToken: resetToken,
+        resetTokenExpiry: tokenExpiry,
+      },
     });
 
     // Prepare email content
@@ -73,54 +77,50 @@ export class AuthService {
     const emailHtml = `<p>You requested a password reset. Your reset token is: <strong>${resetToken}</strong>. Enter this token on the reset password page.</p>`;
 
     // Send the reset token via email
-    await sendEmail(
-        user.email,
-        'Password Reset Request',
-        emailText,
-        emailHtml
-    );
+    await sendEmail(user.email, 'Password Reset Request', emailText, emailHtml);
 
     return { message: 'Password reset token has been sent to your email.' };
-}
+  }
 
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
+    const { token, newPassword, confirmPassword } = resetPasswordDto;
 
-
-
-
-async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
-  const { token, newPassword, confirmPassword } = resetPasswordDto;
-
-  if (newPassword !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       throw new HttpException('Passwords do not match', HttpStatus.BAD_REQUEST);
-  }
+    }
 
-  // Find the user with the provided token
-  const user = await this.prisma.adminSignUp.findFirst({
+    // Find the user with the provided token
+    const user = await this.prisma.adminSignUp.findFirst({
       where: {
-          resetToken: token,
-          resetTokenExpiry: {
-              gte: new Date(), // Ensure the token is still valid (not expired)
-          },
+        resetToken: token,
+        resetTokenExpiry: {
+          gte: new Date(), // Ensure the token is still valid (not expired)
+        },
       },
-  });
+    });
 
-  if (!user) {
-      throw new HttpException('Invalid or expired token', HttpStatus.BAD_REQUEST);
-  }
+    if (!user) {
+      throw new HttpException(
+        'Invalid or expired token',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-  // Hash the new password
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  // Update user's password and clear the reset token fields
-  await this.prisma.adminSignUp.update({
+    // Update user's password and clear the reset token fields
+    await this.prisma.adminSignUp.update({
       where: { id: user.id },
       data: {
-          password: hashedPassword,
-          resetToken: null, // Clear the token after successful reset
-          resetTokenExpiry: null,
+        password: hashedPassword,
+        resetToken: null, // Clear the token after successful reset
+        resetTokenExpiry: null,
       },
-  });
+    });
 
-  return { message: 'Your password has been successfully reset.' };
-}
+    return { message: 'Your password has been successfully reset.' };
+  }
 }

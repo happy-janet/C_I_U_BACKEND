@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
@@ -9,27 +13,29 @@ export class QuestionBankService {
   async getPublishedAssessments() {
     return this.prisma.addAssessment.findMany({
       where: {
-        isDraft: false
+        isDraft: false,
       },
       include: {
         course: {
           select: {
-            courseName: true
-          }
-        }
-      }
+            courseName: true,
+          },
+        },
+      },
     });
   }
 
   // Create a new question bank or add to existing one
- async createQuestionBank(assessmentId: number) {
+  async createQuestionBank(assessmentId: number) {
     const assessment = await this.prisma.addAssessment.findUnique({
       where: { id: assessmentId },
       include: { questions: true },
     });
 
     if (!assessment) {
-      throw new NotFoundException(`Assessment with ID ${assessmentId} not found`);
+      throw new NotFoundException(
+        `Assessment with ID ${assessmentId} not found`,
+      );
     }
 
     const existingBank = await this.prisma.questionBank.findFirst({
@@ -44,7 +50,9 @@ export class QuestionBankService {
         where: { id: existingBank.id },
         data: {
           questions: {
-            connect: assessment.questions.map((question) => ({ id: question.id })),
+            connect: assessment.questions.map((question) => ({
+              id: question.id,
+            })),
           },
         },
         include: { assessment: true, questions: true },
@@ -59,14 +67,15 @@ export class QuestionBankService {
             connect: { id: assessmentId },
           },
           questions: {
-            connect: assessment.questions.map((question) => ({ id: question.id })),
+            connect: assessment.questions.map((question) => ({
+              id: question.id,
+            })),
           },
         },
         include: { assessment: true, questions: true },
       });
     }
   }
-
 
   // Get all question banks
   async getQuestionBanks() {
@@ -76,16 +85,16 @@ export class QuestionBankService {
           include: {
             course: {
               select: {
-                courseName: true
-              }
-            }
-          }
+                courseName: true,
+              },
+            },
+          },
         },
-        questions: true
-      }
+        questions: true,
+      },
     });
 
-    return questionBanks.map(qb => ({
+    return questionBanks.map((qb) => ({
       id: qb.id,
       title: `${qb.courseUnit} Question Bank`,
       courseUnit: qb.courseUnit,
@@ -93,15 +102,18 @@ export class QuestionBankService {
       courseName: qb.assessment.course.courseName,
       questionCount: qb.questions.length,
       createdBy: qb.assessment.createdBy,
-      createdAt: qb.createdAt
+      createdAt: qb.createdAt,
     }));
   }
 
   // Add questions to an existing question bank
-  async addAssessmentToQuestionBank(bankId: number | string, assessmentId: number | string) {
+  async addAssessmentToQuestionBank(
+    bankId: number | string,
+    assessmentId: number | string,
+  ) {
     const parsedBankId = Number(bankId);
     const parsedAssessmentId = Number(assessmentId);
-    
+
     if (isNaN(parsedBankId) || isNaN(parsedAssessmentId)) {
       throw new BadRequestException('Invalid bank ID or assessment ID format');
     }
@@ -110,29 +122,35 @@ export class QuestionBankService {
     const questionBank = await this.prisma.questionBank.findUnique({
       where: { id: parsedBankId },
       include: {
-        questions: true
-      }
+        questions: true,
+      },
     });
 
     if (!questionBank) {
-      throw new NotFoundException(`Question bank with ID ${parsedBankId} not found`);
+      throw new NotFoundException(
+        `Question bank with ID ${parsedBankId} not found`,
+      );
     }
 
     // Get the assessment and its questions
     const assessment = await this.prisma.addAssessment.findUnique({
       where: { id: parsedAssessmentId },
       include: {
-        questions: true
-      }
+        questions: true,
+      },
     });
 
     if (!assessment) {
-      throw new NotFoundException(`Assessment with ID ${parsedAssessmentId} not found`);
+      throw new NotFoundException(
+        `Assessment with ID ${parsedAssessmentId} not found`,
+      );
     }
 
     // Verify course unit matches
     if (assessment.courseUnit !== questionBank.courseUnit) {
-      throw new BadRequestException('Cannot add assessment from different course unit to this question bank');
+      throw new BadRequestException(
+        'Cannot add assessment from different course unit to this question bank',
+      );
     }
 
     try {
@@ -141,21 +159,23 @@ export class QuestionBankService {
         where: { id: parsedBankId },
         data: {
           questions: {
-            connect: assessment.questions.map(q => ({ id: q.id }))
-          }
+            connect: assessment.questions.map((q) => ({ id: q.id })),
+          },
         },
         include: {
           assessment: {
             select: {
               title: true,
-              courseUnit: true
-            }
+              courseUnit: true,
+            },
           },
-          questions: true
-        }
+          questions: true,
+        },
       });
     } catch (error) {
-      throw new BadRequestException('Failed to add assessment questions to question bank');
+      throw new BadRequestException(
+        'Failed to add assessment questions to question bank',
+      );
     }
   }
 
@@ -164,8 +184,8 @@ export class QuestionBankService {
     const questionBank = await this.prisma.questionBank.findUnique({
       where: { id: Number(bankId) },
       include: {
-        questions: true
-      }
+        questions: true,
+      },
     });
 
     if (!questionBank) {
@@ -178,7 +198,7 @@ export class QuestionBankService {
   // Delete a question bank
   async deleteQuestionBank(id: number) {
     const questionBank = await this.prisma.questionBank.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!questionBank) {
@@ -186,7 +206,7 @@ export class QuestionBankService {
     }
 
     return this.prisma.questionBank.delete({
-      where: { id }
+      where: { id },
     });
   }
 }

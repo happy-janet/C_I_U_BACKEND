@@ -6,7 +6,7 @@ export class DashboardController {
   @UseGuards(JwtAuthGuard)
   @Get()
   getDashboard() {
-    return { message: 'Welcome to the Dashboard' }; 
+    return { message: 'Welcome to the Dashboard' };
   }
 }
 // To the lecturer dashboard

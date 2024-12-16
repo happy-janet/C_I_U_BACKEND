@@ -30,6 +30,6 @@ export class UpdateUserDto {
   role?: string;
 
   @IsOptional()
-  @IsNumber()  // Assuming courseId is a number
+  @IsNumber() // Assuming courseId is a number
   courseId?: number;
 }

@@ -1,9 +1,15 @@
-import { Injectable, NotFoundException, UnauthorizedException, InternalServerErrorException,BadRequestException, } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from '../dto/login.dto';
-import { JwtService } from '@nestjs/jwt'; 
+import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { generateNumericToken } from './token-generator';
 import { sendEmail } from './sendEmail';
@@ -11,7 +17,7 @@ import { sendEmail } from './sendEmail';
 export class StudentsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService 
+    private readonly jwtService: JwtService,
   ) {}
 
   // Get all students
@@ -31,71 +37,63 @@ export class StudentsService {
   }
 
   // Create a new student
-  
-  
+
   // Update student details
   async update(id: number, updateUserDto: UpdateUserDto) {
-  const existingStudent = await this.findOneById(id);
-  if (!existingStudent) {
-    throw new NotFoundException(`Student with ID ${id} not found`);
+    const existingStudent = await this.findOneById(id);
+    if (!existingStudent) {
+      throw new NotFoundException(`Student with ID ${id} not found`);
+    }
+
+    // Update the email if the first name changes
+    let formattedEmail = existingStudent.email; // Default to existing email
+    if (updateUserDto.first_name) {
+      formattedEmail = `${updateUserDto.first_name.toLowerCase()}@student.ciu.ac.ug`;
+    }
+
+    return this.prisma.users.update({
+      where: { id },
+      data: {
+        first_name: updateUserDto.first_name,
+        last_name: updateUserDto.last_name,
+        email: formattedEmail, // Use the formatted email
+        program: updateUserDto.program,
+        registrationNo: updateUserDto.registrationNo,
+        password: updateUserDto.password,
+        role: updateUserDto.role,
+        courseId: updateUserDto.courseId,
+      },
+    });
   }
-
-  // Update the email if the first name changes
-  let formattedEmail = existingStudent.email; // Default to existing email
-  if (updateUserDto.first_name) {
-    formattedEmail = `${updateUserDto.first_name.toLowerCase()}@student.ciu.ac.ug`;
-  }
-
-  return this.prisma.users.update({
-    where: { id },
-    data: {
-      first_name: updateUserDto.first_name,
-      last_name: updateUserDto.last_name,
-      email: formattedEmail, // Use the formatted email
-      program: updateUserDto.program,
-      registrationNo: updateUserDto.registrationNo,
-      password: updateUserDto.password,
-      role: updateUserDto.role,
-      courseId: updateUserDto.courseId,
-    },
-  });
-}
-
-
-  
 
   // Reset student password
   async resetPassword(id: number, newPassword: string) {
     const student = await this.findOneById(id);
     if (!student) {
-        throw new NotFoundException(`Student with ID ${id} not found`);
+      throw new NotFoundException(`Student with ID ${id} not found`);
     }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     return this.prisma.users.update({
-        where: { id },
-        data: { password: hashedPassword }, // Store the hashed password
+      where: { id },
+      data: { password: hashedPassword }, // Store the hashed password
     });
-}
-
+  }
 
   // Delete a student
   async delete(id: number) {
     await this.findOneById(id);
-  
+
     // Delete related LoginHistory records first
     await this.prisma.loginHistory.deleteMany({
       where: { studentId: id },
     });
-  
+
     // Delete the user
     return this.prisma.users.delete({
       where: { id },
     });
   }
-  
- 
 
-  
   async create(createUserDto: CreateUserDto) {
     try {
       // Find course name
@@ -103,16 +101,16 @@ export class StudentsService {
         where: { id: createUserDto.courseId },
         select: { courseName: true },
       });
-  
+
       if (!course) {
         throw new BadRequestException('Course not found');
       }
-  
+
       const formattedEmail = `${createUserDto.first_name.toLowerCase()}@student.ciu.ac.ug`;
-  
+
       // Generate a 6-digit token
       const token = generateNumericToken(6);
-  
+
       // Save user with token
       const newUser = await this.prisma.users.create({
         data: {
@@ -128,9 +126,9 @@ export class StudentsService {
           resetTokenExpiry: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Token valid for 7 days
         },
       });
-  
+
       const resetLink = `http://localhost:5173/studenttoken-password-reset?token=${token}`;
-  
+
       // Prepare email content with a clickable button
       const emailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -151,26 +149,27 @@ export class StudentsService {
           <p>This link will expire in 7 days.</p>
         </div>
       `;
-  
+
       // Send email
       const subject = 'Set Your Password';
       const text = `Dear ${newUser.first_name},\n\nUse this token to set your password: ${token}\n\nThe token is valid for 7 days.`;
       await sendEmail(formattedEmail, subject, text, emailHtml);
-  
-      return { message: 'Student registered successfully. Token sent to email.' };
+
+      return {
+        message: 'Student registered successfully. Token sent to email.',
+      };
     } catch (error: any) {
       console.error('Error creating user:', error.message || error);
       throw error;
     }
   }
-  
 
   async findByToken(token: string) {
     return this.prisma.users.findFirst({
       where: {
         resetToken: token,
         resetTokenExpiry: {
-          gte: new Date(), 
+          gte: new Date(),
         },
       },
     });
@@ -187,25 +186,8 @@ export class StudentsService {
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // Login method
-   async countStudents() {
+  async countStudents() {
     return this.prisma.users.count();
   }
 
@@ -223,38 +205,33 @@ export class StudentsService {
     }
   }
 
-
-
-
-
-  
-  async login(loginUserDto: LoginDto) { 
+  async login(loginUserDto: LoginDto) {
     try {
       const { registrationNo, password } = loginUserDto;
-  
+
       // Retrieve the user with the course data included
       const user = await this.prisma.users.findUnique({
         where: { registrationNo },
         include: { course: true }, // Ensure to include course relationship
       });
-  
+
       // Log user data to confirm the courseId and course are fetched
-      console.log("User found:", user);
-  
+      console.log('User found:', user);
+
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
-  
+
       // Verify the password
       const isPasswordValid = await bcrypt.compare(password, user.password);
-  
+
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid credentials');
       }
-  
+
       const payload = { sub: user.id, registrationNo: user.registrationNo };
       const accessToken = this.jwtService.sign(payload);
-  
+
       // Return the login response, including courseId and course details
       return {
         message: 'Login successful',
@@ -263,12 +240,15 @@ export class StudentsService {
           id: user.id,
           registrationNo: user.registrationNo,
           courseId: user.courseId ?? null, // courseId will be null if not set
-          course: user.course ? { // Check if course data exists
-            id: user.course.id,
-            facultyName: user.course.facultyName,
-            courseName: user.course.courseName,
-            courseUnits: user.course.courseUnits,
-          } : null, // course will be null if not available
+          course: user.course
+            ? {
+                // Check if course data exists
+                id: user.course.id,
+                facultyName: user.course.facultyName,
+                courseName: user.course.courseName,
+                courseUnits: user.course.courseUnits,
+              }
+            : null, // course will be null if not available
         },
       };
     } catch (error) {
@@ -276,54 +256,50 @@ export class StudentsService {
       throw new InternalServerErrorException('Error logging in');
     }
   }
-  
-  
 
-
-  
   // students.service.ts
 
-async submitManualAssessment(studentId: number, assessmentId: number, studentAnswers: any) {
-  
-  const assessment = await this.prisma.manualAssessment.findUnique({
-    where: { id: assessmentId },
-    include: { questions: true },
-  });
+  async submitManualAssessment(
+    studentId: number,
+    assessmentId: number,
+    studentAnswers: any,
+  ) {
+    const assessment = await this.prisma.manualAssessment.findUnique({
+      where: { id: assessmentId },
+      include: { questions: true },
+    });
 
-  if (!assessment) {
-    throw new Error('Assessment not found');
-  }
-
-  // Initialize score
-  let score = 0;
-  const totalQuestions = assessment.questions.length;
-
-  // Iterate through each question and compare student's answers
-  assessment.questions.forEach((question) => {
-    const studentAnswer = studentAnswers[question.id];
-    if (studentAnswer === question.answer) {
-      score++;  // Increase score if the student's answer is correct
+    if (!assessment) {
+      throw new Error('Assessment not found');
     }
-  });
 
-  // Calculate the percentage
-  const percentage = (score / totalQuestions) * 100;
+    // Initialize score
+    let score = 0;
+    const totalQuestions = assessment.questions.length;
 
-  // Save the submission
-  const submission = await this.prisma.submission.create({
-    data: {
-      studentId: studentId,
-      assessmentId: assessmentId,
-      answers: studentAnswers,
-      score: score,
-      percentage: percentage,
-      submittedAt: new Date(),
-    },
-  });
+    // Iterate through each question and compare student's answers
+    assessment.questions.forEach((question) => {
+      const studentAnswer = studentAnswers[question.id];
+      if (studentAnswer === question.answer) {
+        score++; // Increase score if the student's answer is correct
+      }
+    });
 
-  return { score, totalQuestions, percentage };
-}
+    // Calculate the percentage
+    const percentage = (score / totalQuestions) * 100;
 
+    // Save the submission
+    const submission = await this.prisma.submission.create({
+      data: {
+        studentId: studentId,
+        assessmentId: assessmentId,
+        answers: studentAnswers,
+        score: score,
+        percentage: percentage,
+        submittedAt: new Date(),
+      },
+    });
 
-
+    return { score, totalQuestions, percentage };
+  }
 }

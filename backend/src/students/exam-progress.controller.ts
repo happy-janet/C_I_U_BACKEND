@@ -1,4 +1,12 @@
-import { Controller, Patch, Get, Body, Param, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Patch,
+  Get,
+  Body,
+  Param,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { ExamProgressService } from './exam-progress.service';
 import { UpdateExamProgressDto, ResumeExamDto } from './dto/exam-progress.dto';
 

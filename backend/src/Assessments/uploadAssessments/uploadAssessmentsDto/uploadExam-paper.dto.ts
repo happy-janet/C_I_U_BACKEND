@@ -21,7 +21,6 @@ export class UpdateQuestionDto {
   options?: string; // Optional if options are in the CSV
 }
 
-
 // Create a new interface for the frontend to use
 export interface CourseDropdownData {
   id: number;

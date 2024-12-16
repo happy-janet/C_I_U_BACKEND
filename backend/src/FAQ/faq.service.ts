@@ -1,5 +1,9 @@
 // src/faq/faq.service.ts
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFAQDto } from './faqDTO/create-faq.dto'; // Ensure DTO is imported
 import { FAQ } from '@prisma/client';
@@ -44,7 +48,7 @@ export class FAQService {
             {
               first_name: {
                 contains: name,
-                mode: 'insensitive',  
+                mode: 'insensitive',
               },
             },
             {
@@ -71,7 +75,7 @@ export class FAQService {
         select: {
           first_name: true,
           last_name: true,
-          role: true, 
+          role: true,
         },
       });
     } catch (error) {
@@ -80,5 +84,3 @@ export class FAQService {
     }
   }
 }
-
-

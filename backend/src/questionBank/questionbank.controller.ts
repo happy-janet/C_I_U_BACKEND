@@ -1,16 +1,16 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Delete, 
-  Param, 
-  Body, 
-  ParseIntPipe, 
-  HttpCode, 
-  HttpStatus, 
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  Body,
+  ParseIntPipe,
+  HttpCode,
+  HttpStatus,
   NotFoundException,
   BadRequestException,
-  InternalServerErrorException
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { QuestionBankService } from './questionbank.service';
 
@@ -24,14 +24,17 @@ export class QuestionBankController {
       return await this.questionBankService.getPublishedAssessments();
     } catch (error) {
       console.error('Error fetching published assessments:', error);
-      throw new InternalServerErrorException('Failed to fetch published assessments');
+      throw new InternalServerErrorException(
+        'Failed to fetch published assessments',
+      );
     }
   }
 
   @Get(':bankId/questions')
   async getQuestionsByBankId(@Param('bankId', ParseIntPipe) bankId: number) {
     try {
-      const questions = await this.questionBankService.getQuestionsByBankId(bankId);
+      const questions =
+        await this.questionBankService.getQuestionsByBankId(bankId);
       return questions;
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -55,27 +58,30 @@ export class QuestionBankController {
   @Post(':bankId/questions')
   async addAssessmentToQuestionBank(
     @Param('bankId', ParseIntPipe) bankId: number,
-    @Body('assessmentId', ParseIntPipe) assessmentId: number
+    @Body('assessmentId', ParseIntPipe) assessmentId: number,
   ) {
     try {
-       const createdQuestionBank = await this.questionBankService.createQuestionBank(assessmentId);
+      const createdQuestionBank =
+        await this.questionBankService.createQuestionBank(assessmentId);
       return createdQuestionBank; // You might want to return the newly created resource
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
       console.error('Error adding assessment to question bank:', error);
-      throw new InternalServerErrorException('Failed to add assessment to question bank');
+      throw new InternalServerErrorException(
+        'Failed to add assessment to question bank',
+      );
     }
   }
-
-
-
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createQuestionBank(
-    @Body('assessmentId', ParseIntPipe) assessmentId: number
+    @Body('assessmentId', ParseIntPipe) assessmentId: number,
   ) {
     try {
       return await this.questionBankService.createQuestionBank(assessmentId);

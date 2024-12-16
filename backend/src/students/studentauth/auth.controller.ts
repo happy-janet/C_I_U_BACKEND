@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Get, Req, Put, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Req,
+  Put,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from '../dto/login.dto';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
@@ -39,7 +48,10 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Put('profile/update-name')
-  async updateName(@Req() req, @Body() updateNameDto: { firstName?: string; lastName?: string }) {
+  async updateName(
+    @Req() req,
+    @Body() updateNameDto: { firstName?: string; lastName?: string },
+  ) {
     const userId = req.user.userId;
     return this.authService.updateName(userId, updateNameDto);
   }

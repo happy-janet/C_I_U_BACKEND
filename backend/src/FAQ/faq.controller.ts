@@ -1,5 +1,14 @@
 // src/faq/faq.controller.ts
-import { Controller, Post, Body, Get, UseGuards,Query,Req ,Param} from '@nestjs/common'; // Import UseGuards
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Query,
+  Req,
+  Param,
+} from '@nestjs/common'; // Import UseGuards
 import { FAQService } from './faq.service';
 import { CreateFAQDto } from './faqDTO/create-faq.dto';
 import { JwtAuthGuard } from '../students/studentauth/jwt-auth.guard'; // Correct import path
@@ -9,7 +18,8 @@ import { FAQ } from '@prisma/client';
 // import { ManualAssessmentService } from '../lectures/addAssessment.service';
 @Controller('faqs')
 export class FAQController {
-  constructor(private readonly faqService: FAQService,
+  constructor(
+    private readonly faqService: FAQService,
     // private readonly manualAssessmentService: ManualAssessmentService,
   ) {}
 
@@ -22,11 +32,11 @@ export class FAQController {
 
   // Students access all FAQs
   @Get('')
-async getAllFaqs() {
-  console.log('Received request to get all FAQs');
-  return this.faqService.findAll();
-}
-@Get('search')
+  async getAllFaqs() {
+    console.log('Received request to get all FAQs');
+    return this.faqService.findAll();
+  }
+  @Get('search')
   async searchUsers(@Query('name') name: string) {
     return this.faqService.searchUsersByName(name);
   }
@@ -37,8 +47,4 @@ async getAllFaqs() {
     const user = req.user; // user is set in request after successful authentication
     return this.faqService.getProfile(user.userId); // userId comes from decoded JWT payload
   }
-
 }
-    
-
-

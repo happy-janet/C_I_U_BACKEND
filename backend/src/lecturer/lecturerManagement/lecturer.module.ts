@@ -10,10 +10,10 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     PrismaModule,
-    ConfigModule.forRoot(), 
+    ConfigModule.forRoot(),
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'yourSecretKey', 
+      secret: process.env.JWT_SECRET || 'yourSecretKey',
       signOptions: { expiresIn: '60m' },
     }),
   ],

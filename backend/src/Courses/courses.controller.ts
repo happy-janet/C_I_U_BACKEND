@@ -1,4 +1,14 @@
-import { Controller, Post, Body, Patch, Param, Get, Delete,HttpException, HttpStatus,  } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Get,
+  Delete,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { CreateCourseDto } from './CoursesDto/Register-course.dto';
 import { CoursesService } from './courses.service';
 import { UpdateCourseDto } from './CoursesDto/update-course.dto';
@@ -7,28 +17,29 @@ import { UpdateCourseDto } from './CoursesDto/update-course.dto';
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
-
-  
-
-   // Create a new course
-   @Post()
-   async create(@Body() createCourseDto: CreateCourseDto) {
-     try {
-       return await this.coursesService.create(createCourseDto);
-     } catch (error) {
-       const err = error as any;
-       if (err.response?.statusCode === HttpStatus.CONFLICT) {
-         throw new HttpException(err.response.message || 'Conflict', HttpStatus.CONFLICT);
-       }
-       throw error;
-     }
-   }
+  // Create a new course
+  @Post()
+  async create(@Body() createCourseDto: CreateCourseDto) {
+    try {
+      return await this.coursesService.create(createCourseDto);
+    } catch (error) {
+      const err = error as any;
+      if (err.response?.statusCode === HttpStatus.CONFLICT) {
+        throw new HttpException(
+          err.response.message || 'Conflict',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw error;
+    }
+  }
 
   // Update an existing course by ID
   @Patch(':id')
   async updateCourse(
-    @Param('id') id: string, 
-    @Body() updateCourseDto: UpdateCourseDto) {
+    @Param('id') id: string,
+    @Body() updateCourseDto: UpdateCourseDto,
+  ) {
     return this.coursesService.updateCourse(id, updateCourseDto); // Ensure id is numeric
   }
 
@@ -38,13 +49,10 @@ export class CoursesController {
     return { count }; // Return the count directly
   }
 
-  
   @Get('count')
   async getCourseCount() {
     return this.coursesService.getCourseCount(); // Await the promise
-    
   }
-
 
   // Retrieve all courses
   @Get()
@@ -55,12 +63,12 @@ export class CoursesController {
   // Get a single course by ID
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.coursesService.findOne(+id);  // Ensure id is numeric
+    return this.coursesService.findOne(+id); // Ensure id is numeric
   }
 
   // Delete a course by ID
   @Delete(':id')
   async delete(@Param('id') id: string) {
-    return this.coursesService.delete(+id);  // Ensure id is numeric
+    return this.coursesService.delete(+id); // Ensure id is numeric
   }
 }
