@@ -1,4 +1,12 @@
-import { IsDate, IsInt, IsNotEmpty, IsOptional, IsString, ValidateNested, IsBoolean } from 'class-validator';
+import {
+  IsDate,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+  IsBoolean,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class UpdatemanualAssessmentDto {
@@ -54,7 +62,6 @@ export class UpdatemanualAssessmentDto {
   @IsBoolean()
   @IsOptional()
   isPublished?: boolean; // Ensure this property is included
-
 
   @IsOptional()
   @ValidateNested({ each: true })

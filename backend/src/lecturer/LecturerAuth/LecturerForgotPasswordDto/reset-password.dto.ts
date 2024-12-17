@@ -1,5 +1,10 @@
 // src/auth/dto/reset-password.dto.ts
-import { IsNotEmpty, IsString, IsNumberString, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumberString,
+  MinLength,
+} from 'class-validator';
 
 export class ResetPasswordDto {
   @IsNotEmpty()

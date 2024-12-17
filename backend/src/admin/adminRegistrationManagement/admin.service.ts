@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException,InternalServerErrorException,BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateAdminSignUpDto } from './adminRegistrationManagementDto/create-admin.dto';
 import * as bcrypt from 'bcrypt';
@@ -7,21 +12,21 @@ import { sendEmail } from '../../students/studentmanagement/sendEmail';
 import { generateNumericToken } from './token';
 import { SetPasswordDto } from './adminRegistrationManagementDto/set-password.dto';
 
-
-
 @Injectable()
 export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
   // Create admin with hashed password
   async registerAdmin(
-    createAdminSignUpDto: CreateAdminSignUpDto
+    createAdminSignUpDto: CreateAdminSignUpDto,
   ): Promise<{ message: string }> {
     // Email validation pattern for the admin email format
     const emailPattern = /^[a-zA-Z]+@ciu\.ac\.ug$/;
 
     if (!emailPattern.test(createAdminSignUpDto.email)) {
-      throw new BadRequestException('Email must be in the format: firstname@ciu.ac.ug');
+      throw new BadRequestException(
+        'Email must be in the format: firstname@ciu.ac.ug',
+      );
     }
 
     const { first_name, last_name, email, role } = createAdminSignUpDto;
@@ -81,29 +86,40 @@ Please use the following link to reset your password: ${resetLink}. This link wi
     // Send the email with the token to the admin's email
     await sendEmail(email, 'Registration Successful', emailText, emailHtml);
 
-    return { message: 'Admin registered successfully. A confirmation token has been sent to your email.' };
+    return {
+      message:
+        'Admin registered successfully. A confirmation token has been sent to your email.',
+    };
   }
 
-  async setPassword(token: string, password: string, confirmPassword: string): Promise<string> {
+  async setPassword(
+    token: string,
+    password: string,
+    confirmPassword: string,
+  ): Promise<string> {
     // Validate inputs
     if (!token || !password || !confirmPassword) {
-        throw new BadRequestException('All fields (token, password, confirmPassword) are required.');
+      throw new BadRequestException(
+        'All fields (token, password, confirmPassword) are required.',
+      );
     }
 
     if (password !== confirmPassword) {
-        throw new BadRequestException('Password and Confirm Password do not match.');
+      throw new BadRequestException(
+        'Password and Confirm Password do not match.',
+      );
     }
 
     // Find admin by reset token
     const admin = await this.prisma.adminSignUp.findFirst({
-        where: {
-            resetToken: token,
-            resetTokenExpiry: { gte: new Date() }, // Ensure the token is not expired
-        },
+      where: {
+        resetToken: token,
+        resetTokenExpiry: { gte: new Date() }, // Ensure the token is not expired
+      },
     });
 
     if (!admin) {
-        throw new BadRequestException('Invalid or expired token.');
+      throw new BadRequestException('Invalid or expired token.');
     }
 
     // Hash the new password
@@ -111,37 +127,22 @@ Please use the following link to reset your password: ${resetLink}. This link wi
 
     // Update admin record
     await this.prisma.adminSignUp.update({
-        where: { id: admin.id },
-        data: {
-            password: hashedPassword,
-            resetToken: null, // Clear the token
-            resetTokenExpiry: null, // Clear the expiry
-        },
+      where: { id: admin.id },
+      data: {
+        password: hashedPassword,
+        resetToken: null, // Clear the token
+        resetTokenExpiry: null, // Clear the expiry
+      },
     });
 
     return 'Password has been set successfully.';
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  }
 
   // Update admin by ID
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.prisma.adminSignUp.findUnique({ where: { id: Number(id) } });
+    const user = await this.prisma.adminSignUp.findUnique({
+      where: { id: Number(id) },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -150,7 +151,7 @@ Please use the following link to reset your password: ${resetLink}. This link wi
       data: updateUserDto,
     });
   }
-  
+
   // Fetch all admins
   async findAll() {
     return this.prisma.adminSignUp.findMany();
@@ -159,12 +160,9 @@ Please use the following link to reset your password: ${resetLink}. This link wi
   // Fetch a single admin by ID
   async findOne(id: number) {
     return this.prisma.adminSignUp.findUnique({
-      where: { id },  
+      where: { id },
     });
   }
-  
-  
-
 
   // Delete an admin by ID
   async delete(id: number) {
@@ -179,7 +177,7 @@ Please use the following link to reset your password: ${resetLink}. This link wi
       select: {
         first_name: true,
         last_name: true,
-        role: true
+        role: true,
       },
     });
   }

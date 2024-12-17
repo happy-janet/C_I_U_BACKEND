@@ -12,6 +12,8 @@ export class ExamPaper {
   @Column({ nullable: true })
   description: string;
 
-  @OneToMany(() => Question, question => question.examPaper, { cascade: true })
+  @OneToMany(() => Question, (question) => question.examPaper, {
+    cascade: true,
+  })
   questions: Question[];
 }

@@ -8,7 +8,7 @@ export class DashboardController {
   getDashboard(@Request() req) {
     return {
       message: 'Welcome to the Dashboard',
-      user: req.user, 
+      user: req.user,
     };
   }
 }

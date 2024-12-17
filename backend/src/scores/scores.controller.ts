@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Param, Put, Delete,ParseIntPipe, Patch, Res} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  ParseIntPipe,
+  Patch,
+  Res,
+} from '@nestjs/common';
 import { ScoresService } from './scores.service';
 import { Score } from '@prisma/client';
 import { Response } from 'express';
@@ -10,10 +21,23 @@ export class ScoresController {
   // Create a new score
   @Post()
   async createScore(
-    @Body() body: { score: number; percentage: number; userId: number; examId?: number; assessmentType?: 'add' | 'manual' },
+    @Body()
+    body: {
+      score: number;
+      percentage: number;
+      userId: number;
+      examId?: number;
+      assessmentType?: 'add' | 'manual';
+    },
   ): Promise<Score> {
     const { score, percentage, userId, examId, assessmentType } = body;
-    return this.scoresService.createScore(score, percentage, userId, examId, assessmentType);
+    return this.scoresService.createScore(
+      score,
+      percentage,
+      userId,
+      examId,
+      assessmentType,
+    );
   }
 
   // Get all scores
@@ -30,16 +54,12 @@ export class ScoresController {
     return this.scoresService.getScoresByUserId(userId);
   }
 
-//Get all scores for a specific assessment using assessment id
-@Get('/:Id')
-async getScoresByAssessmentId(
-  @Param('Id') Id: string
-): Promise<Score[]> {
-  const assessmentId = parseInt(Id, 10);
-  return this.scoresService.getScoresByAssessmentId(assessmentId);
-}
-
-
+  //Get all scores for a specific assessment using assessment id
+  @Get('/:Id')
+  async getScoresByAssessmentId(@Param('Id') Id: string): Promise<Score[]> {
+    const assessmentId = parseInt(Id, 10);
+    return this.scoresService.getScoresByAssessmentId(assessmentId);
+  }
 
   // Update an existing score
   @Put(':scoreId')
@@ -57,4 +77,3 @@ async getScoresByAssessmentId(
     return this.scoresService.deleteScore(scoreId);
   }
 }
-

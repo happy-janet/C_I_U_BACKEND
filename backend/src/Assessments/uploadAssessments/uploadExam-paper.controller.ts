@@ -14,7 +14,10 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ExamPaperService } from './uploadExam-paper.service';
-import { UploadExamPaperDto, UpdateQuestionDto } from './uploadAssessmentsDto/uploadExam-paper.dto';
+import {
+  UploadExamPaperDto,
+  UpdateQuestionDto,
+} from './uploadAssessmentsDto/uploadExam-paper.dto';
 import { CreateQuestionDto } from '../Assessmentquestion/AssessmentquestionDto/Assessmentquestion.dto';
 import { Response } from 'express';
 import { Patch, Res } from '@nestjs/common';
@@ -23,13 +26,10 @@ import { Patch, Res } from '@nestjs/common';
 export class ExamPaperController {
   constructor(private readonly examPaperService: ExamPaperService) {}
 
-
   @Get('/courses')
   async getCourses() {
     return this.examPaperService.getCourses();
   }
-
-
 
   @Patch(':id/publishResults')
     async publishExamResults(@Param('id') id: string, @Res() res: Response) {
@@ -46,18 +46,18 @@ export class ExamPaperController {
   async getCompletedAssessments() {
     return this.examPaperService.getCompletedAssessments();
   }
-  
+
   @Get('/courses/:courseId/units')
   async getCourseUnits(@Param('courseId') courseId: string) {
     return this.examPaperService.getCourseUnits(parseInt(courseId));
   }
 
-
-
   @Patch(':id/publish')
   async publishExamPaper(@Param('id') id: string, @Res() res: Response) {
     try {
-      const publishedExamPaper = await this.examPaperService.publishExamPaper(parseInt(id));
+      const publishedExamPaper = await this.examPaperService.publishExamPaper(
+        parseInt(id),
+      );
       return res.json(publishedExamPaper);
     } catch (error) {
       const err = error as any;
@@ -68,19 +68,21 @@ export class ExamPaperController {
   @Patch(':id/unpublish')
   async unpublishExamPaper(@Param('id') id: string, @Res() res: Response) {
     try {
-      const unpublishedExamPaper = await this.examPaperService.unpublishExamPaper(parseInt(id));
+      const unpublishedExamPaper =
+        await this.examPaperService.unpublishExamPaper(parseInt(id));
       return res.json(unpublishedExamPaper);
     } catch (error) {
       const err = error as any;
       return res.status(500).json({ message: err.message || 'Internal server error' });
     }
   }
-  
+
   @Patch(':id/request-approval')
   async requestApproval(@Param('id') id: string, @Res() res: Response) {
     try {
       // Call the service to update the status to 'pending'
-      const approvalRequestedExamPaper = await this.examPaperService.requestApproval(parseInt(id));
+      const approvalRequestedExamPaper =
+        await this.examPaperService.requestApproval(parseInt(id));
       return res.json(approvalRequestedExamPaper);
     } catch (error) {
       const err = error as any;
@@ -92,51 +94,55 @@ export class ExamPaperController {
   async approval(@Param('id') id: string, @Res() res: Response) {
     try {
       // Call the service to update the status to 'pending'
-      const approvalExamPaper = await this.examPaperService.approval(parseInt(id));
+      const approvalExamPaper = await this.examPaperService.approval(
+        parseInt(id),
+      );
       return res.json(approvalExamPaper);
     } catch (error) {
       const err = error as any;
       return res.status(500).json({ message: err.message || 'Internal server error' });
     }
   }
- 
+
   @Patch(':id/reject')
   async rejection(@Param('id') id: string, @Res() res: Response) {
     try {
       // Call the service to update the status to 'pending'
-      const rejectionExamPaper = await this.examPaperService.rejection(parseInt(id));
+      const rejectionExamPaper = await this.examPaperService.rejection(
+        parseInt(id),
+      );
       return res.json(rejectionExamPaper);
     } catch (error) {
       const err = error as any;
       return res.status(500).json({ message: err.message || 'Internal server error' });
     }
   }
-   // New route to get all exam papers
-   @Get()
-   async getAllExamPapers() {
-     return this.examPaperService.getAllExamPapers(); // Call the service method
-   }
-  
-   @Get('upcoming')
-   async getUpcomingAssessmentsCount() {
-     return this.examPaperService.getUpcomingAssessmentsCount(); 
-   }
+  // New route to get all exam papers
+  @Get()
+  async getAllExamPapers() {
+    return this.examPaperService.getAllExamPapers(); // Call the service method
+  }
 
-   @Get('ongoing')
-   async getOngoingAssessmentsCount() {
-     return this.examPaperService.getOngoingAssessmentsCount();
-   }
+  @Get('upcoming')
+  async getUpcomingAssessmentsCount() {
+    return this.examPaperService.getUpcomingAssessmentsCount();
+  }
 
-   @Get('count')
-   async countAllExamPapers(): Promise<{
-       coursesCount: number;
-       studentsCount: number;
-       upcomingExamsCount: number;
-   }> {
-       return this.examPaperService.countAllExamPapers();
-   }
+  @Get('ongoing')
+  async getOngoingAssessmentsCount() {
+    return this.examPaperService.getOngoingAssessmentsCount();
+  }
 
-   // Retrieve a specific question by questionId from a specific exam paper
+  @Get('count')
+  async countAllExamPapers(): Promise<{
+    coursesCount: number;
+    studentsCount: number;
+    upcomingExamsCount: number;
+  }> {
+    return this.examPaperService.countAllExamPapers();
+  }
+
+  // Retrieve a specific question by questionId from a specific exam paper
   @Get(':id/question/:questionId')
   async getQuestionById(
     @Param('id') id: string,
@@ -152,33 +158,35 @@ export class ExamPaperController {
     return this.examPaperService.getQuestionById(examPaperId, parsedQuestionId);
   }
 
-//update each question in the exam paper
-@Put(':id/question/:questionId')
-async updateQuestion(
-  @Param('id') id: string,
-  @Param('questionId') questionId: string,
-  @Body() updateQuestionDto: UpdateQuestionDto,
-) {
-  const examPaperId = parseInt(id, 10);
-  const parsedQuestionId = parseInt(questionId, 10);
-  if (isNaN(examPaperId) || isNaN(parsedQuestionId)) {
-    throw new BadRequestException('Invalid exam paper or question ID');
+  //update each question in the exam paper
+  @Put(':id/question/:questionId')
+  async updateQuestion(
+    @Param('id') id: string,
+    @Param('questionId') questionId: string,
+    @Body() updateQuestionDto: UpdateQuestionDto,
+  ) {
+    const examPaperId = parseInt(id, 10);
+    const parsedQuestionId = parseInt(questionId, 10);
+    if (isNaN(examPaperId) || isNaN(parsedQuestionId)) {
+      throw new BadRequestException('Invalid exam paper or question ID');
+    }
+    return this.examPaperService.updateQuestion(
+      examPaperId,
+      parsedQuestionId,
+      updateQuestionDto,
+    );
   }
-  return this.examPaperService.updateQuestion(examPaperId, parsedQuestionId, updateQuestionDto);
-}
 
-
-//Add a question in the exam paper
-@Post(':id/add-question')
+  //Add a question in the exam paper
+  @Post(':id/add-question')
   async addQuestion(
-    @Param('id') assessmentId: string, 
-    @Body() createQuestionDto: CreateQuestionDto, 
+    @Param('id') assessmentId: string,
+    @Body() createQuestionDto: CreateQuestionDto,
   ) {
     return this.examPaperService.addQuestion(+assessmentId, createQuestionDto);
   }
 
-
-//upload exam paper
+  //upload exam paper
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -190,7 +198,10 @@ async updateQuestion(
       }),
       fileFilter: (req, file, cb) => {
         if (!file.originalname.match(/\.(csv)$/)) {
-          return cb(new BadRequestException('Only CSV files are allowed!'), false);
+          return cb(
+            new BadRequestException('Only CSV files are allowed!'),
+            false,
+          );
         }
         cb(null, true);
       },
@@ -202,7 +213,7 @@ async updateQuestion(
   ) {
     return this.examPaperService.uploadExamPaper(file, uploadExamPaperDto);
   }
-//get exam paper
+  //get exam paper
   @Get(':id')
   async getExamPaper(@Param('id') id: string) {
     const examPaperId = parseInt(id, 10);
@@ -212,9 +223,6 @@ async updateQuestion(
     return this.examPaperService.previewExamPaper(examPaperId);
   }
 
-
-
-
   // @Get('completedAssessments')
   // async getCompletedAssessments(
   //   @Query('courseId') courseId: number,
@@ -222,11 +230,8 @@ async updateQuestion(
   // ) {
   //   return this.examPaperService.getCompletedAssessmentsByCourseUnit(courseId, courseUnit);
   // }
-  
-  
 
-   
-//update exam paper
+  //update exam paper
   @Put(':id')
   async updateExamPaper(
     @Param('id') id: string,
@@ -236,9 +241,12 @@ async updateQuestion(
     if (isNaN(examPaperId)) {
       throw new BadRequestException('Invalid exam paper ID');
     }
-    return this.examPaperService.updateExamPaper(examPaperId, updateExamPaperDto);
+    return this.examPaperService.updateExamPaper(
+      examPaperId,
+      updateExamPaperDto,
+    );
   }
-//delete exam papaer
+  //delete exam papaer
   @Delete(':id')
   async deleteExamPaper(@Param('id') id: string) {
     const examPaperId = parseInt(id, 10);
@@ -247,7 +255,7 @@ async updateQuestion(
     }
     return this.examPaperService.deleteExamPaper(examPaperId);
   }
-//delete all questions
+  //delete all questions
   @Delete(':id/questions')
   async deleteAllQuestions(@Param('id') id: string) {
     const examPaperId = parseInt(id, 10);
@@ -257,37 +265,41 @@ async updateQuestion(
     return this.examPaperService.deleteAllQuestions(examPaperId);
   }
 
+  // Define the DELETE route to accept both exam paper ID and question ID
+  @Delete(':examPaperId/question/:questionId')
+  async deleteQuestionById(
+    @Param('examPaperId') examPaperId: string,
+    @Param('questionId') questionId: string,
+  ) {
+    console.log(
+      `Attempting to delete question with ID: ${questionId} from exam paper ID: ${examPaperId}`,
+    );
 
-// Define the DELETE route to accept both exam paper ID and question ID
-@Delete(':examPaperId/question/:questionId')
-async deleteQuestionById(
-  @Param('examPaperId') examPaperId: string,
-  @Param('questionId') questionId: string,
-) {
-  console.log(`Attempting to delete question with ID: ${questionId} from exam paper ID: ${examPaperId}`);
-  
-  const parsedQuestionId = parseInt(questionId, 10);
-  const parsedExamPaperId = parseInt(examPaperId, 10);
+    const parsedQuestionId = parseInt(questionId, 10);
+    const parsedExamPaperId = parseInt(examPaperId, 10);
 
-  if (isNaN(parsedQuestionId) || isNaN(parsedExamPaperId)) {
-    throw new BadRequestException('Invalid exam paper or question ID');
+    if (isNaN(parsedQuestionId) || isNaN(parsedExamPaperId)) {
+      throw new BadRequestException('Invalid exam paper or question ID');
+    }
+
+    const result = await this.examPaperService.deleteQuestionById(
+      parsedQuestionId,
+      parsedExamPaperId,
+    );
+    console.log(`Delete result: ${JSON.stringify(result)}`);
+    return result;
   }
 
-  const result = await this.examPaperService.deleteQuestionById(parsedQuestionId, parsedExamPaperId);
-  console.log(`Delete result: ${JSON.stringify(result)}`);
-  return result;
-}
-
-@Get(':id/questions-no-answers')
-async allQuestionsNoAnswer(@Param('id') id: string) {
-  const examPaperId = parseInt(id, 10);
-  if (isNaN(examPaperId)) {
-    throw new BadRequestException('Invalid exam paper ID');
+  @Get(':id/questions-no-answers')
+  async allQuestionsNoAnswer(@Param('id') id: string) {
+    const examPaperId = parseInt(id, 10);
+    if (isNaN(examPaperId)) {
+      throw new BadRequestException('Invalid exam paper ID');
+    }
+    return this.examPaperService.allQuestionsNoAnswer(examPaperId);
   }
-  return this.examPaperService.allQuestionsNoAnswer(examPaperId);
-}
 
-//get all questions
+  //get all questions
   @Get(':id/questions')
   async previewAllQuestions(@Param('id') id: string) {
     const examPaperId = parseInt(id, 10);
@@ -296,6 +308,4 @@ async allQuestionsNoAnswer(@Param('id') id: string) {
     }
     return this.examPaperService.previewAllQuestions(examPaperId);
   }
-
-
 }
