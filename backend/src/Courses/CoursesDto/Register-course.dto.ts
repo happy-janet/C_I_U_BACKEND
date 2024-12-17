@@ -15,5 +15,4 @@ export class CreateCourseDto {
   @IsArray()
   @IsString({ each: true })
   courseUnitCode: string[];
-
 }

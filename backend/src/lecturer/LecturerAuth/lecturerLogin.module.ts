@@ -20,7 +20,7 @@ import { LecturesService } from '../lecturerManagement/lecturer.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, EmailService, LecturesService ],
-  controllers: [AuthController,DashboardController],
+  providers: [AuthService, EmailService, LecturesService],
+  controllers: [AuthController, DashboardController],
 })
 export class AuthModule {}

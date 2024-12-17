@@ -25,16 +25,20 @@ export class NotificationController {
       );
     }
 
-    return this.notificationService.notifyStudentsForEvent(eventType, title, message);
+    return this.notificationService.notifyStudentsForEvent(
+      eventType,
+      title,
+      message,
+    );
   }
 
   @Get()
   async getAllNotifications() {
-  console.log('GET /notifications route hit');  
-  const notifications = await this.notificationService.getAllNotifications();
-  console.log('Fetched notifications:', notifications);
-  return notifications;
-}
+    console.log('GET /notifications route hit');
+    const notifications = await this.notificationService.getAllNotifications();
+    console.log('Fetched notifications:', notifications);
+    return notifications;
+  }
 
   @Patch(':id/read')
   async markAsRead(@Param('id') notificationId: number) {

@@ -15,8 +15,12 @@ export class NotificationService {
     private readonly notificationGateway: NotificationGateway,
   ) {}
 
-  
-  async createNotification(userId: number, title: string, message: string, eventType: string) {
+  async createNotification(
+    userId: number,
+    title: string,
+    message: string,
+    eventType: string,
+  ) {
     const user = await this.prisma.users.findUnique({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} does not exist`);
@@ -28,7 +32,7 @@ export class NotificationService {
         userId,
         title,
         eventType,
-        read: false, 
+        read: false,
       },
     });
 
@@ -37,7 +41,6 @@ export class NotificationService {
       return existingNotification;
     }
 
-    
     const notification = await this.prisma.notification.create({
       data: {
         title,
@@ -47,13 +50,16 @@ export class NotificationService {
       },
     });
 
-    
-    this.notificationGateway.sendNotification(userId, title, message, eventType);
+    this.notificationGateway.sendNotification(
+      userId,
+      title,
+      message,
+      eventType,
+    );
     console.log(`Created new notification for user ${userId}: ${title}`);
     return notification;
   }
 
-  
   async getAllNotifications() {
     const notifications = await this.prisma.notification.findMany({
       orderBy: { createdAt: 'desc' },
@@ -64,7 +70,6 @@ export class NotificationService {
     return notifications;
   }
 
-  
   async markNotificationAsRead(notificationId: number) {
     return this.prisma.notification.update({
       where: { id: notificationId },
@@ -72,8 +77,11 @@ export class NotificationService {
     });
   }
 
-  
-  async notifyStudentsForEvent(eventType: string, title: string, message: string) {
+  async notifyStudentsForEvent(
+    eventType: string,
+    title: string,
+    message: string,
+  ) {
     const studentsToNotify = await this.prisma.users.findMany({
       where: { role: 'student' },
     });
@@ -88,7 +96,6 @@ export class NotificationService {
     }
   }
 
-  
   async notifyForCalendarEvent(userId: number, eventTitle: string) {
     const message = `Upcoming event: ${eventTitle}`;
     await this.createNotification(userId, eventTitle, message, 'CalendarEvent');

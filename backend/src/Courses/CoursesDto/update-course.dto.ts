@@ -12,10 +12,7 @@ export class UpdateCourseDto {
   @IsString({ each: true }) // Ensures each element in the array is a string
   courseUnits: string[];
 
-
   @IsArray()
   @IsString({ each: true })
   courseUnitCode: string[];
 }
-
-

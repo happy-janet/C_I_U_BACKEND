@@ -1,4 +1,11 @@
-import { Injectable, UnauthorizedException, Logger, HttpException, HttpStatus,InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  Logger,
+  HttpException,
+  HttpStatus,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -73,7 +80,10 @@ export class AuthService {
     });
   }
 
-  async updateName(userId: number, updateNameDto: { firstName?: string; lastName?: string }): Promise<any> {
+  async updateName(
+    userId: number,
+    updateNameDto: { firstName?: string; lastName?: string },
+  ): Promise<any> {
     try {
       const updatedUser = await this.prisma.users.update({
         where: { id: userId },
@@ -94,7 +104,9 @@ export class AuthService {
     return { message: 'Logout successful. Please remove token on client.' };
   }
 
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<{ message: string }> {
     const user = await this.prisma.users.findUnique({
       where: { registrationNo: forgotPasswordDto.registrationNo },
     });
@@ -123,7 +135,9 @@ export class AuthService {
     return { message: 'Password reset token has been sent to your email.' };
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
     const { token, newPassword, confirmPassword } = resetPasswordDto;
 
     if (newPassword !== confirmPassword) {
@@ -138,7 +152,10 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new HttpException('Invalid or expired token', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Invalid or expired token',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

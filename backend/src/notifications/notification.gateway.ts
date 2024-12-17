@@ -9,11 +9,13 @@ import { NotificationService } from './notification.service';
 import { Inject, forwardRef } from '@nestjs/common';
 
 @WebSocketGateway({ cors: true })
-export class NotificationGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class NotificationGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() server: Server;
 
   constructor(
-    @Inject(forwardRef(() => NotificationService)) 
+    @Inject(forwardRef(() => NotificationService))
     private readonly notificationService: NotificationService,
   ) {}
 
@@ -25,7 +27,12 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  async sendNotification(userId: number, title: string, message: string, eventType: string) {
+  async sendNotification(
+    userId: number,
+    title: string,
+    message: string,
+    eventType: string,
+  ) {
     const notification = await this.notificationService.createNotification(
       userId,
       title,

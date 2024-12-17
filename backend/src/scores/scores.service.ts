@@ -1,4 +1,4 @@
-import { Injectable ,NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Score } from '@prisma/client';
 
@@ -20,11 +20,19 @@ export class ScoresService {
       student: { connect: { id: userId } },
     };
 
-    console.log('Received Parameters:', { score, percentage, userId, examId, assessmentType });
+    console.log('Received Parameters:', {
+      score,
+      percentage,
+      userId,
+      examId,
+      assessmentType,
+    });
 
     if (examId && assessmentType === 'add') {
       console.log('Attempting to connect addAssessment');
-      const addAssessment = await this.prisma.addAssessment.findUnique({ where: { id: examId } });
+      const addAssessment = await this.prisma.addAssessment.findUnique({
+        where: { id: examId },
+      });
       if (addAssessment) {
         data.addAssessment = { connect: { id: examId } };
         console.log('Connected addAssessmentId:', examId);
@@ -35,7 +43,9 @@ export class ScoresService {
 
     if (examId && assessmentType === 'manual') {
       console.log('Attempting to connect manualAssessment');
-      const manualAssessment = await this.prisma.manualAssessment.findUnique({ where: { id: examId } });
+      const manualAssessment = await this.prisma.manualAssessment.findUnique({
+        where: { id: examId },
+      });
       if (manualAssessment) {
         data.manualAssessment = { connect: { id: examId } };
         console.log('Connected manualAssessmentId:', examId);
@@ -62,39 +72,37 @@ export class ScoresService {
     return this.prisma.score.findMany();
   }
 
-
-//Get a specific assessment's scores
-async getScoresByAssessmentId(addAssessmentId: number): Promise<Score[]> {
-  return this.prisma.score.findMany({
-    where: {
-      addAssessmentId: addAssessmentId, 
-    },
-    include: {
-      student: true, 
-      addAssessment: true,
-    },
-  });
-}
-
-
-
-
+  //Get a specific assessment's scores
+  async getScoresByAssessmentId(addAssessmentId: number): Promise<Score[]> {
+    return this.prisma.score.findMany({
+      where: {
+        addAssessmentId: addAssessmentId,
+      },
+      include: {
+        student: true,
+        addAssessment: true,
+      },
+    });
+  }
 
   // Get scores for a specific user
   async getScoresByUserId(userId: number): Promise<Score[]> {
     return this.prisma.score.findMany({
-      where: { 
-        student: { 
+      where: {
+        student: {
           id: userId, // Ensure this matches your Prisma schema
         },
       },
     });
   }
 
-  
-
   // Update an existing score
-  async updateScore(scoreId: number, score: number, percentage: number, examId?: number): Promise<Score> {
+  async updateScore(
+    scoreId: number,
+    score: number,
+    percentage: number,
+    examId?: number,
+  ): Promise<Score> {
     const data: any = { score, percentage };
     if (examId) {
       data.examId = examId;
@@ -104,7 +112,7 @@ async getScoresByAssessmentId(addAssessmentId: number): Promise<Score[]> {
       data,
     });
   }
-  
+
   // Delete a score
   async deleteScore(scoreId: number): Promise<Score> {
     return this.prisma.score.delete({
@@ -112,5 +120,3 @@ async getScoresByAssessmentId(addAssessmentId: number): Promise<Score[]> {
     });
   }
 }
-
-

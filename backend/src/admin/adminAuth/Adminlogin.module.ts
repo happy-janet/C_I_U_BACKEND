@@ -7,8 +7,6 @@ import { PrismaModule } from '../../../prisma/prisma.module';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { AdminModule } from '../adminRegistrationManagement/admin.module';
 
-
-
 @Module({
   imports: [
     PrismaModule,
@@ -23,6 +21,6 @@ import { AdminModule } from '../adminRegistrationManagement/admin.module';
     }),
   ],
   providers: [AuthService],
-  controllers: [AuthController,DashboardController],
+  controllers: [AuthController, DashboardController],
 })
 export class AdminAuthModule {}

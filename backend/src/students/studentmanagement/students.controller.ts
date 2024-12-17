@@ -28,9 +28,9 @@ import { IssueReportService } from '../../reports/issue-report.service';
 import { IssueReport } from '@prisma/client';
 import { RolesGuard } from './roles.guard';
 import { Roles } from './role.decorator';
-import { CreateFAQDto } from  '../../FAQ/faqDTO/create-faq.dto'
+import { CreateFAQDto } from '../../FAQ/faqDTO/create-faq.dto';
 import { ReportIssueDto } from '../../reports/reportsDTO/report-issue.dto';
-import {SubmissionDto} from '../dto/SubmitAssessmentDto.dto';
+import { SubmissionDto } from '../dto/SubmitAssessmentDto.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { generateNumericToken } from './token-generator';
 import { sendEmail } from './sendEmail';
@@ -41,7 +41,7 @@ export class StudentsController {
     private readonly studentsService: StudentsService,
     private readonly authService: AuthService,
     private readonly faqService: FAQService,
-    private readonly issueReportService: IssueReportService
+    private readonly issueReportService: IssueReportService,
   ) {}
 
   @Get()
@@ -55,17 +55,14 @@ export class StudentsController {
   }
 
   @Post()
-createStudent(@Body() createUserDto: CreateUserDto) {
-  return this.studentsService.create(createUserDto);
-}
+  createStudent(@Body() createUserDto: CreateUserDto) {
+    return this.studentsService.create(createUserDto);
+  }
 
-
-@Patch(':id')
-updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  return this.studentsService.update(Number(id), updateUserDto);
-}
-
-  
+  @Patch(':id')
+  updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.studentsService.update(Number(id), updateUserDto);
+  }
 
   @Delete(':id')
   deleteStudent(@Param('id') id: string) {
@@ -78,34 +75,36 @@ updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
   }
 
   @Get('count/students')
-    async getStudentCount() {
-        return this.studentsService.countStudents();
-    }
+  async getStudentCount() {
+    return this.studentsService.countStudents();
+  }
 
-    @Get('count/programs')
-    async getProgramCount() {
-        return this.studentsService.countPrograms();
-    }
-
+  @Get('count/programs')
+  async getProgramCount() {
+    return this.studentsService.countPrograms();
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Request() req) {
     // Optionally handle any additional logout logic if necessary
-    return { message: 'Logout successful. Remove the token from your client storage.' };
+    return {
+      message: 'Logout successful. Remove the token from your client storage.',
+    };
   }
 
-  
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
   @Post('reset-password')
-    async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
-        return this.authService.resetPassword(resetPasswordDto);
-    }
-    
-    @Post('faq')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @Post('faq')
   async createFAQ(
     @Body() createFaqDto: CreateFAQDto, // Use DTO here
   ): Promise<FAQ> {
@@ -118,7 +117,6 @@ updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.faqService.findAll();
   }
 
-
   @Post('report')
   async reportIssue(
     @Body() reportIssueDto: ReportIssueDto,
@@ -126,7 +124,14 @@ updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.issueReportService.reportIssue(reportIssueDto);
   }
   @Post('set-password')
-  async setPassword(@Body() body: { token: string; newPassword: string; confirmPassword: string }) {
+  async setPassword(
+    @Body()
+    body: {
+      token: string;
+      newPassword: string;
+      confirmPassword: string;
+    },
+  ) {
     const { token, newPassword, confirmPassword } = body;
 
     if (newPassword !== confirmPassword) {
@@ -136,7 +141,10 @@ updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const student = await this.studentsService.findByToken(token);
 
     if (!student) {
-      throw new HttpException('Invalid or expired token', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'Invalid or expired token',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -146,18 +154,3 @@ updateStudent(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return { message: 'Password set successfully' };
   }
 }
-   
-
-
-
-  
-
-
-
-
-
-
-
-
-
-  

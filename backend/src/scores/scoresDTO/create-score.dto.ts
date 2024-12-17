@@ -12,12 +12,11 @@ export class CreateScoreDto {
 
   @IsOptional()
   @IsInt()
-  examId?: number; 
-
+  examId?: number;
 
   @IsOptional()
   @IsBoolean()
-  isPublished?: boolean; 
+  isPublished?: boolean;
 
   @IsOptional()
   @IsIn(['add', 'manual'])

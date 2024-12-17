@@ -1,11 +1,16 @@
-import { Controller, Post, Body, Res, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthService } from './Adminlogin.service';
 import { Response } from 'express';
 import { LoginDto } from './adminAuthDto/AdminLoginDto'; // Import the DTO
 import { ForgotPasswordDto } from './adminForgot-resetPasswordDto/forgot-password.dto';
 import { ResetPasswordDto } from './adminForgot-resetPasswordDto/reset-password.dto';
-
-
 
 @Controller('adminauth')
 export class AuthController {
@@ -14,7 +19,10 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     try {
-      const user = await this.authService.validateUser(loginDto.email, loginDto.password);
+      const user = await this.authService.validateUser(
+        loginDto.email,
+        loginDto.password,
+      );
       if (!user) {
         throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
       }
@@ -28,14 +36,13 @@ export class AuthController {
   }
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-      return this.authService.forgotPassword(forgotPasswordDto);
+    return this.authService.forgotPassword(forgotPasswordDto);
   }
   @Post('reset-password')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
     // Ensure that the token is passed correctly in the resetPasswordDto
     return this.authService.resetPassword(resetPasswordDto);
+  }
 }
-}
-
-
-

@@ -17,5 +17,3 @@ export class CreateMessageDto {
   @IsString()
   text: string;
 }
-
-

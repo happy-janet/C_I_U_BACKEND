@@ -10,7 +10,8 @@ export class ResumeExamDto {
   examId: number;
 
   @IsEnum(['in-progress', 'completed'], {
-    message: 'status must be one of the following values: in-progress or completed',
+    message:
+      'status must be one of the following values: in-progress or completed',
   })
   @IsNotEmpty()
   status: 'in-progress' | 'completed';
