@@ -26,7 +26,7 @@ interface RoomData {
 @WebSocketGateway({
   namespace: 'proctor',
   cors: {
-    origin: 'http://localhost:5173',
+    origin: 'https://ciu-online-exam-monitoring-system.netlify.ap',
     methods: ['GET', 'POST'],
     credentials: true,
   },

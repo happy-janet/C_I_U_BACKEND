@@ -15,7 +15,6 @@ async function bootstrap() {
   app.enableCors({
     origin: (origin, callback) => {
       const allowedOrigins = [
-        'http://localhost:5173', // Local development
         'https://ciu-online-exam-monitoring-system.netlify.app', // Production
       ];
   
